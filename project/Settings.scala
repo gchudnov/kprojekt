@@ -19,11 +19,16 @@ object Settings {
     "-Ywarn-numeric-widen",              // Warn when numerics are widened.
   )
 
+  val sharedResolvers = Seq(
+    Resolver.jcenterRepo, Resolver.mavenLocal
+  ).toVector
+
   val shared: Seq[Setting[_]] = Seq(
     scalacOptions ++= sharedScalacOptions ++ Seq("-target:jvm-1.8"),
     scalaVersion := scalaV,
     test in assembly := {},
     ThisBuild / turbo := true,
+    resolvers := Resolver.combineDefaultResolvers(sharedResolvers),
     compileOrder := CompileOrder.JavaThenScala,
     organization := "com.github.gchudnov"
   )
