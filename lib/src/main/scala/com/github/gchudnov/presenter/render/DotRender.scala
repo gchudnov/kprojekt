@@ -9,7 +9,7 @@ import cats.implicits._
   *
   * cat graph.dot | dot -Tpng > graph.png
   */
-case class Dot(value: String)
+case class Dot(value: String, excludes: Set[String] = Set.empty[String])
 
 case class DotRender(inner: Dot) extends Render[Dot] {
   import DotRender._
@@ -35,7 +35,10 @@ case class DotRender(inner: Dot) extends Render[Dot] {
 
   override def subtopologyEnd(): Render[Dot] = DotRender(inner |+| Dot("}\n"))
 
-  override def edge(fromName: String, toName: String): Render[Dot] = DotRender(inner |+| Dot(s"${toId(fromName)} -> ${toId(toName)};\n"))
+  override def edge(fromName: String, toName: String): Render[Dot] =
+    ifNotExcluded(fromName, toName)(
+      DotRender(inner |+| Dot(s"${toId(fromName)} -> ${toId(toName)};\n"))
+    )
 
   override def source(name: String, topics: Seq[String]): Render[Dot] =
     DotRender(
@@ -47,19 +50,23 @@ case class DotRender(inner: Dot) extends Render[Dot] {
         )
     )
 
-  override def processor(name: String, stores: Seq[String]): Render[Dot] =
+  override def processor(name: String, stores: Seq[String]): Render[Dot] = {
+    val (storeAttrs, excludes) = if (stores.size == 1) {
+      ("""image="cylinder.png", imagescale=true, fixedsize=true,""", Set(stores(0)))
+    } else {
+      ("", Set.empty[String])
+    }
+
     DotRender(
       inner |+|
-        Dot({
-          val storeAttrs = if (stores.isEmpty) {
-            ""
-          } else {
-            """image="cylinder.png", imagescale=true, fixedsize=true,"""
-          }
-
-          s"""${toId(name)} [shape=ellipse, ${storeAttrs} label="", xlabel="${toLabel(name)}"];\n"""
-        })
+        Dot(
+          new StringBuilder()
+            .append(s"""${toId(name)} [shape=ellipse, ${storeAttrs} label="", xlabel="${toLabel(name)}"];\n""")
+            .toString(),
+          excludes
+        )
     )
+  }
 
   override def sink(name: String, topic: String): Render[Dot] =
     DotRender(
@@ -72,24 +79,36 @@ case class DotRender(inner: Dot) extends Render[Dot] {
     )
 
   override def store(name: String): Render[Dot] =
-    DotRender(
-      inner |+|
-        Dot(
-          new StringBuilder()
-            .append(s"""${toId(name)} [shape=cylinder, label="", xlabel="${toLabel(name)}"];\n""")
-            .toString()
-        )
+    ifNotExcluded(name)(
+      DotRender(
+        inner |+|
+          Dot(
+            new StringBuilder()
+              .append(s"""${toId(name)} [shape=cylinder, label="", xlabel="${toLabel(name)}"];\n""")
+              .toString()
+          )
+      )
     )
 
   override def rank(name1: String, name2: String): Render[Dot] =
-    DotRender(
-      inner |+|
-        Dot(
-          new StringBuilder()
-            .append(s"""{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
-            .toString()
-        )
+    ifNotExcluded(name1, name2)(
+      DotRender(
+        inner |+|
+          Dot(
+            new StringBuilder()
+              .append(s"""{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
+              .toString()
+          )
+      )
     )
+
+  private def ifNotExcluded(names: String*)(r: Render[Dot]): Render[Dot] = {
+    if (names.intersect(inner.excludes.toSeq).nonEmpty) {
+      this
+    } else {
+      r
+    }
+  }
 }
 
 object DotRender {
@@ -121,7 +140,7 @@ sealed trait DotInstances {
 
   implicit val dotMonoid: Monoid[Dot] = new Monoid[Dot] {
     override def empty: Dot = Dot("")
-    override def combine(x: Dot, y: Dot): Dot = Dot(x.value + y.value)
+    override def combine(x: Dot, y: Dot): Dot = Dot(x.value + y.value, x.excludes ++ y.excludes)
   }
 
   implicit val dotRender: Render[Dot] = DotRender()

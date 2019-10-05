@@ -57,6 +57,8 @@ class PresenterSpec extends WordSpec with Matchers {
         val str = Presenter.run[Dot]("word-count", desc)
 
         str.isEmpty shouldBe false
+
+        FileOps.save(new File("/home/gchudnov/Downloads/graph2.dot"))(str)
       }
     }
   }

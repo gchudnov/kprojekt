@@ -52,13 +52,6 @@ object Presenter {
                 acc.edge(e._1, e._2)
               })
             })
-            .edges(ra => {
-              storeEdges.foldLeft(ra)((acc, e) => {
-                acc
-                .edge(e._1, e._2)
-                .rank(e._1, e._2)
-              })
-            })
             .sources(ra => {
               sources.foldLeft(ra)((acc, s) => {
                 acc.source(s.name, s.topicSet().asScala.toSeq)
@@ -77,6 +70,13 @@ object Presenter {
             .stores(ra => {
               stores.foldLeft(ra)((acc, storeName) => {
                 acc.store(storeName)
+              })
+            })
+            .edges(ra => {
+              storeEdges.foldLeft(ra)((acc, e) => {
+                acc
+                .edge(e._1, e._2)
+                .rank(e._1, e._2)
               })
             })
             .subtopologyEnd()
