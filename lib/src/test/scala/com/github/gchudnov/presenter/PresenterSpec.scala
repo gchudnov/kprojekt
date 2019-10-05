@@ -1,16 +1,15 @@
 package com.github.gchudnov.presenter
 
-import java.io.BufferedWriter
+import com.github.gchudnov.files.FileOps
+import com.github.gchudnov.presenter.render.Dot
+import com.github.gchudnov.presenter.render.DotInstances
 import java.io.File
-import java.io.FileWriter
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.StreamsBuilder
 import org.scalatest.{WordSpec, Matchers}
 import scala.jdk.CollectionConverters._
-import com.github.gchudnov.presenter.render.Dot
-import com.github.gchudnov.presenter.render.DotInstances
 
 /**
   * PresenterSpec
@@ -36,8 +35,7 @@ class PresenterSpec extends WordSpec with Matchers {
         val desc = topology.describe()
         val str = Presenter.run[Dot]("fan-out", desc)
 
-        println(desc)
-        println(str)
+        str.isEmpty shouldBe false
       }
     }
 
@@ -58,16 +56,8 @@ class PresenterSpec extends WordSpec with Matchers {
         val desc = topology.describe()
         val str = Presenter.run[Dot]("word-count", desc)
 
-        println(desc)
-        println(str)
+        str.isEmpty shouldBe false
       }
     }
-  }
-
-  private def saveAsFile(filename: String, data: String) = {
-    val file = new File(filename)
-    val bw = new BufferedWriter(new FileWriter(file))
-    bw.write(data)
-    bw.close()
   }
 }

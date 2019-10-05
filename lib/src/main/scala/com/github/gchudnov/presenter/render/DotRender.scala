@@ -21,7 +21,7 @@ case class DotRender(inner: Dot) extends Render[Dot] {
 
   override def topologyEnd(): Render[Dot] = DotRender(inner |+| Dot("}\n"))
 
-  override def topic(t: String): Render[Dot] = DotRender(inner |+| Dot(s"""${toId(t)} [shape=box, label="", xlabel="${t}"];\n"""))
+  override def topic(name: String): Render[Dot] = DotRender(inner |+| Dot(s"""${toId(name)} [shape=box, label="", xlabel="${name}"];\n"""))
 
   override def subtopologyStart(name: String): Render[Dot] =
     DotRender(
@@ -50,15 +50,15 @@ case class DotRender(inner: Dot) extends Render[Dot] {
   override def processor(name: String, stores: Seq[String]): Render[Dot] =
     DotRender(
       inner |+|
-        Dot(
-          s"""${toId(name)} [shape=ellipse, label="", xlabel="${toLabel(name)}"];\n"""
-          // stores
-          //   .foldLeft(new StringBuilder)((acc, t) => {
-          //     acc.append(s"${toId(t)} -> ${toId(name)};\n")
-          //   })
-          //   .append(s"""${toId(name)} [shape=ellipse];\n""")
-          //   .toString()
-        )
+        Dot({
+          val storeAttrs = if (stores.isEmpty) {
+            ""
+          } else {
+            """image="cylinder.png", imagescale=true, fixedsize=true,"""
+          }
+
+          s"""${toId(name)} [shape=ellipse, ${storeAttrs} label="", xlabel="${toLabel(name)}"];\n"""
+        })
     )
 
   override def sink(name: String, topic: String): Render[Dot] =
@@ -67,6 +67,26 @@ case class DotRender(inner: Dot) extends Render[Dot] {
         Dot(
           new StringBuilder()
             .append(s"""${toId(name)} [shape=ellipse, label="", xlabel="${toLabel(name)}"];\n""")
+            .toString()
+        )
+    )
+
+  override def store(name: String): Render[Dot] =
+    DotRender(
+      inner |+|
+        Dot(
+          new StringBuilder()
+            .append(s"""${toId(name)} [shape=cylinder, label="", xlabel="${toLabel(name)}"];\n""")
+            .toString()
+        )
+    )
+
+  override def rank(name1: String, name2: String): Render[Dot] =
+    DotRender(
+      inner |+|
+        Dot(
+          new StringBuilder()
+            .append(s"""{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
             .toString()
         )
     )
