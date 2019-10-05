@@ -98,7 +98,11 @@ class PresenterSpec extends WordSpec with Matchers {
         topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
 
         val desc = topology.describe()
-        val str = Presenter.run[Dot]("global-store-1", desc)
+        val str = Presenter.run[Dot]("global-store-usage", desc)
+
+        import com.github.gchudnov.files.FileOps
+        import java.io.File
+        FileOps.save(new File("/home/gchudnov/Downloads/graph3.dot"))(str)
 
         str.isEmpty shouldBe false
       }
