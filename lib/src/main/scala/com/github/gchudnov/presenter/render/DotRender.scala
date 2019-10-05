@@ -51,17 +51,19 @@ case class DotRender(inner: Dot) extends Render[Dot] {
     )
 
   override def processor(name: String, stores: Seq[String]): Render[Dot] = {
-    val (storeAttrs, excludes) = if (stores.size == 1) {
-      ("""image="cylinder.png", imagescale=true, fixedsize=true,""", Set(stores(0)))
+    val (text, excludes) = if (stores.size == 1) {
+      val label = s"""${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\\n${stores(0)}"];\n"""
+      (label, Set(stores(0)))
     } else {
-      ("", Set.empty[String])
+      val label = s"""${toId(name)} [shape=ellipse, label="", xlabel="${toLabel(name)}"];\n"""
+      (label, Set.empty[String])
     }
 
     DotRender(
       inner |+|
         Dot(
           new StringBuilder()
-            .append(s"""${toId(name)} [shape=ellipse, ${storeAttrs} label="", xlabel="${toLabel(name)}"];\n""")
+            .append(text)
             .toString(),
           excludes
         )
