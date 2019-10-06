@@ -2,16 +2,16 @@ package com.github.gchudnov.presenter
 
 import com.github.gchudnov.presenter.render.Dot
 import com.github.gchudnov.presenter.render.DotInstances
+import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.Materialized
-import org.apache.kafka.streams.state.KeyValueStore
-import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.processor.{Processor, ProcessorContext, ProcessorSupplier}
 import org.apache.kafka.streams.state.{KeyValueStore, StoreBuilder, Stores}
+import org.apache.kafka.streams.state.KeyValueStore
+import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.Topology
 import org.scalatest.{WordSpec, Matchers}
 import scala.jdk.CollectionConverters._
-import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.Topology
 
 /**
   * PresenterSpec

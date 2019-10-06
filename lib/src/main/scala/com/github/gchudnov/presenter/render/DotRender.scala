@@ -9,7 +9,7 @@ import cats.implicits._
   *
   * cat graph.dot | dot -Tpng > graph.png
   */
-case class Dot(value: String, excludes: Set[String] = Set.empty[String])
+case class Dot(value: String, storesToEmbed: Set[String] = Set.empty[String])
 
 case class DotRender(inner: Dot) extends Render[Dot] {
   import DotRender._
@@ -36,7 +36,7 @@ case class DotRender(inner: Dot) extends Render[Dot] {
   override def subtopologyEnd(): Render[Dot] = DotRender(inner |+| Dot("}\n"))
 
   override def edge(fromName: String, toName: String): Render[Dot] =
-    ifNotExcluded(fromName, toName)(
+    ifNotEmbedded(fromName, toName)(
       DotRender(inner |+| Dot(s"${toId(fromName)} -> ${toId(toName)};\n"))
     )
 
@@ -51,7 +51,7 @@ case class DotRender(inner: Dot) extends Render[Dot] {
     )
 
   override def processor(name: String, stores: Seq[String]): Render[Dot] = {
-    val (text, excludes) = if (stores.size == 1) {
+    val (text, excludes) = if (stores.size == 1 && inner.storesToEmbed.contains(stores(0))) {
       val label = s"""${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\\n${stores(0)}"];\n"""
       (label, Set(stores(0)))
     } else {
@@ -80,8 +80,25 @@ case class DotRender(inner: Dot) extends Render[Dot] {
         )
     )
 
+  /**
+   * used to plan the embeddment of stores into the graph node
+   * A store `s` can be embedded if:
+   * - processor references only 1 store
+   * - there are no other references to this store
+   * That means dfs(s) = 1
+   */
+  override def storeEdges(edges: Seq[(String, String)]): Render[Dot] = {
+    DotRender(
+      inner |+|
+        Dot(
+          "",
+          DotRender.findStoresToEmbed(edges)
+        )
+    )
+  }
+
   override def store(name: String): Render[Dot] =
-    ifNotExcluded(name)(
+    ifNotEmbedded(name)(
       DotRender(
         inner |+|
           Dot(
@@ -93,7 +110,7 @@ case class DotRender(inner: Dot) extends Render[Dot] {
     )
 
   override def rank(name1: String, name2: String): Render[Dot] =
-    ifNotExcluded(name1, name2)(
+    ifNotEmbedded(name1, name2)(
       DotRender(
         inner |+|
           Dot(
@@ -104,8 +121,8 @@ case class DotRender(inner: Dot) extends Render[Dot] {
       )
     )
 
-  private def ifNotExcluded(names: String*)(r: Render[Dot]): Render[Dot] = {
-    if (names.intersect(inner.excludes.toSeq).nonEmpty) {
+  private def ifNotEmbedded(names: String*)(r: Render[Dot]): Render[Dot] = {
+    if (names.intersect(inner.storesToEmbed.toSeq).nonEmpty) {
       this
     } else {
       r
@@ -132,6 +149,36 @@ object DotRender {
       name
     }
   }
+
+  def findStoresToEmbed(storEdges: Seq[(String, String)]): Set[String] = {
+    val (stores, adjList) = storEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]]))((acc, e) => {
+      val (stores , adjList) = acc
+      (stores + e._2, adjList |+| Map(e._1 -> List(e._2)) |+| Map(e._2 -> List(e._1)))
+    })
+
+    stores.foldLeft(Set.empty[String])((acc, s) => {
+      if(depth(adjList)(s) > 1) {
+        acc
+      } else {
+        acc + s
+      }
+    })
+  }
+
+  private[render] def depth(adjList: Map[String, List[String]])(s: String): Int = {
+    def iterate(depth: Int, visited: List[String], v: String): Int = {
+      val ws = adjList.getOrElse(v, List.empty[String])
+      ws.foldLeft(depth)((acc, w) => {
+        if(!visited.contains(w)) {
+          Math.max(acc, iterate(depth + 1, visited :+ w, w))
+        } else {
+          acc
+        }
+      })
+    }
+    iterate(0, List(s), s)
+  }
+
 }
 
 sealed trait DotInstances {
@@ -142,7 +189,7 @@ sealed trait DotInstances {
 
   implicit val dotMonoid: Monoid[Dot] = new Monoid[Dot] {
     override def empty: Dot = Dot("")
-    override def combine(x: Dot, y: Dot): Dot = Dot(x.value + y.value, x.excludes ++ y.excludes)
+    override def combine(x: Dot, y: Dot): Dot = Dot(x.value + y.value, x.storesToEmbed ++ y.storesToEmbed)
   }
 
   implicit val dotRender: Render[Dot] = DotRender()

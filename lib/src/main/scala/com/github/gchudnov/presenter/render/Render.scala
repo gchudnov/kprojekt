@@ -26,6 +26,7 @@ trait Render[A] {
   def sinks(f: (Render[A]) => Render[A]): Render[A] = f(this)
   def sink(name: String, topic: String): Render[A]
 
+  def storeEdges(edges: Seq[(String, String)]): Render[A]
   def stores(f: Render[A] => Render[A]): Render[A] = f(this)
   def store(name: String): Render[A]
 
