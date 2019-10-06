@@ -1,16 +1,17 @@
 package com.github.gchudnov.presenter
 
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
+import com.github.gchudnov.presenter.render.Dot
+import com.github.gchudnov.presenter.render.DotInstances
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.processor.{Processor, ProcessorContext, ProcessorSupplier}
+import org.apache.kafka.streams.state.{KeyValueStore, StoreBuilder, Stores}
 import org.scalatest.{WordSpec, Matchers}
 import scala.jdk.CollectionConverters._
-import com.github.gchudnov.presenter.render.Dot
-import com.github.gchudnov.presenter.render.DotInstances
+import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.Topology
 
 /**
   * PresenterSpec
@@ -36,8 +37,7 @@ class PresenterSpec extends WordSpec with Matchers {
         val desc = topology.describe()
         val str = Presenter.run[Dot]("fan-out", desc)
 
-        println(desc)
-        println(str)
+        str.isEmpty shouldBe false
       }
     }
 
@@ -58,16 +58,50 @@ class PresenterSpec extends WordSpec with Matchers {
         val desc = topology.describe()
         val str = Presenter.run[Dot]("word-count", desc)
 
-        println(desc)
-        println(str)
+        str.isEmpty shouldBe false
       }
     }
-  }
 
-  private def saveAsFile(filename: String, data: String) = {
-    val file = new File(filename)
-    val bw = new BufferedWriter(new FileWriter(file))
-    bw.write(data)
-    bw.close()
+    "rendreing a topology with global store" should {
+      "produce the expected graphviz output" in {
+        import DotInstances._
+
+        val stateStoreName = "test-store"
+
+        val processor: Processor[String, String] = new Processor[String, String] {
+          var keyValueStore: KeyValueStore[String, java.lang.Long] = null
+
+          override def init(context: ProcessorContext): Unit = {
+            keyValueStore = context.getStateStore(stateStoreName).asInstanceOf[KeyValueStore[String, java.lang.Long]]
+          }
+
+          override def process(key: String, value: String): Unit = {
+            keyValueStore.put(key, value.length.toLong)
+          }
+
+          override def close(): Unit = {}
+        }
+
+        val stringSerde = new Serdes.StringSerde
+        val longSerde = new Serdes.LongSerde
+
+        val storeSupplier: StoreBuilder[KeyValueStore[String, java.lang.Long]] = Stores
+          .keyValueStoreBuilder(Stores.persistentKeyValueStore(stateStoreName), stringSerde, longSerde)
+          .withLoggingDisabled()
+
+        val processorSupplier = new ProcessorSupplier[String, String] {
+          override def get(): Processor[String, String] = processor
+        }
+
+        val topology = new Topology()
+
+        topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
+
+        val desc = topology.describe()
+        val str = Presenter.run[Dot]("global-store-1", desc)
+
+        str.isEmpty shouldBe false
+      }
+    }
   }
 }

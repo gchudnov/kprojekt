@@ -8,7 +8,7 @@ trait Render[A] {
   def topologyEnd(): Render[A]
 
   def topics(f: (Render[A]) => Render[A]): Render[A] = f(this)
-  def topic(t: String): Render[A]
+  def topic(name: String): Render[A]
 
   def subtopologies(f: (Render[A]) => Render[A]): Render[A] = f(this)
   def subtopologyStart(name: String): Render[A]
@@ -25,4 +25,9 @@ trait Render[A] {
 
   def sinks(f: (Render[A]) => Render[A]): Render[A] = f(this)
   def sink(name: String, topic: String): Render[A]
+
+  def stores(f: Render[A] => Render[A]): Render[A] = f(this)
+  def store(name: String): Render[A]
+
+  def rank(name1: String, name2: String): Render[A]
 }
