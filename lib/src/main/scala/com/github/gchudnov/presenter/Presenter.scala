@@ -66,6 +66,7 @@ object Presenter {
     val storeEdges = collectStoreEdges(processors)
 
     ra
+      .storeEdges(storeEdges.toSeq)
       .subtopologyStart(stName)
       .edges(ra => {
         nodeEdges.foldLeft(ra)((acc, e) => {
