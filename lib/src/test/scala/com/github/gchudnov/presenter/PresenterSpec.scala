@@ -11,6 +11,7 @@ import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.scalatest.{WordSpec, Matchers}
+import scala.io.Source
 import scala.jdk.CollectionConverters._
 
 /**
@@ -26,6 +27,8 @@ class PresenterSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
+        val expected = stringFromResource("graphs/fan-out.dot")
+
         val builder = new StreamsBuilder
         val stream1 = builder.stream[String, String]("topic-a")
         val stream2 = stream1.mapValues(_.toUpperCase())
@@ -35,15 +38,17 @@ class PresenterSpec extends WordSpec with Matchers {
 
         val topology = builder.build()
         val desc = topology.describe()
-        val str = Presenter.run[Dot]("fan-out", desc)
+        val actual = Presenter.run[Dot]("fan-out", desc).trim()
 
-        str.isEmpty shouldBe false
+        actual shouldBe expected
       }
     }
 
     "rendering a word-count topology" should {
       "produce the expected graphviz output" in {
         import DotInstances._
+
+        val expected = stringFromResource("graphs/word-count.dot")
 
         val builder = new StreamsBuilder
         val source = builder.stream[String, String]("streams-plaintext-input")
@@ -56,15 +61,17 @@ class PresenterSpec extends WordSpec with Matchers {
 
         val topology = builder.build()
         val desc = topology.describe()
-        val str = Presenter.run[Dot]("word-count", desc)
+        val actual = Presenter.run[Dot]("word-count", desc).trim()
 
-        str.isEmpty shouldBe false
+        actual shouldBe expected
       }
     }
 
     "rendreing a topology with global store" should {
       "produce the expected graphviz output" in {
         import DotInstances._
+
+        val expected = stringFromResource("graphs/global-storage.dot")
 
         val stateStoreName = "test-store"
 
@@ -98,14 +105,14 @@ class PresenterSpec extends WordSpec with Matchers {
         topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
 
         val desc = topology.describe()
-        val str = Presenter.run[Dot]("global-store-usage", desc)
+        val actual = Presenter.run[Dot]("global-store-usage", desc).trim()
 
-        import com.github.gchudnov.files.FileOps
-        import java.io.File
-        FileOps.save(new File("/home/gchudnov/Downloads/graph3.dot"))(str)
-
-        str.isEmpty shouldBe false
+        actual shouldBe expected
       }
     }
+  }
+
+  private def stringFromResource(resourcePath: String) = {
+    Source.fromResource(resourcePath).getLines.mkString("\n").trim()
   }
 }

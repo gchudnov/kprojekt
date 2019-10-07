@@ -1,0 +1,32 @@
+digraph g_word_count {
+  counts_store_repartition [shape=box, label="", xlabel="counts-store-repartition"];
+  counts_store_repartition [shape=box, label="", xlabel="counts-store-repartition"];
+  streams_plaintext_input [shape=box, label="", xlabel="streams-plaintext-input"];
+  streams_wordcount_output [shape=box, label="", xlabel="streams-wordcount-output"];
+  KSTREAM_SINK_0000000004 -> counts_store_repartition;
+  KSTREAM_SINK_0000000008 -> streams_wordcount_output;
+  counts_store_repartition -> KSTREAM_SOURCE_0000000006;
+  streams_plaintext_input -> KSTREAM_SOURCE_0000000000;
+  subgraph cluster_0 {
+    style=dotted;
+    KSTREAM_FILTER_0000000005 -> KSTREAM_SINK_0000000004;
+    KSTREAM_FLATMAPVALUES_0000000001 -> KSTREAM_KEY_SELECT_0000000002;
+    KSTREAM_KEY_SELECT_0000000002 -> KSTREAM_FILTER_0000000005;
+    KSTREAM_SOURCE_0000000000 -> KSTREAM_FLATMAPVALUES_0000000001;
+    KSTREAM_SOURCE_0000000000 [shape=ellipse, label="", xlabel="SOURCE"];
+    KSTREAM_FILTER_0000000005 [shape=ellipse, label="", xlabel="FILTER"];
+    KSTREAM_FLATMAPVALUES_0000000001 [shape=ellipse, label="", xlabel="FLATMAPVALUES"];
+    KSTREAM_KEY_SELECT_0000000002 [shape=ellipse, label="", xlabel="KEY-SELECT"];
+    KSTREAM_SINK_0000000004 [shape=ellipse, label="", xlabel="SINK"];
+  }
+  subgraph cluster_1 {
+    style=dotted;
+    KSTREAM_AGGREGATE_0000000003 -> KTABLE_TOSTREAM_0000000007;
+    KSTREAM_SOURCE_0000000006 -> KSTREAM_AGGREGATE_0000000003;
+    KTABLE_TOSTREAM_0000000007 -> KSTREAM_SINK_0000000008;
+    KSTREAM_SOURCE_0000000006 [shape=ellipse, label="", xlabel="SOURCE"];
+    KSTREAM_AGGREGATE_0000000003 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="AGGREGATE\ncounts-store"];
+    KTABLE_TOSTREAM_0000000007 [shape=ellipse, label="", xlabel="TOSTREAM"];
+    KSTREAM_SINK_0000000008 [shape=ellipse, label="", xlabel="SINK"];
+  }
+}

@@ -21,8 +21,8 @@ object Presenter {
   private val KeySink = "k" 
 
   def run[A: Render : Show](name: String, desc: TopologyDescription): String = {
-    val subtopologies = desc.subtopologies().asScala.toSet
-    val globalStores = desc.globalStores().asScala.toSet
+    val subtopologies = desc.subtopologies().asScala.toSeq
+    val globalStores = desc.globalStores().asScala.toSeq
 
     val maybeTopicRelatedNodes = subtopologies.flatMap(_.nodes().asScala) ++ globalStores.map(_.source())
     val topics = collectTopics(maybeTopicRelatedNodes)
@@ -49,9 +49,9 @@ object Presenter {
       })
       .subtopologies(ra => {
         globalStores.foldLeft(ra)((acc, gs) => {
-          val sources = Set(gs.source())
-          val processors = Set(gs.processor())
-          val sinks = Set.empty[Sink]
+          val sources = Seq(gs.source())
+          val processors = Seq(gs.processor())
+          val sinks = Seq.empty[Sink]
           renderSubtopology(acc)(gs.id().toString(), sources, processors, sinks)
         })
       })
@@ -60,7 +60,7 @@ object Presenter {
       .show
   }
 
-  private def renderSubtopology[A: Render](ra: Render[A])(stName: String, sources: Set[Source], processors: Set[Processor], sinks: Set[Sink]): Render[A] = {
+  private def renderSubtopology[A: Render](ra: Render[A])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Render[A] = {
     val nodeEdges = collectNodeEdges(sources ++ processors ++ sinks)
     val stores = collectStores(processors)
     val storeEdges = collectStoreEdges(processors)
@@ -103,29 +103,29 @@ object Presenter {
       .subtopologyEnd()
   }
 
-  private def collectTopics(nodes: Set[Node]): Set[String] = {
+  private def collectTopics(nodes: Seq[Node]): Seq[String] = {
     nodes.collect({ 
       case s: Source => s.topicSet().asScala.toSet
       case k: Sink => Set(k.topic())
-    }).flatten
+    }).flatten.sorted
   }
 
-  private def collectTopicEdges(nodes: Set[Node]): Set[(String, String)] = {
+  private def collectTopicEdges(nodes: Seq[Node]): Seq[(String, String)] = {
      nodes.collect({ 
       case s: Source => s.topicSet().asScala.toSet.map((t: String) => (t, s.name()))
       case k: Sink => Set(k.topic()).map(t => (k.name(), t))
-    }).flatten
+    }).flatten.sorted
   }
 
-  private def collectNodes(subtopology: Subtopology): Set[Node] = {
-    subtopology.nodes().asScala.toSet
+  private def collectNodes(subtopology: Subtopology): Seq[Node] = {
+    subtopology.nodes().asScala.toSeq
   }
 
-  private def collectNodeEdges(nodes: Set[Node]): Set[(String, String)] = {
-    nodes.flatMap(from => from.successors().asScala.map(to => (from.name(), to.name())))
+  private def collectNodeEdges(nodes: Seq[Node]): Seq[(String, String)] = {
+    nodes.flatMap(from => from.successors().asScala.map(to => (from.name(), to.name()))).toSeq.sorted
   }
 
-  private def collectNodeByType(nodes: Set[Node]): (Set[Source], Set[Processor], Set[Sink]) = {
+  private def collectNodeByType(nodes: Seq[Node]): (Seq[Source], Seq[Processor], Seq[Sink]) = {
     val m = nodes.groupBy({
       case _: Source => KeySource
       case _: Processor => KeyProcessor
@@ -136,18 +136,18 @@ object Presenter {
     val processors = m.get(KeyProcessor).getOrElse(Set.empty[Node]).map(_.asInstanceOf[Processor])
     val sinks = m.get(KeySink).getOrElse(Set.empty[Node]).map(_.asInstanceOf[Sink])
 
-    (sources, processors, sinks)
+    (sources.toSeq.sortBy(_.name()), processors.toSeq.sortBy(_.name()), sinks.toSeq.sortBy(_.name()))
   }
 
-  private def collectStores(processors: Set[Processor]): Set[String] = {
+  private def collectStores(processors: Seq[Processor]): Seq[String] = {
     processors.foldLeft(Set.empty[String])((acc, p) => {
       acc ++ p.stores().asScala
-    })
+    }).toSeq.sorted
   }
 
-  private def collectStoreEdges(processors: Set[Processor]): Set[(String, String)] = {
+  private def collectStoreEdges(processors: Seq[Processor]): Seq[(String, String)] = {
     processors.foldLeft(Set.empty[(String, String)])((acc, p) => {
       acc ++ p.stores().asScala.map(storeName => (p.name(), storeName))
-    })
+    }).toSeq.sorted
   }
 }
