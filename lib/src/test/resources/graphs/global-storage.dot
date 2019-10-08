@@ -1,0 +1,10 @@
+digraph g_global_store_usage {
+  test_topic [shape=box, label="", xlabel="test-topic"];
+  test_topic -> test_source;
+  subgraph cluster_0 {
+    style=dotted;
+    test_source -> test_processor;
+    test_source [shape=ellipse, label="", xlabel="test-source"];
+    test_processor [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="test-processor\ntest-store"];
+  }
+}

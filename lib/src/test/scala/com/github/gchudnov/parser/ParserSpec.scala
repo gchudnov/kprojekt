@@ -16,7 +16,7 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
     "used to parse a valid topology description" should {
       "return the parsed structure" in {
 
-        val input = stringFromResource("topologies/fan-out.txt")
+        val input = stringFromResource("topologies/fan-out.log")
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
@@ -64,7 +64,7 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
 
   "used to parse an invalid input" should {
     "return an error" in {
-        val input = stringFromResource("topologies/invalid-structure.txt")
+        val input = stringFromResource("topologies/invalid-structure.log")
         val errOrTopology = Parser.run(input)
 
         errOrTopology.left.value.isInstanceOf[ParseException] shouldBe true
@@ -74,4 +74,5 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
   private def stringFromResource(resourcePath: String) = {
     Source.fromResource(resourcePath).getLines.mkString("\n")
   }
+
 }
