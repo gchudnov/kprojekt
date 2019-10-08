@@ -71,7 +71,7 @@ class PresenterSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val expected = stringFromResource("graphs/global-storage.dot")
+        val expected = stringFromResource("graphs/global-store.dot")
 
         val stateStoreName = "test-store"
 

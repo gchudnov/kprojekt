@@ -3,6 +3,7 @@ package com.github.gchudnov.parser
 import org.scalatest.{WordSpec, Matchers, EitherValues}
 import scala.io.Source
 import scala.jdk.CollectionConverters._
+import org.apache.kafka.streams.TopologyDescription.Sink
 
 /**
   * ParserSpec
@@ -13,9 +14,8 @@ import scala.jdk.CollectionConverters._
 class ParserSpec extends WordSpec with Matchers with EitherValues {
 
   "Parser" when {
-    "used to parse a valid topology description" should {
+    "parse fan-out topology description" should {
       "return the parsed structure" in {
-
         val input = stringFromResource("topologies/fan-out.log")
         val errOrTopology = Parser.run(input)
 
@@ -60,14 +60,44 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
         })
       }
     }
-  }
 
-  "used to parse an invalid input" should {
-    "return an error" in {
+    "parse global-store topology description" should {
+      "return the valid structure" in {
+        val input = stringFromResource("topologies/global-store.log")
+        val errOrTopology = Parser.run(input)
+
+        errOrTopology.isRight shouldBe true
+        errOrTopology.foreach(t => {
+          val subtopologies = t.subtopologies()
+          subtopologies.size() shouldBe 1
+
+          val subtopology = subtopologies.stream().findFirst().get()
+          subtopology.id() shouldBe 0
+
+          val nodes = subtopology.nodes().asScala
+          nodes.size shouldBe 2
+
+          val source = nodes.find(_.name() == "test-source").get
+          source.predecessors().asScala.isEmpty shouldBe true
+          source.successors().asScala.size shouldBe 1
+
+          val proc = nodes.find(_.name() == "test-processor").get
+          proc.predecessors().asScala.isEmpty shouldBe true
+          proc.successors().asScala.size shouldBe 1
+
+          val sink = nodes.find(_.isInstanceOf[Sink])
+          sink shouldBe None
+        })
+      }
+    }
+
+    "parse an invalid input" should {
+      "return an error" in {
         val input = stringFromResource("topologies/invalid-structure.log")
         val errOrTopology = Parser.run(input)
 
         errOrTopology.left.value.isInstanceOf[ParseException] shouldBe true
+      }
     }
   }
 

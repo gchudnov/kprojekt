@@ -51,6 +51,7 @@ object Parser {
         Left[ParseException, TopologyDescription](new ParseException(s"Cannot parse input: ${msg} at ${pos}"))
       },
       (t, _) => {
+        println(t)
         Right[ParseException, TopologyDescription](toTopologyDescription(t))
       }
     )
