@@ -24,6 +24,8 @@ object Parser {
   final case class ProcessorRef(name: String, stores: Seq[String], next: Seq[String], prev: Seq[String]) extends NodeRef
   final case class SinkRef(name: String, topic: String, prev: Seq[String]) extends NodeRef
 
+  private def untilEol[_: P] = P(CharsWhile(_ != '\n', 0))
+
   private def space[_: P] = P(CharsWhileIn(" \r\n", 0))
 
   private def next[_: P] = P("-->")
@@ -40,7 +42,7 @@ object Parser {
   private def processor[_: P] = P("Processor:" ~/ identifier ~ "(" ~/ storeSeq ~ ")" ~/ next ~/ identifierSeq ~ prev ~/ identifierSeq).map(ProcessorRef.tupled)
   private def sink[_: P] = P("Sink:" ~/ identifier ~ "(" ~/ topic ~ ")" ~/ prev ~/ identifierSeq).map(SinkRef.tupled)
 
-  private def subtopologyId[_: P] = P("Sub-topology:" ~/ identifier.!)
+  private def subtopologyId[_: P] = P("Sub-topology:" ~/ identifier ~~ untilEol)
   private def subtopology[_: P] = P(subtopologyId ~ (source | processor | sink).rep).map(SubtopologyRef.tupled)
 
   private def topology[_: P] = P("Topologies:" ~/ subtopology.rep).map(TopologyRef)
@@ -51,7 +53,6 @@ object Parser {
         Left[ParseException, TopologyDescription](new ParseException(s"Cannot parse input: ${msg} at ${pos}"))
       },
       (t, _) => {
-        println(t)
         Right[ParseException, TopologyDescription](toTopologyDescription(t))
       }
     )

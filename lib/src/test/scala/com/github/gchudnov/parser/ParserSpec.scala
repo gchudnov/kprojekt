@@ -1,9 +1,11 @@
 package com.github.gchudnov.parser
 
-import org.scalatest.{WordSpec, Matchers, EitherValues}
-import scala.io.Source
-import scala.jdk.CollectionConverters._
+import org.apache.kafka.streams.TopologyDescription.Processor
 import org.apache.kafka.streams.TopologyDescription.Sink
+import org.apache.kafka.streams.TopologyDescription.Source
+import org.scalatest.{WordSpec, Matchers, EitherValues}
+import scala.io.{Source => IOSource}
+import scala.jdk.CollectionConverters._
 
 /**
   * ParserSpec
@@ -77,13 +79,15 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
           val nodes = subtopology.nodes().asScala
           nodes.size shouldBe 2
 
-          val source = nodes.find(_.name() == "test-source").get
+          val source = nodes.find(_.name() == "test-source").get.asInstanceOf[Source]
           source.predecessors().asScala.isEmpty shouldBe true
           source.successors().asScala.size shouldBe 1
+          source.topicSet().asScala.size shouldBe 1
 
-          val proc = nodes.find(_.name() == "test-processor").get
-          proc.predecessors().asScala.isEmpty shouldBe true
-          proc.successors().asScala.size shouldBe 1
+          val proc = nodes.find(_.name() == "test-processor").get.asInstanceOf[Processor]
+          proc.predecessors().asScala.size shouldBe 1
+          proc.successors().asScala.size shouldBe 0
+          proc.stores().asScala.size shouldBe 1
 
           val sink = nodes.find(_.isInstanceOf[Sink])
           sink shouldBe None
@@ -102,7 +106,7 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
   }
 
   private def stringFromResource(resourcePath: String) = {
-    Source.fromResource(resourcePath).getLines.mkString("\n")
+    IOSource.fromResource(resourcePath).getLines.mkString("\n")
   }
 
 }
