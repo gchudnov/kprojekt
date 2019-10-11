@@ -1,0 +1,75 @@
+Topologies:
+   Sub-topology: 0
+    Source: KSTREAM-SOURCE-0000000000 (topics: [input])
+      --> KSTREAM-MAP-0000000001
+    Processor: KSTREAM-MAP-0000000001 (stores: [])
+      --> KSTREAM-FILTER-0000000002, KSTREAM-FILTER-0000000040
+      <-- KSTREAM-SOURCE-0000000000
+    Processor: KSTREAM-FILTER-0000000002 (stores: [])
+      --> KSTREAM-MAPVALUES-0000000003
+      <-- KSTREAM-MAP-0000000001
+    Processor: KSTREAM-FILTER-0000000040 (stores: [])
+      --> KSTREAM-SINK-0000000039
+      <-- KSTREAM-MAP-0000000001
+    Processor: KSTREAM-MAPVALUES-0000000003 (stores: [])
+      --> KSTREAM-PROCESSOR-0000000004
+      <-- KSTREAM-FILTER-0000000002
+    Processor: KSTREAM-PROCESSOR-0000000004 (stores: [])
+      --> none
+      <-- KSTREAM-MAPVALUES-0000000003
+    Sink: KSTREAM-SINK-0000000039 (topic: count-stream-repartition)
+      <-- KSTREAM-FILTER-0000000040
+
+  Sub-topology: 1
+    Source: KSTREAM-SOURCE-0000000041 (topics: [count-stream-repartition])
+      --> KSTREAM-FILTER-0000000020, KSTREAM-AGGREGATE-0000000007, KSTREAM-AGGREGATE-0000000014, KSTREAM-FILTER-0000000029
+    Processor: KSTREAM-AGGREGATE-0000000007 (stores: [KSTREAM-AGGREGATE-STATE-STORE-0000000006])
+      --> KTABLE-TOSTREAM-0000000011
+      <-- KSTREAM-SOURCE-0000000041
+    Processor: KTABLE-TOSTREAM-0000000011 (stores: [])
+      --> joined-stream-other-windowed, KSTREAM-SINK-0000000012
+      <-- KSTREAM-AGGREGATE-0000000007
+    Processor: KSTREAM-FILTER-0000000020 (stores: [])
+      --> KSTREAM-PEEK-0000000021
+      <-- KSTREAM-SOURCE-0000000041
+    Processor: KSTREAM-FILTER-0000000029 (stores: [])
+      --> joined-stream-this-windowed
+      <-- KSTREAM-SOURCE-0000000041
+    Processor: KSTREAM-PEEK-0000000021 (stores: [])
+      --> KSTREAM-REDUCE-0000000023
+      <-- KSTREAM-FILTER-0000000020
+    Processor: joined-stream-other-windowed (stores: [joined-stream-other-join-store])
+      --> joined-stream-other-join
+      <-- KTABLE-TOSTREAM-0000000011
+    Processor: joined-stream-this-windowed (stores: [joined-stream-this-join-store])
+      --> joined-stream-this-join
+      <-- KSTREAM-FILTER-0000000029
+    Processor: KSTREAM-AGGREGATE-0000000014 (stores: [KSTREAM-AGGREGATE-STATE-STORE-0000000013])
+      --> KTABLE-TOSTREAM-0000000018
+      <-- KSTREAM-SOURCE-0000000041
+    Processor: KSTREAM-REDUCE-0000000023 (stores: [KSTREAM-REDUCE-STATE-STORE-0000000022])
+      --> KTABLE-TOSTREAM-0000000027
+      <-- KSTREAM-PEEK-0000000021
+    Processor: joined-stream-other-join (stores: [joined-stream-this-join-store])
+      --> joined-stream-merge
+      <-- joined-stream-other-windowed
+    Processor: joined-stream-this-join (stores: [joined-stream-other-join-store])
+      --> joined-stream-merge
+      <-- joined-stream-this-windowed
+    Processor: KTABLE-TOSTREAM-0000000018 (stores: [])
+      --> KSTREAM-SINK-0000000019
+      <-- KSTREAM-AGGREGATE-0000000014
+    Processor: KTABLE-TOSTREAM-0000000027 (stores: [])
+      --> KSTREAM-SINK-0000000028
+      <-- KSTREAM-REDUCE-0000000023
+    Processor: joined-stream-merge (stores: [])
+      --> KSTREAM-SINK-0000000038
+      <-- joined-stream-this-join, joined-stream-other-join
+    Sink: KSTREAM-SINK-0000000012 (topic: outputTopic_0)
+      <-- KTABLE-TOSTREAM-0000000011
+    Sink: KSTREAM-SINK-0000000019 (topic: outputTopic_1)
+      <-- KTABLE-TOSTREAM-0000000018
+    Sink: KSTREAM-SINK-0000000028 (topic: outputTopic_2)
+      <-- KTABLE-TOSTREAM-0000000027
+    Sink: KSTREAM-SINK-0000000038 (topic: outputTopicForJoin)
+      <-- joined-stream-merge

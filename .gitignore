@@ -2,5 +2,4 @@
 .bloop
 .idea
 *.class
-*.log
 target

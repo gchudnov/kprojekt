@@ -44,7 +44,7 @@ object Presenter {
         subtopologies.foldLeft(ra)((acc, st) => {
           val nodes = collectNodes(st)
           val (sources, processors, sinks) = collectNodeByType(nodes)
-          renderSubtopology(acc)(st.id().toString(), sources, processors, sinks)
+          renderSubtopology(acc)(st.id().toString, sources, processors, sinks)
         })
       })
       .subtopologies(ra => {
@@ -52,7 +52,7 @@ object Presenter {
           val sources = Seq(gs.source())
           val processors = Seq(gs.processor())
           val sinks = Seq.empty[Sink]
-          renderSubtopology(acc)(gs.id().toString(), sources, processors, sinks)
+          renderSubtopology(acc)(gs.id().toString, sources, processors, sinks)
         })
       })
       .topologyEnd()
@@ -61,12 +61,12 @@ object Presenter {
   }
 
   private def renderSubtopology[A: Render](ra: Render[A])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Render[A] = {
-    val nodeEdges = collectNodeEdges(sources ++ processors ++ sinks)
+    val nodeEdges = collectNodeEdges(sources ++ processors ++ sinks.asInstanceOf[Seq[Node]])
     val stores = collectStores(processors)
     val storeEdges = collectStoreEdges(processors)
 
     ra
-      .storeEdges(storeEdges.toSeq)
+      .storeEdges(storeEdges)
       .subtopologyStart(stName)
       .edges(ra => {
         nodeEdges.foldLeft(ra)((acc, e) => {
@@ -122,7 +122,7 @@ object Presenter {
   }
 
   private def collectNodeEdges(nodes: Seq[Node]): Seq[(String, String)] = {
-    nodes.flatMap(from => from.successors().asScala.map(to => (from.name(), to.name()))).toSeq.sorted
+    nodes.flatMap(from => from.successors().asScala.map(to => (from.name(), to.name()))).sorted
   }
 
   private def collectNodeByType(nodes: Seq[Node]): (Seq[Source], Seq[Processor], Seq[Sink]) = {
@@ -132,9 +132,9 @@ object Presenter {
       case _: Sink => KeySink
     })
 
-    val sources = m.get(KeySource).getOrElse(Set.empty[Node]).map(_.asInstanceOf[Source])
-    val processors = m.get(KeyProcessor).getOrElse(Set.empty[Node]).map(_.asInstanceOf[Processor])
-    val sinks = m.get(KeySink).getOrElse(Set.empty[Node]).map(_.asInstanceOf[Sink])
+    val sources = m.getOrElse(KeySource, Set.empty[Node]).map(_.asInstanceOf[Source])
+    val processors = m.getOrElse(KeyProcessor, Set.empty[Node]).map(_.asInstanceOf[Processor])
+    val sinks = m.getOrElse(KeySink, Set.empty[Node]).map(_.asInstanceOf[Sink])
 
     (sources.toSeq.sortBy(_.name()), processors.toSeq.sortBy(_.name()), sinks.toSeq.sortBy(_.name()))
   }

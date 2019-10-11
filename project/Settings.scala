@@ -16,10 +16,10 @@ object Settings {
     "-language:implicitConversions",     // Allow definition of implicit functions called views
     "-unchecked",                        // Enable additional warnings where generated code depends on assumptions.
     "-Xlint",
-    "-Ywarn-numeric-widen",              // Warn when numerics are widened.
+    "-Ywarn-numeric-widen"               // Warn when numerics are widened.
   )
 
-  val sharedResolvers = Seq(
+  val sharedResolvers: Vector[MavenRepository] = Seq(
     Resolver.jcenterRepo, Resolver.mavenLocal
   ).toVector
 
