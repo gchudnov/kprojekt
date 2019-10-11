@@ -1,0 +1,7 @@
+Topologies:
+   Sub-topology: 0 for global store (will not generate tasks)
+    Source: test-source (topics: [test-topic])
+      --> test-processor
+    Processor: test-processor (stores: [test-store])
+      --> none
+      <-- test-source
