@@ -13,12 +13,15 @@ import org.apache.kafka.streams.Topology
 import org.scalatest.{WordSpec, Matchers}
 import scala.io.Source
 import scala.jdk.CollectionConverters._
+import com.github.gchudnov.parser.Parser
 
 /**
   * PresenterSpec
   *
   * example:
   *   bloop test lib --only com.github.gchudnov.presenter.PresenterSpec
+  *
+  *   cat graph.dot | dot -Tpng > graph.png
   */
 class PresenterSpec extends WordSpec with Matchers {
 
@@ -108,6 +111,24 @@ class PresenterSpec extends WordSpec with Matchers {
         val actual = Presenter.run[Dot]("global-store-usage", desc).trim()
 
         actual shouldBe expected
+      }
+    }
+
+    "parsing and rendering a complex topology 1" should {
+      "produce the expected graphviz output" in {
+        import DotInstances._
+
+        val input = stringFromResource("topologies/complex-topo-1.log")
+        val errOrTopology = Parser.run(input)
+
+        errOrTopology.isRight shouldBe true
+        errOrTopology.foreach(desc => {
+          val actual = Presenter.run[Dot]("complex-topo-1", desc).trim()
+          val expected = stringFromResource("graphs/complex-topo-1.dot")
+
+          actual shouldBe expected
+        })
+
       }
     }
   }
