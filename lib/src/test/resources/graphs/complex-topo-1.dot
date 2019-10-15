@@ -1,0 +1,73 @@
+digraph g_complex_topo_1 {
+  count_stream_repartition [shape=box, label="", xlabel="count-stream-repartition"];
+  count_stream_repartition [shape=box, label="", xlabel="count-stream-repartition"];
+  input [shape=box, label="", xlabel="input"];
+  outputTopicForJoin [shape=box, label="", xlabel="outputTopicForJoin"];
+  outputTopic_0 [shape=box, label="", xlabel="outputTopic_0"];
+  outputTopic_1 [shape=box, label="", xlabel="outputTopic_1"];
+  outputTopic_2 [shape=box, label="", xlabel="outputTopic_2"];
+  KSTREAM_SINK_0000000012 -> outputTopic_0;
+  KSTREAM_SINK_0000000019 -> outputTopic_1;
+  KSTREAM_SINK_0000000028 -> outputTopic_2;
+  KSTREAM_SINK_0000000038 -> outputTopicForJoin;
+  KSTREAM_SINK_0000000039 -> count_stream_repartition;
+  count_stream_repartition -> KSTREAM_SOURCE_0000000041;
+  input -> KSTREAM_SOURCE_0000000000;
+  subgraph cluster_1 {
+    style=dotted;
+    KSTREAM_AGGREGATE_0000000007 -> KTABLE_TOSTREAM_0000000011;
+    KSTREAM_AGGREGATE_0000000014 -> KTABLE_TOSTREAM_0000000018;
+    KSTREAM_FILTER_0000000020 -> KSTREAM_PEEK_0000000021;
+    KSTREAM_FILTER_0000000029 -> joined_stream_this_windowed;
+    KSTREAM_PEEK_0000000021 -> KSTREAM_REDUCE_0000000023;
+    KSTREAM_REDUCE_0000000023 -> KTABLE_TOSTREAM_0000000027;
+    KSTREAM_SOURCE_0000000041 -> KSTREAM_AGGREGATE_0000000007;
+    KSTREAM_SOURCE_0000000041 -> KSTREAM_AGGREGATE_0000000014;
+    KSTREAM_SOURCE_0000000041 -> KSTREAM_FILTER_0000000020;
+    KSTREAM_SOURCE_0000000041 -> KSTREAM_FILTER_0000000029;
+    KTABLE_TOSTREAM_0000000011 -> KSTREAM_SINK_0000000012;
+    KTABLE_TOSTREAM_0000000011 -> joined_stream_other_windowed;
+    KTABLE_TOSTREAM_0000000018 -> KSTREAM_SINK_0000000019;
+    KTABLE_TOSTREAM_0000000027 -> KSTREAM_SINK_0000000028;
+    joined_stream_merge -> KSTREAM_SINK_0000000038;
+    joined_stream_other_join -> joined_stream_merge;
+    joined_stream_other_windowed -> joined_stream_other_join;
+    joined_stream_this_join -> joined_stream_merge;
+    joined_stream_this_windowed -> joined_stream_this_join;
+    KSTREAM_SOURCE_0000000041 [shape=ellipse, label="", xlabel="SOURCE"];
+    KSTREAM_AGGREGATE_0000000007 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="AGGREGATE\nKSTREAM-AGGREGATE-STATE-STORE-0000000006"];
+    KSTREAM_AGGREGATE_0000000014 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="AGGREGATE\nKSTREAM-AGGREGATE-STATE-STORE-0000000013"];
+    KSTREAM_FILTER_0000000020 [shape=ellipse, label="", xlabel="FILTER"];
+    KSTREAM_FILTER_0000000029 [shape=ellipse, label="", xlabel="FILTER"];
+    KSTREAM_PEEK_0000000021 [shape=ellipse, label="", xlabel="PEEK"];
+    KSTREAM_REDUCE_0000000023 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="REDUCE\nKSTREAM-REDUCE-STATE-STORE-0000000022"];
+    KTABLE_TOSTREAM_0000000011 [shape=ellipse, label="", xlabel="TOSTREAM"];
+    KTABLE_TOSTREAM_0000000018 [shape=ellipse, label="", xlabel="TOSTREAM"];
+    KTABLE_TOSTREAM_0000000027 [shape=ellipse, label="", xlabel="TOSTREAM"];
+    joined_stream_merge [shape=ellipse, label="", xlabel="joined-stream-merge"];
+    joined_stream_other_join [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="joined-stream-other-join\njoined-stream-this-join-store"];
+    joined_stream_other_windowed [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="joined-stream-other-windowed\njoined-stream-other-join-store"];
+    joined_stream_this_join [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="joined-stream-this-join\njoined-stream-other-join-store"];
+    joined_stream_this_windowed [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="joined-stream-this-windowed\njoined-stream-this-join-store"];
+    KSTREAM_SINK_0000000012 [shape=ellipse, label="", xlabel="SINK"];
+    KSTREAM_SINK_0000000019 [shape=ellipse, label="", xlabel="SINK"];
+    KSTREAM_SINK_0000000028 [shape=ellipse, label="", xlabel="SINK"];
+    KSTREAM_SINK_0000000038 [shape=ellipse, label="", xlabel="SINK"];
+  }
+  subgraph cluster_0 {
+    style=dotted;
+    KSTREAM_FILTER_0000000002 -> KSTREAM_MAPVALUES_0000000003;
+    KSTREAM_FILTER_0000000040 -> KSTREAM_SINK_0000000039;
+    KSTREAM_MAP_0000000001 -> KSTREAM_FILTER_0000000002;
+    KSTREAM_MAP_0000000001 -> KSTREAM_FILTER_0000000040;
+    KSTREAM_MAPVALUES_0000000003 -> KSTREAM_PROCESSOR_0000000004;
+    KSTREAM_SOURCE_0000000000 -> KSTREAM_MAP_0000000001;
+    KSTREAM_SOURCE_0000000000 [shape=ellipse, label="", xlabel="SOURCE"];
+    KSTREAM_FILTER_0000000002 [shape=ellipse, label="", xlabel="FILTER"];
+    KSTREAM_FILTER_0000000040 [shape=ellipse, label="", xlabel="FILTER"];
+    KSTREAM_MAP_0000000001 [shape=ellipse, label="", xlabel="MAP"];
+    KSTREAM_MAPVALUES_0000000003 [shape=ellipse, label="", xlabel="MAPVALUES"];
+    KSTREAM_PROCESSOR_0000000004 [shape=ellipse, label="", xlabel="PROCESSOR"];
+    KSTREAM_SINK_0000000039 [shape=ellipse, label="", xlabel="SINK"];
+  }
+}

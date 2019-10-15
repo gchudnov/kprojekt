@@ -97,13 +97,25 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
 
     "parse complex topology description" should {
       "return the valid structure" in {
-        val input = stringFromResource("topologies/complex-topo.log")
+        val input = stringFromResource("topologies/complex-topo-1.log")
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
         errOrTopology.foreach(t => {
-          val subtopologies = t.subtopologies()
-          subtopologies.size() shouldBe 2
+          val subtopologies = t.subtopologies().asScala.toSet
+          subtopologies.size shouldBe 2
+
+          val subtopology0 = subtopologies.find(_.id() == 0).get
+          subtopology0.id() shouldBe 0
+
+          val nodes0 = subtopology0.nodes().asScala
+          nodes0.size shouldBe 7
+
+          val subtopology1 = subtopologies.find(_.id() == 1).get
+          subtopology1.id() shouldBe 1
+
+          val nodes1 = subtopology1.nodes().asScala
+          nodes1.size shouldBe 19
         })
       }
     }

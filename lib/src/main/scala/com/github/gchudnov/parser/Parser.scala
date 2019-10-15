@@ -31,7 +31,7 @@ object Parser {
   private def next[_: P] = P("-->")
   private def prev[_: P] = P("<--")
 
-  private def identifier[_: P] = P(CharsWhileIn("0-9a-zA-Z\\-").!)
+  private def identifier[_: P] = P(CharsWhileIn("0-9a-zA-Z\\-_").!)
   private def identifierSeq[_: P] = P(identifier.rep(sep = ("," ~ space)./))
 
   private def storeSeq[_: P] = P("stores:" ~/ "[" ~/ identifierSeq ~ "]")
