@@ -2,7 +2,7 @@ package com.github.gchudnov.presenter.render
 
 import cats._
 import cats.implicits._
-import com.github.gchudnov.name.NodeName
+import com.github.gchudnov.presenter.name.NodeName
 
 /**
   * Render Topology for GraphViz (Dot-Format)
@@ -23,7 +23,12 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
   override def topologyStart(name: String): Render[Dot] =
     DotRender(
       inner |+| Dot(
-        s"""${T}digraph g_${toId(name)} {\n"""
+        new StringBuilder()
+          .append(s"""${T}digraph g_${toId(name)} {\n""")
+          .append(s"""${T2}graph [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
+          .append(s"""${T2}node [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
+          .append(s"""${T2}edge [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
+          .toString()
       ),
       state.copy(indent = state.indent + 1)
     )
@@ -39,7 +44,7 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
   override def topic(name: String): Render[Dot] =
     DotRender(
       inner |+| Dot(
-        s"""${T}${toId(name)} [shape=box, label="", xlabel="${name}"];\n"""
+        s"""${T}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
       ),
       state
     )
@@ -77,7 +82,7 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       inner |+|
         Dot(
           new StringBuilder()
-            .append(s"""${T}${toId(name)} [shape=ellipse, label="", xlabel="${toLabel(name)}"];\n""")
+            .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
             .toString()
         ),
       state
@@ -85,9 +90,9 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
 
   override def processor(name: String, stores: Seq[String]): Render[Dot] = {
     val text = if (stores.size == 1 && state.storesToEmbed.contains(stores(0))) {
-      s"""${T}${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\\n${stores(0)}"];\n"""
+      s"""${T}${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(stores(0))})"];\n"""
     } else {
-      s"""${T}${toId(name)} [shape=ellipse, label="", xlabel="${toLabel(name)}"];\n"""
+      s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
     }
 
     DotRender(
@@ -106,7 +111,7 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       inner |+|
         Dot(
           new StringBuilder()
-            .append(s"""${T}${toId(name)} [shape=ellipse, label="", xlabel="${toLabel(name)}"];\n""")
+            .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
             .toString()
         ),
       state
@@ -132,7 +137,7 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
         inner |+|
           Dot(
             new StringBuilder()
-              .append(s"""${T}${toId(name)} [shape=cylinder, label="", xlabel="${toLabel(name)}"];\n""")
+              .append(s"""${T}${toId(name)} [shape=cylinder, fixedsize=false, width=0.5, label="", xlabel="${toLabel(name)}"];\n""")
               .toString()
           ),
         state
@@ -161,7 +166,7 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
   }
 
   private def T: String = indent(state.indent)
-
+  private def T2: String = indent(state.indent + 1)
   private def T_1: String = indent(state.indent - 1)
 
   private def indent(value: Int): String = " " * (value * defaultIndent)
@@ -171,6 +176,8 @@ object DotRender {
   import DotInstances.dotMonoid
 
   private val defaultIndent = 2
+  private val defaultFontName = "sans-serif"
+  private val defaultFontSize = "10"
 
   def apply() = new DotRender(Monoid[Dot].empty)
 
@@ -181,35 +188,21 @@ object DotRender {
   def toLabel(name: String): String =
     NodeName.parse(name).label
 
-  def findStoresToEmbed(storEdges: Seq[(String, String)]): Set[String] = {
-    val (stores, adjList) = storEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]]))((acc, e) => {
+  def findStoresToEmbed(storeEdges: Seq[(String, String)]): Set[String] = {
+    val (stores, adjList) = storeEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]]))((acc, e) => {
       val (stores, adjList) = acc
       (stores + e._2, adjList |+| Map(e._1 -> List(e._2)) |+| Map(e._2 -> List(e._1)))
     })
 
     stores.foldLeft(Set.empty[String])((acc, s) => {
-      if (depth(adjList)(s) > 1) {
+      val as = adjList.getOrElse(s, List.empty[String])
+      if (as.size > 1) {
         acc
       } else {
         acc + s
       }
     })
   }
-
-  private[render] def depth(adjList: Map[String, List[String]])(s: String): Int = {
-    def iterate(depth: Int, visited: List[String], v: String): Int = {
-      val ws = adjList.getOrElse(v, List.empty[String])
-      ws.foldLeft(depth)((acc, w) => {
-        if (!visited.contains(w)) {
-          Math.max(acc, iterate(depth + 1, visited :+ w, w))
-        } else {
-          acc
-        }
-      })
-    }
-    iterate(0, List(s), s)
-  }
-
 }
 
 sealed trait DotInstances {

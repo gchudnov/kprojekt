@@ -1,7 +1,10 @@
 digraph g_fan_out {
-  output_1 [shape=box, label="", xlabel="output-1"];
-  output_2 [shape=box, label="", xlabel="output-2"];
-  topic_a [shape=box, label="", xlabel="topic-a"];
+  graph [fontname = "sans-serif", fontsize=10];
+  node [fontname = "sans-serif", fontsize=10];
+  edge [fontname = "sans-serif", fontsize=10];
+  output_1 [shape=box, fixedsize=true, label="output-1", xlabel=""];
+  output_2 [shape=box, fixedsize=true, label="output-2", xlabel=""];
+  topic_a [shape=box, fixedsize=true, label="topic-a", xlabel=""];
   KSTREAM_SINK_0000000003 -> output_1;
   KSTREAM_SINK_0000000004 -> output_2;
   topic_a -> KSTREAM_SOURCE_0000000000;
@@ -11,10 +14,10 @@ digraph g_fan_out {
     KSTREAM_MAPVALUES_0000000002 -> KSTREAM_SINK_0000000004;
     KSTREAM_SOURCE_0000000000 -> KSTREAM_MAPVALUES_0000000001;
     KSTREAM_SOURCE_0000000000 -> KSTREAM_MAPVALUES_0000000002;
-    KSTREAM_SOURCE_0000000000 [shape=ellipse, label="", xlabel="SOURCE"];
-    KSTREAM_MAPVALUES_0000000001 [shape=ellipse, label="", xlabel="MAPVALUES"];
-    KSTREAM_MAPVALUES_0000000002 [shape=ellipse, label="", xlabel="MAPVALUES"];
-    KSTREAM_SINK_0000000003 [shape=ellipse, label="", xlabel="SINK"];
-    KSTREAM_SINK_0000000004 [shape=ellipse, label="", xlabel="SINK"];
+    KSTREAM_SOURCE_0000000000 [shape=ellipse, fixedsize=true, label="SOURCE", xlabel=""];
+    KSTREAM_MAPVALUES_0000000001 [shape=ellipse, fixedsize=true, label="MAPVALUES", xlabel=""];
+    KSTREAM_MAPVALUES_0000000002 [shape=ellipse, fixedsize=true, label="MAPVALUES", xlabel=""];
+    KSTREAM_SINK_0000000003 [shape=ellipse, fixedsize=true, label="SINK", xlabel=""];
+    KSTREAM_SINK_0000000004 [shape=ellipse, fixedsize=true, label="SINK", xlabel=""];
   }
 }
