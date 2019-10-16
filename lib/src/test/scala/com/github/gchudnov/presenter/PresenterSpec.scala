@@ -114,17 +114,17 @@ class PresenterSpec extends WordSpec with Matchers {
       }
     }
 
-    "parsing and rendering a complex topology 1" should {
+    "parsing and rendering a complex topology" should {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val input = stringFromResource("topologies/complex-topo-1.log")
+        val input = stringFromResource("topologies/complex-topo.log")
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
         errOrTopology.foreach(desc => {
-          val actual = Presenter.run[Dot]("complex-topo-1", desc).trim()
-          val expected = stringFromResource("graphs/complex-topo-1.dot")
+          val actual = Presenter.run[Dot]("complex-topo", desc).trim()
+          val expected = stringFromResource("graphs/complex-topo.dot")
 
           actual shouldBe expected
         })

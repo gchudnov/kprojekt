@@ -1,4 +1,4 @@
-digraph g_complex_topo_1 {
+digraph g_complex_topo {
   graph [fontname = "sans-serif", fontsize=10];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
