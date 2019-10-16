@@ -21,8 +21,8 @@ object Presenter {
   private val KeySink = "k" 
 
   def run[A: Render : Show](name: String, desc: TopologyDescription): String = {
-    val subtopologies = desc.subtopologies().asScala.toSeq
-    val globalStores = desc.globalStores().asScala.toSeq
+    val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
+    val globalStores = desc.globalStores().asScala.toSeq.sortBy(_.id())
 
     val maybeTopicRelatedNodes = subtopologies.flatMap(_.nodes().asScala) ++ globalStores.map(_.source())
     val topics = collectTopics(maybeTopicRelatedNodes)
@@ -75,12 +75,12 @@ object Presenter {
       })
       .sources(ra => {
         sources.foldLeft(ra)((acc, s) => {
-          acc.source(s.name, s.topicSet().asScala.toSeq)
+          acc.source(s.name, s.topicSet().asScala.toSeq.sorted)
         })
       })
       .processors(ra => {
         processors.foldLeft(ra)((acc, p) => {
-          acc.processor(p.name(), p.stores().asScala.toSeq)
+          acc.processor(p.name(), p.stores().asScala.toSeq.sorted)
         })
       })
       .sinks(ra => {
@@ -97,7 +97,6 @@ object Presenter {
         storeEdges.foldLeft(ra)((acc, e) => {
           acc
           .edge(e._1, e._2)
-          .rank(e._1, e._2)
         })
       })
       .subtopologyEnd()
@@ -118,7 +117,7 @@ object Presenter {
   }
 
   private def collectNodes(subtopology: Subtopology): Seq[Node] = {
-    subtopology.nodes().asScala.toSeq
+    subtopology.nodes().asScala.toSeq.sortBy(_.name())
   }
 
   private def collectNodeEdges(nodes: Seq[Node]): Seq[(String, String)] = {
