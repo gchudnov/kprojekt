@@ -1,4 +1,4 @@
-package com.github.gchudnov.presenter.name
+package com.github.gchudnov.kprojekt.presenter.render
 
 import scala.util.matching.Regex
 

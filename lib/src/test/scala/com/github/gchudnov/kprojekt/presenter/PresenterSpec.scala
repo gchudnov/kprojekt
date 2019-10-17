@@ -1,7 +1,8 @@
-package com.github.gchudnov.presenter
+package com.github.gchudnov.kprojekt.presenter
 
-import com.github.gchudnov.presenter.render.Dot
-import com.github.gchudnov.presenter.render.DotInstances
+import com.github.gchudnov.kprojekt.parser.Parser
+import com.github.gchudnov.kprojekt.presenter.render.Dot
+import com.github.gchudnov.kprojekt.presenter.render.DotInstances
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.Materialized
@@ -13,7 +14,6 @@ import org.apache.kafka.streams.Topology
 import org.scalatest.{WordSpec, Matchers}
 import scala.io.Source
 import scala.jdk.CollectionConverters._
-import com.github.gchudnov.parser.Parser
 
 /**
   * PresenterSpec

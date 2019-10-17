@@ -1,8 +1,8 @@
-package com.github.gchudnov.presenter.render
+package com.github.gchudnov.kprojekt.presenter.render
 
 import cats._
 import cats.implicits._
-import com.github.gchudnov.presenter.name.NodeName
+import com.github.gchudnov.kprojekt.presenter.render.NodeName
 
 /**
   * Render Topology for GraphViz (Dot-Format)

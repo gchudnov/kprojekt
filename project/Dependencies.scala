@@ -12,6 +12,8 @@ object Dependencies {
     val scalatest = "3.0.8"
 
     val log4j = "1.2.17"
+
+    val scopt = "4.0.0-RC2"
   }
 
   // compiler plugins
@@ -23,12 +25,14 @@ object Dependencies {
     kindProjector
   )
 
-  private val cats = "org.typelevel" %% "cats-core" % "2.0.0"
+  private val cats = "org.typelevel" %% "cats-core" % versions.cats
 
   private val kafka = "org.apache.kafka" % "kafka-streams" % versions.kafka
   private val kafkaClients = "org.apache.kafka" % "kafka-clients" % versions.kafka
 
   private val fastparse = "com.lihaoyi" %% "fastparse" % versions.fastparse
+
+  private val scopt = "com.github.scopt" %% "scopt" % versions.scopt
 
   private val scalatest = "org.scalatest" %% "scalatest" % versions.scalatest
 
@@ -36,7 +40,8 @@ object Dependencies {
     val compile = Seq(
       cats,
       kafka,
-      fastparse
+      fastparse,
+      scopt
     )
     val test = Seq(
       scalatest,

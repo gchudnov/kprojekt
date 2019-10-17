@@ -1,4 +1,4 @@
-package com.github.gchudnov.parser
+package com.github.gchudnov.kprojekt.parser
 
 import org.apache.kafka.streams.TopologyDescription.Processor
 import org.apache.kafka.streams.TopologyDescription.Sink

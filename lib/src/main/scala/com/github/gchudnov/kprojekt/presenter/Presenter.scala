@@ -1,8 +1,8 @@
-package com.github.gchudnov.presenter
+package com.github.gchudnov.kprojekt.presenter
 
 import cats.Show
 import cats.syntax.show._
-import com.github.gchudnov.presenter.render.Render
+import com.github.gchudnov.kprojekt.presenter.render.Render
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.Node
 import org.apache.kafka.streams.TopologyDescription.Processor

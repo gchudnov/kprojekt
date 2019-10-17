@@ -28,8 +28,11 @@ lazy val cli = (project in file("cli"))
   )
 
 lazy val root = (project in file("."))
+  .enablePlugins(BuildInfoPlugin)
   .aggregate(lib, cli)
   .settings(allSettings: _*)
   .settings(
     name := "kprojekt",
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.github.gchudnov.kprojekt"
   )

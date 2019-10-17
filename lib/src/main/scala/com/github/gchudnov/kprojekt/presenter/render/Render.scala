@@ -1,4 +1,4 @@
-package com.github.gchudnov.presenter.render
+package com.github.gchudnov.kprojekt.presenter.render
 
 trait Render[A] {
 
