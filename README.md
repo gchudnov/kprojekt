@@ -1,10 +1,8 @@
-# [WIP] KProjekt -- Kafka Topology Renderer
+# [WIP] KProjekt -- Kafka Topology Visualization
 
 [![Build Status](https://travis-ci.org/gchudnov/kprojekt.svg?branch=master)](https://travis-ci.org//gchudnov/kprojekt)
 
-Kafka Topology Renderer
-
-Graph drawing library and cli for topology visualization.
+Represents Kafka topology as an image.
 
 ## Example
 

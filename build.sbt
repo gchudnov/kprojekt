@@ -20,19 +20,19 @@ lazy val lib = (project in file("lib"))
   )
 
 lazy val cli = (project in file("cli"))
+  .enablePlugins(BuildInfoPlugin)
   .dependsOn(lib)
   .settings(allSettings: _*)
   .settings(
-    name := "cli",
-    libraryDependencies ++= Dependencies.All
+    name := "kprojekt-cli",
+    libraryDependencies ++= Dependencies.All,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.github.gchudnov.kprojekt"
   )
 
 lazy val root = (project in file("."))
-  .enablePlugins(BuildInfoPlugin)
   .aggregate(lib, cli)
   .settings(allSettings: _*)
   .settings(
-    name := "kprojekt",
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "com.github.gchudnov.kprojekt"
+    name := "kprojekt"
   )
