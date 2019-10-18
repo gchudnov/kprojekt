@@ -6,10 +6,13 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import scopt.OParser
 
-case class AppConfig(topologyPath: Path = null)
+final case class AppConfig(topologyPath: Path = null)
 
 /**
   * Command-Line Application for topology parser
+  * 
+  * building an image:
+  * sbt 'show graalvm-native-image:packageBin'
   *
   * bloop run cli -m com.github.gchudnov.kprojekt.Cli
   * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
@@ -34,7 +37,7 @@ object Cli extends App {
     case Some(config) =>
       println(config)
     case _ =>
-      println("cannot parse config")
+    // no-op
   }
 
 }
