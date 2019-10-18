@@ -24,7 +24,7 @@ object Settings {
   ).toVector
 
   val shared: Seq[Setting[_]] = Seq(
-    scalacOptions ++= sharedScalacOptions ++ Seq("-target:jvm-1.8"),
+    scalacOptions ++= sharedScalacOptions,
     scalaVersion := scalaV,
     test in assembly := {},
     ThisBuild / turbo := true,

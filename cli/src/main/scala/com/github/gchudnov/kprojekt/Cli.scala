@@ -13,6 +13,8 @@ final case class AppConfig(topologyPath: Path = null)
   * 
   * building an image:
   * sbt 'show graalvm-native-image:packageBin'
+  * OR
+  * sbt cli/assembly
   *
   * bloop run cli -m com.github.gchudnov.kprojekt.Cli
   * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
