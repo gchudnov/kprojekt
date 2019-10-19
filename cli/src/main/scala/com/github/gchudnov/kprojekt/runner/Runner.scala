@@ -15,7 +15,7 @@ object Runner {
   def run(config: RunnerConfig): Either[Throwable, Unit] = {
     Either
       .catchNonFatal(Using.resource(Source.fromFile(config.topologyFile)) { file =>
-        file.getLines.mkString
+        file.getLines.mkString("\n").trim()
       })
       .flatMap(Parser.run)
       .map(desc => {

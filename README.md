@@ -4,6 +4,29 @@
 
 Represents Kafka topology as an image.
 
+## Building
+
+To build an executable binary:
+
+```bash
+sbt cli/assembly
+```
+
+A binary image will be built: `kprojekt-cli-x.y.z`
+
+## Usage
+
+- Download or build an executable binary `kprojekt-cli-x.y.z`.
+- Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
+- Prepare a file with Kafka-topology.
+- Run from the command line:
+
+  ```bash
+  ./kprojekt-cli-x.y.z /path/to/topology.log | dot -Tpng >/path/to/image.png
+  ```
+
+- An output image will be produced.
+
 ## Example
 
 Code
@@ -20,6 +43,8 @@ source
 
 val topology = builder.build()
 val desc = topology.describe()
+
+println(desc)
 ```
 
 Topology
@@ -57,16 +82,6 @@ Topologies:
 Graph
 
 ![word-count-png](example/word-count.png)
-
-## Building
-
-To build a fat-jar 
-
-```bash
-sbt cli/assembly
-```
-
-An executable binary will be built `kprojekt-cli-0.9.0`.
 
 ## Contact
 
