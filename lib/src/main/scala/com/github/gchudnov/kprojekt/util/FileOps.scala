@@ -1,4 +1,4 @@
-package com.github.gchudnov.files
+package com.github.gchudnov.kprojekt.util
 
 import java.io.BufferedWriter
 import java.io.File

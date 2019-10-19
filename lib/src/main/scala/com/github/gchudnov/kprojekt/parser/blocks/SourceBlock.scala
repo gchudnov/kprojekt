@@ -1,8 +1,9 @@
-package com.github.gchudnov.parser.blocks
-import org.apache.kafka.streams.TopologyDescription.Source
+package com.github.gchudnov.kprojekt.parser.blocks
+
 import java.util.{Set => JSet}
-import scala.jdk.CollectionConverters._
 import java.util.regex.Pattern
+import org.apache.kafka.streams.TopologyDescription.Source
+import scala.jdk.CollectionConverters._
 
 class SourceBlock(sourceName: String, sourceTopics: Seq[String]) extends NodeBlock(sourceName) with Source {
   override def topics(): String = sourceTopics.mkString(",")

@@ -1,10 +1,31 @@
-# [WIP] KProjekt -- Kafka Topology Renderer
+# [WIP] KProjekt -- Kafka Topology Visualization
 
 [![Build Status](https://travis-ci.org/gchudnov/kprojekt.svg?branch=master)](https://travis-ci.org//gchudnov/kprojekt)
 
-Kafka Topology Renderer
+Represents Kafka topology as an image.
 
-Graph drawing library and cli for topology visualization.
+## Building
+
+To build an executable binary:
+
+```bash
+sbt cli/assembly
+```
+
+A binary image will be built: `kprojekt-cli-x.y.z`
+
+## Usage
+
+- Download or build an executable binary `kprojekt-cli-x.y.z`.
+- Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
+- Prepare a file with Kafka-topology.
+- Run from the command line:
+
+  ```bash
+  ./kprojekt-cli-x.y.z /path/to/topology.log | dot -Tpng >/path/to/image.png
+  ```
+
+- An output image will be produced.
 
 ## Example
 
@@ -22,6 +43,8 @@ source
 
 val topology = builder.build()
 val desc = topology.describe()
+
+println(desc)
 ```
 
 Topology
@@ -62,7 +85,7 @@ Graph
 
 ## Contact
 
-[Grigorii Chudnov] (mailto:g.chudnov@gmail.com)
+[Grigorii Chudnov](mailto:g.chudnov@gmail.com)
 
 ## License
 

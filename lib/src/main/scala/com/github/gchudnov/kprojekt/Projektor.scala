@@ -1,8 +1,7 @@
-package com.github.gchudnov.presenter
+package com.github.gchudnov.kprojekt
 
-import cats.Show
-import cats.syntax.show._
-import com.github.gchudnov.presenter.render.Render
+import com.github.gchudnov.kprojekt.format.Format
+import com.github.gchudnov.kprojekt.format.Tag
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.Node
 import org.apache.kafka.streams.TopologyDescription.Processor
@@ -14,13 +13,13 @@ import scala.jdk.CollectionConverters._
 /**
   * Present topology with the given builder
   */
-object Presenter {
+object Projektor {
 
   private val KeySource = "s"
   private val KeyProcessor = "p"
   private val KeySink = "k" 
 
-  def run[A: Render : Show](name: String, desc: TopologyDescription): String = {
+  def run[T <: Tag : Format](name: String, desc: TopologyDescription): String = {
     val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
     val globalStores = desc.globalStores().asScala.toSeq.sortBy(_.id())
 
@@ -28,7 +27,7 @@ object Presenter {
     val topics = collectTopics(maybeTopicRelatedNodes)
     val topicEdges = collectTopicEdges(maybeTopicRelatedNodes)
 
-    implicitly[Render[A]]
+    implicitly[Format[T]]
       .topologyStart(name)
       .topics(ra => {
         topics.foldLeft(ra)((acc, t) => {
@@ -44,7 +43,7 @@ object Presenter {
         subtopologies.foldLeft(ra)((acc, st) => {
           val nodes = collectNodes(st)
           val (sources, processors, sinks) = collectNodeByType(nodes)
-          renderSubtopology(acc)(st.id().toString, sources, processors, sinks)
+          formatSubtopology(acc)(st.id().toString, sources, processors, sinks)
         })
       })
       .subtopologies(ra => {
@@ -52,15 +51,14 @@ object Presenter {
           val sources = Seq(gs.source())
           val processors = Seq(gs.processor())
           val sinks = Seq.empty[Sink]
-          renderSubtopology(acc)(gs.id().toString, sources, processors, sinks)
+          formatSubtopology(acc)(gs.id().toString, sources, processors, sinks)
         })
       })
       .topologyEnd()
-      .get
-      .show
+      .toString()
   }
 
-  private def renderSubtopology[A: Render](ra: Render[A])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Render[A] = {
+  private def formatSubtopology[T <: Tag : Format](ra: Format[T])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Format[T] = {
     val nodeEdges = collectNodeEdges(sources ++ processors ++ sinks.asInstanceOf[Seq[Node]])
     val stores = collectStores(processors)
     val storeEdges = collectStoreEdges(processors)

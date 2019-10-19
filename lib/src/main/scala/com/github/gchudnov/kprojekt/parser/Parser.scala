@@ -1,11 +1,11 @@
-package com.github.gchudnov.parser
+package com.github.gchudnov.kprojekt.parser
 
-import com.github.gchudnov.parser.blocks.NodeBlock
-import com.github.gchudnov.parser.blocks.ProcessorBlock
-import com.github.gchudnov.parser.blocks.SinkBlock
-import com.github.gchudnov.parser.blocks.SourceBlock
-import com.github.gchudnov.parser.blocks.SubtopologyBlock
-import com.github.gchudnov.parser.blocks.TopologyDescriptionBlock
+import com.github.gchudnov.kprojekt.parser.blocks.NodeBlock
+import com.github.gchudnov.kprojekt.parser.blocks.ProcessorBlock
+import com.github.gchudnov.kprojekt.parser.blocks.SinkBlock
+import com.github.gchudnov.kprojekt.parser.blocks.SourceBlock
+import com.github.gchudnov.kprojekt.parser.blocks.SubtopologyBlock
+import com.github.gchudnov.kprojekt.parser.blocks.TopologyDescriptionBlock
 import fastparse._, MultiLineWhitespace._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.Node

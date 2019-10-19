@@ -1,9 +1,9 @@
-package com.github.gchudnov.presenter.name
+package com.github.gchudnov.kprojekt.format
 
 import scala.util.matching.Regex
 
 /**
-  * Represents a stream name, like: KSTREAM-MAPVALUES-0000000002 or KSTREAM-SELECT-KEY-0000000002
+  * Represents a node name, like: KSTREAM-MAPVALUES-0000000002 or KSTREAM-SELECT-KEY-0000000002
   */
 case class NodeName(kind: String, label: String, uid: String)
 
