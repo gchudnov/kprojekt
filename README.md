@@ -58,9 +58,19 @@ Graph
 
 ![word-count-png](example/word-count.png)
 
+## Building
+
+To build a fat-jar 
+
+```bash
+sbt cli/assembly
+```
+
+An executable binary will be built `kprojekt-cli-0.9.0`.
+
 ## Contact
 
-[Grigorii Chudnov] (mailto:g.chudnov@gmail.com)
+[Grigorii Chudnov](mailto:g.chudnov@gmail.com)
 
 ## License
 

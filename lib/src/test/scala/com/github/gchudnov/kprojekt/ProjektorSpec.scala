@@ -1,8 +1,8 @@
-package com.github.gchudnov.kprojekt.presenter
+package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.parser.Parser
-import com.github.gchudnov.kprojekt.presenter.render.Dot
-import com.github.gchudnov.kprojekt.presenter.render.DotInstances
+import com.github.gchudnov.kprojekt.render.Dot
+import com.github.gchudnov.kprojekt.render.DotInstances
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.Materialized
@@ -16,16 +16,16 @@ import scala.io.Source
 import scala.jdk.CollectionConverters._
 
 /**
-  * PresenterSpec
+  * ProjektorSpec
   *
   * example:
-  *   bloop test lib --only com.github.gchudnov.presenter.PresenterSpec
+  *   bloop test lib --only com.github.gchudnov.kprojekt.ProjektorSpec
   *
   *   cat graph.dot | dot -Tpng > graph.png
   */
-class PresenterSpec extends WordSpec with Matchers {
+class ProjektorSpec extends WordSpec with Matchers {
 
-  "Presenter" when {
+  "Projektor" when {
     "rendering a fan-out toplogy" should {
       "produce the expected graphviz output" in {
         import DotInstances._
@@ -41,7 +41,7 @@ class PresenterSpec extends WordSpec with Matchers {
 
         val topology = builder.build()
         val desc = topology.describe()
-        val actual = Presenter.run[Dot]("fan-out", desc).trim()
+        val actual = Projektor.run[Dot]("fan-out", desc).trim()
 
         actual shouldBe expected
       }
@@ -64,7 +64,7 @@ class PresenterSpec extends WordSpec with Matchers {
 
         val topology = builder.build()
         val desc = topology.describe()
-        val actual = Presenter.run[Dot]("word-count", desc).trim()
+        val actual = Projektor.run[Dot]("word-count", desc).trim()
 
         actual shouldBe expected
       }
@@ -108,7 +108,7 @@ class PresenterSpec extends WordSpec with Matchers {
         topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
 
         val desc = topology.describe()
-        val actual = Presenter.run[Dot]("global-store-usage", desc).trim()
+        val actual = Projektor.run[Dot]("global-store-usage", desc).trim()
 
         actual shouldBe expected
       }
@@ -123,7 +123,7 @@ class PresenterSpec extends WordSpec with Matchers {
 
         errOrTopology.isRight shouldBe true
         errOrTopology.foreach(desc => {
-          val actual = Presenter.run[Dot]("complex-topo", desc).trim()
+          val actual = Projektor.run[Dot]("complex-topo", desc).trim()
           val expected = stringFromResource("graphs/complex-topo.dot")
 
           actual shouldBe expected

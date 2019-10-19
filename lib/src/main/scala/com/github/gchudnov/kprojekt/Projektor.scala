@@ -1,8 +1,8 @@
-package com.github.gchudnov.kprojekt.presenter
+package com.github.gchudnov.kprojekt
 
 import cats.Show
 import cats.syntax.show._
-import com.github.gchudnov.kprojekt.presenter.render.Render
+import com.github.gchudnov.kprojekt.render.Render
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.Node
 import org.apache.kafka.streams.TopologyDescription.Processor
@@ -14,7 +14,7 @@ import scala.jdk.CollectionConverters._
 /**
   * Present topology with the given builder
   */
-object Presenter {
+object Projektor {
 
   private val KeySource = "s"
   private val KeyProcessor = "p"

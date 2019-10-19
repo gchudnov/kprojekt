@@ -6,7 +6,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import scopt.OParser
 
-final case class AppConfig(topologyPath: Path = null)
+final case class AppConfig(topologyPath: Option[Path] = None)
 
 /**
   * Command-Line Application for topology parser
@@ -30,7 +30,7 @@ object Cli extends App {
       help("help").text("prints this usage text"),
       arg[File]("<file>")
         .required()
-        .action((x, c) => c.copy(topologyPath = Paths.get(x.toURI())))
+        .action((x, c) => c.copy(topologyPath = Some(Paths.get(x.toURI()))))
         .text("path to the topology description")
     )
   }
