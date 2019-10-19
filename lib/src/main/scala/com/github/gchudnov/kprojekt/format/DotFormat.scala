@@ -177,7 +177,7 @@ object DotFormat {
   def apply() = new DotFormat("")
 
   def toId(name: String): String = {
-    name.replace("-", "_")
+    name.replaceAll("""[-\.]""", "_")
   }
 
   def toLabel(name: String): String =

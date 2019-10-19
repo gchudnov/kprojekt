@@ -6,11 +6,23 @@ import org.scalatest.{WordSpec, Matchers}
   * DotFormatSpec
   *
   * example:
-  *   bloop test lib --only com.github.gchudnov.presenter.render.DotFormatSpec
+  *   bloop test lib --only com.github.gchudnov.kprojekt.format.DotFormatSpec
   */
 class DotFormatSpec extends WordSpec with Matchers {
 
   "DotFormat" when {
+
+    "name is converted to id" should {
+      "remove the prohibited characters" in {
+        val name = "some-name.txt"
+
+        val expected = "some_name_txt"
+        val actual = DotFormat.toId(name)
+
+        actual shouldBe expected
+      }
+    }
+
     "searching stores to embed" should {
       "do not embed the store if 2 processors are connected to it" in {
         /**
