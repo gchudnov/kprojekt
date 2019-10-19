@@ -1,8 +1,7 @@
 package com.github.gchudnov.kprojekt
 
-import cats.Show
-import cats.syntax.show._
 import com.github.gchudnov.kprojekt.format.Format
+import com.github.gchudnov.kprojekt.format.Tag
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.Node
 import org.apache.kafka.streams.TopologyDescription.Processor
@@ -20,7 +19,7 @@ object Projektor {
   private val KeyProcessor = "p"
   private val KeySink = "k" 
 
-  def run[A: Format : Show](name: String, desc: TopologyDescription): String = {
+  def run[T <: Tag : Format](name: String, desc: TopologyDescription): String = {
     val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
     val globalStores = desc.globalStores().asScala.toSeq.sortBy(_.id())
 
@@ -28,7 +27,7 @@ object Projektor {
     val topics = collectTopics(maybeTopicRelatedNodes)
     val topicEdges = collectTopicEdges(maybeTopicRelatedNodes)
 
-    implicitly[Format[A]]
+    implicitly[Format[T]]
       .topologyStart(name)
       .topics(ra => {
         topics.foldLeft(ra)((acc, t) => {
@@ -56,11 +55,10 @@ object Projektor {
         })
       })
       .topologyEnd()
-      .get
-      .show
+      .toString()
   }
 
-  private def formatSubtopology[A: Format](ra: Format[A])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Format[A] = {
+  private def formatSubtopology[T <: Tag : Format](ra: Format[T])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Format[T] = {
     val nodeEdges = collectNodeEdges(sources ++ processors ++ sinks.asInstanceOf[Seq[Node]])
     val stores = collectStores(processors)
     val storeEdges = collectStoreEdges(processors)

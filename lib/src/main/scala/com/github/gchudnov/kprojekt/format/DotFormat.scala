@@ -1,6 +1,5 @@
 package com.github.gchudnov.kprojekt.format
 
-import cats._
 import cats.implicits._
 import com.github.gchudnov.kprojekt.format.NodeName
 
@@ -10,19 +9,16 @@ import com.github.gchudnov.kprojekt.format.NodeName
   *
   * cat graph.dot | dot -Tpng > graph.png
   */
-final case class Dot(value: String)
-
 final case class DotFormatState(storesToEmbed: Set[String] = Set.empty[String], indent: Int = 0)
 
-final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState()) extends Format[Dot] {
+final case class DotFormat(inner: String, state: DotFormatState = DotFormatState()) extends Format[Dot] {
   import DotFormat._
-  import DotInstances.dotMonoid
 
-  override def get: Dot = inner
+  override def toString(): String = inner
 
   override def topologyStart(name: String): Format[Dot] =
     DotFormat(
-      inner |+| Dot(
+      inner |+| (
         new StringBuilder()
           .append(s"""${T}digraph g_${toId(name)} {\n""")
           .append(s"""${T2}graph [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
@@ -35,7 +31,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
 
   override def topologyEnd(): Format[Dot] =
     DotFormat(
-      inner |+| Dot(
+      inner |+| (
         s"""${T_1}}\n"""
       ),
       state.copy(indent = state.indent - 1)
@@ -43,7 +39,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
 
   override def topic(name: String): Format[Dot] =
     DotFormat(
-      inner |+| Dot(
+      inner |+| (
         s"""${T}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
       ),
       state
@@ -51,7 +47,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
 
   override def subtopologyStart(name: String): Format[Dot] =
     DotFormat(
-      inner |+| Dot(
+      inner |+| (
         new StringBuilder()
           .append(s"${T}subgraph cluster_${toId(name)} {\n")
           .append(s"${T}${T}style=dotted;\n")
@@ -61,7 +57,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
     )
 
   override def subtopologyEnd(): Format[Dot] = DotFormat(
-    inner |+| Dot(
+    inner |+| (
       s"""${T_1}}\n"""
     ),
     state.copy(indent = state.indent - 1)
@@ -70,7 +66,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
   override def edge(fromName: String, toName: String): Format[Dot] =
     ifNotEmbedded(fromName, toName)(
       DotFormat(
-        inner |+| Dot(
+        inner |+| (
           s"${T}${toId(fromName)} -> ${toId(toName)};\n"
         ),
         state
@@ -80,7 +76,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
   override def source(name: String, topics: Seq[String]): Format[Dot] =
     DotFormat(
       inner |+|
-        Dot(
+        (
           new StringBuilder()
             .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
             .toString()
@@ -97,7 +93,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
 
     DotFormat(
       inner |+|
-        Dot(
+        (
           new StringBuilder()
             .append(text)
             .toString()
@@ -109,7 +105,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
   override def sink(name: String, topic: String): Format[Dot] =
     DotFormat(
       inner |+|
-        Dot(
+        (
           new StringBuilder()
             .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
             .toString()
@@ -135,7 +131,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
     ifNotEmbedded(name)(
       DotFormat(
         inner |+|
-          Dot(
+          (
             new StringBuilder()
               .append(s"""${T}${toId(name)} [shape=cylinder, fixedsize=false, width=0.5, label="", xlabel="${toLabel(name)}"];\n""")
               .toString()
@@ -148,7 +144,7 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
     ifNotEmbedded(name1, name2)(
       DotFormat(
         inner |+|
-          Dot(
+          (
             new StringBuilder()
               .append(s"""${T}{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
               .toString()
@@ -173,13 +169,12 @@ final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState())
 }
 
 object DotFormat {
-  import DotInstances.dotMonoid
 
   private val defaultIndent = 2
   private val defaultFontName = "sans-serif"
   private val defaultFontSize = "10"
 
-  def apply() = new DotFormat(Monoid[Dot].empty)
+  def apply() = new DotFormat("")
 
   def toId(name: String): String = {
     name.replace("-", "_")
@@ -206,15 +201,6 @@ object DotFormat {
 }
 
 sealed trait DotInstances {
-
-  implicit val dotShow: Show[Dot] = Show.show[Dot] { dot =>
-    dot.value
-  }
-
-  implicit val dotMonoid: Monoid[Dot] = new Monoid[Dot] {
-    override def empty: Dot = Dot("")
-    override def combine(x: Dot, y: Dot): Dot = Dot(x.value + y.value)
-  }
 
   implicit val dotFormat: Format[Dot] = DotFormat()
 
