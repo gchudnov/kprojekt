@@ -1,8 +1,8 @@
 package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.parser.Parser
-import com.github.gchudnov.kprojekt.render.Dot
-import com.github.gchudnov.kprojekt.render.DotInstances
+import com.github.gchudnov.kprojekt.format.Dot
+import com.github.gchudnov.kprojekt.format.DotInstances
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.Materialized

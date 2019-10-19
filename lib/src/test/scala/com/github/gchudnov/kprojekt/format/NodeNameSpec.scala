@@ -1,4 +1,4 @@
-package com.github.gchudnov.kprojekt.render
+package com.github.gchudnov.kprojekt.format
 
 import org.scalatest.{WordSpec, Matchers, EitherValues}
 

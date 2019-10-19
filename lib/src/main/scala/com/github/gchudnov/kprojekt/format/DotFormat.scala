@@ -1,27 +1,27 @@
-package com.github.gchudnov.kprojekt.render
+package com.github.gchudnov.kprojekt.format
 
 import cats._
 import cats.implicits._
-import com.github.gchudnov.kprojekt.render.NodeName
+import com.github.gchudnov.kprojekt.format.NodeName
 
 /**
-  * Render Topology for GraphViz (Dot-Format)
+  * Format Topology for GraphViz (Dot-Format)
   * http://www.graphviz.org/
   *
   * cat graph.dot | dot -Tpng > graph.png
   */
 final case class Dot(value: String)
 
-final case class DotRenderState(storesToEmbed: Set[String] = Set.empty[String], indent: Int = 0)
+final case class DotFormatState(storesToEmbed: Set[String] = Set.empty[String], indent: Int = 0)
 
-final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState()) extends Render[Dot] {
-  import DotRender._
+final case class DotFormat(inner: Dot, state: DotFormatState = DotFormatState()) extends Format[Dot] {
+  import DotFormat._
   import DotInstances.dotMonoid
 
   override def get: Dot = inner
 
-  override def topologyStart(name: String): Render[Dot] =
-    DotRender(
+  override def topologyStart(name: String): Format[Dot] =
+    DotFormat(
       inner |+| Dot(
         new StringBuilder()
           .append(s"""${T}digraph g_${toId(name)} {\n""")
@@ -33,24 +33,24 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       state.copy(indent = state.indent + 1)
     )
 
-  override def topologyEnd(): Render[Dot] =
-    DotRender(
+  override def topologyEnd(): Format[Dot] =
+    DotFormat(
       inner |+| Dot(
         s"""${T_1}}\n"""
       ),
       state.copy(indent = state.indent - 1)
     )
 
-  override def topic(name: String): Render[Dot] =
-    DotRender(
+  override def topic(name: String): Format[Dot] =
+    DotFormat(
       inner |+| Dot(
         s"""${T}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
       ),
       state
     )
 
-  override def subtopologyStart(name: String): Render[Dot] =
-    DotRender(
+  override def subtopologyStart(name: String): Format[Dot] =
+    DotFormat(
       inner |+| Dot(
         new StringBuilder()
           .append(s"${T}subgraph cluster_${toId(name)} {\n")
@@ -60,16 +60,16 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       state.copy(indent = state.indent + 1)
     )
 
-  override def subtopologyEnd(): Render[Dot] = DotRender(
+  override def subtopologyEnd(): Format[Dot] = DotFormat(
     inner |+| Dot(
       s"""${T_1}}\n"""
     ),
     state.copy(indent = state.indent - 1)
   )
 
-  override def edge(fromName: String, toName: String): Render[Dot] =
+  override def edge(fromName: String, toName: String): Format[Dot] =
     ifNotEmbedded(fromName, toName)(
-      DotRender(
+      DotFormat(
         inner |+| Dot(
           s"${T}${toId(fromName)} -> ${toId(toName)};\n"
         ),
@@ -77,8 +77,8 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       )
     )
 
-  override def source(name: String, topics: Seq[String]): Render[Dot] =
-    DotRender(
+  override def source(name: String, topics: Seq[String]): Format[Dot] =
+    DotFormat(
       inner |+|
         Dot(
           new StringBuilder()
@@ -88,14 +88,14 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       state
     )
 
-  override def processor(name: String, stores: Seq[String]): Render[Dot] = {
+  override def processor(name: String, stores: Seq[String]): Format[Dot] = {
     val text = if (stores.size == 1 && state.storesToEmbed.contains(stores(0))) {
       s"""${T}${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(stores(0))})"];\n"""
     } else {
       s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
     }
 
-    DotRender(
+    DotFormat(
       inner |+|
         Dot(
           new StringBuilder()
@@ -106,8 +106,8 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
     )
   }
 
-  override def sink(name: String, topic: String): Render[Dot] =
-    DotRender(
+  override def sink(name: String, topic: String): Format[Dot] =
+    DotFormat(
       inner |+|
         Dot(
           new StringBuilder()
@@ -124,16 +124,16 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
     * - there are no other references to this store
     * That means dfs(s) = 1
     */
-  override def storeEdges(edges: Seq[(String, String)]): Render[Dot] = {
-    DotRender(
+  override def storeEdges(edges: Seq[(String, String)]): Format[Dot] = {
+    DotFormat(
       inner,
-      state.copy(storesToEmbed = DotRender.findStoresToEmbed(edges))
+      state.copy(storesToEmbed = DotFormat.findStoresToEmbed(edges))
     )
   }
 
-  override def store(name: String): Render[Dot] =
+  override def store(name: String): Format[Dot] =
     ifNotEmbedded(name)(
-      DotRender(
+      DotFormat(
         inner |+|
           Dot(
             new StringBuilder()
@@ -144,9 +144,9 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       )
     )
 
-  override def rank(name1: String, name2: String): Render[Dot] =
+  override def rank(name1: String, name2: String): Format[Dot] =
     ifNotEmbedded(name1, name2)(
-      DotRender(
+      DotFormat(
         inner |+|
           Dot(
             new StringBuilder()
@@ -157,7 +157,7 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
       )
     )
 
-  private def ifNotEmbedded(names: String*)(r: Render[Dot]): Render[Dot] = {
+  private def ifNotEmbedded(names: String*)(r: Format[Dot]): Format[Dot] = {
     if (names.intersect(state.storesToEmbed.toSeq).nonEmpty) {
       this
     } else {
@@ -172,14 +172,14 @@ final case class DotRender(inner: Dot, state: DotRenderState = DotRenderState())
   private def indent(value: Int): String = " " * (value * defaultIndent)
 }
 
-object DotRender {
+object DotFormat {
   import DotInstances.dotMonoid
 
   private val defaultIndent = 2
   private val defaultFontName = "sans-serif"
   private val defaultFontSize = "10"
 
-  def apply() = new DotRender(Monoid[Dot].empty)
+  def apply() = new DotFormat(Monoid[Dot].empty)
 
   def toId(name: String): String = {
     name.replace("-", "_")
@@ -216,7 +216,7 @@ sealed trait DotInstances {
     override def combine(x: Dot, y: Dot): Dot = Dot(x.value + y.value)
   }
 
-  implicit val dotRender: Render[Dot] = DotRender()
+  implicit val dotFormat: Format[Dot] = DotFormat()
 
 }
 
