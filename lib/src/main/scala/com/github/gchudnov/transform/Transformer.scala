@@ -34,7 +34,8 @@ object Transformer {
               })
               .map(_ => {
                 val pngFile = FileOps.changeExtension(config.topologyFile, "png")
-                s"dot -Tpng ${dotFile.getAbsolutePath()}" #> pngFile !!
+                val logger = ProcessLogger(out => { }, err => { })
+                s"dot -Tpng ${dotFile.getAbsolutePath()} -o${pngFile.getAbsolutePath}" !(logger)
               })
           })
       })
