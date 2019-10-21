@@ -30,7 +30,7 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val expected = FileOps.stringFromResource("graphs/fan-out.dot")
+        val expected = FileOps.stringFromResource("graphs/fan-out.dot").toOption.get
 
         val builder = new StreamsBuilder
         val stream1 = builder.stream[String, String]("topic-a")
@@ -51,7 +51,7 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val expected = FileOps.stringFromResource("graphs/word-count.dot")
+        val expected = FileOps.stringFromResource("graphs/word-count.dot").toOption.get
 
         val builder = new StreamsBuilder
         val source = builder.stream[String, String]("streams-plaintext-input")
@@ -74,7 +74,7 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val expected = FileOps.stringFromResource("graphs/global-store.dot")
+        val expected = FileOps.stringFromResource("graphs/global-store.dot").toOption.get
 
         val stateStoreName = "test-store"
 
@@ -118,19 +118,15 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val errOrInput = FileOps.stringFromResource("topologies/complex-topo.log")
-        errOrInput.isRight shouldBe true
+        val input = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
+        val errOrTopology = Parser.run(input)
 
-        errOrInput.foreach(input => {
-          val errOrTopology = Parser.run(input)
+        errOrTopology.isRight shouldBe true
+        errOrTopology.foreach(desc => {
+          val actual = Projektor.run[Dot]("complex-topo", desc).trim()
+          val expected = FileOps.stringFromResource("graphs/complex-topo.dot").toOption.get
 
-          errOrTopology.isRight shouldBe true
-          errOrTopology.foreach(desc => {
-            val actual = Projektor.run[Dot]("complex-topo", desc).trim()
-            val expected = FileOps.stringFromResource("graphs/complex-topo.dot")
-
-            actual shouldBe expected
-          })
+          actual shouldBe expected
         })
       }
     }

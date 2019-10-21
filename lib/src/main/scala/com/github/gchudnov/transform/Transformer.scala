@@ -15,29 +15,38 @@ object Transformer {
   private val tmpPrefix: String = "res"
   private val cylinderFileName = "cylinder.png"
 
+  private val logger = ProcessLogger(out => {}, err => {
+    if (!err.contains("size too small for label")) {
+      Console.err.println(err)
+    }
+  })
+
   def run(config: TransformConfig): Either[Throwable, Unit] = {
     val name = config.topologyFile.getName()
 
-    FileOps.stringFromFile(config.topologyFile)
+    FileOps
+      .stringFromFile(config.topologyFile)
       .flatMap(Parser.run)
       .flatMap(desc => {
-        FileOps.createTempDir(tmpPrefix)
+        FileOps
+          .createTempDir(tmpPrefix)
           .flatMap(tmpDir => {
             import com.github.gchudnov.kprojekt.format.DotInstances._
             val data = Projektor.run[Dot](name, desc)
 
             val dotFile: File = FileOps.changeExtension(new File(tmpDir, name), "dot")
-            FileOps.saveString(dotFile)(data)
+            FileOps
+              .saveString(dotFile)(data)
               .flatMap(_ => {
                 val cylinderFile = new File(tmpDir, cylinderFileName)
                 FileOps.saveResource(cylinderFile)(s"images/${cylinderFileName}")
               })
               .map(_ => {
                 val pngFile = FileOps.changeExtension(config.topologyFile, "png")
-                val logger = ProcessLogger(out => { }, err => { })
-                s"dot -Tpng ${dotFile.getAbsolutePath()} -o${pngFile.getAbsolutePath}" !(logger)
+                s"dot -Tpng ${dotFile.getAbsolutePath()} -o${pngFile.getAbsolutePath}" ! (logger)
               })
           })
       })
   }
+
 }
