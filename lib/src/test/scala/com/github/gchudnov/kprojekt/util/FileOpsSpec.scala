@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.util
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.{WordSpec, Matchers, EitherValues}
 import java.io.File
 
 /**
@@ -10,13 +10,16 @@ import java.io.File
   *   bloop test lib --only com.github.gchudnov.kprojekt.util.FileOpsSpec
   *
   */
-class FileOpsSpec extends WordSpec with Matchers {
+class FileOpsSpec extends WordSpec with Matchers with EitherValues {
 
   "FileOps" when {
     "a resource is retrieved" should {
       "be non-empty" in {
-        val data = FileOps.stringFromResource("graphs/fan-out.dot")
-        data.isEmpty() shouldBe false
+        val errOrData = FileOps.stringFromResource("graphs/fan-out.dot")
+        errOrData.isRight shouldBe true
+        errOrData.foreach(data => {
+          data.isEmpty() shouldBe false
+        })
       }
     }
 
@@ -26,8 +29,25 @@ class FileOpsSpec extends WordSpec with Matchers {
         tmpFile.deleteOnExit()
         tmpFile.length() shouldBe 0
 
-        FileOps.saveResource(tmpFile)("images/cylinder.png")
-        tmpFile.length() shouldNot be (0)
+        val errOrRes = FileOps.saveResource(tmpFile)("images/cylinder.png")
+        errOrRes.isRight shouldBe true
+        tmpFile.length() shouldNot be(0)
+      }
+    }
+
+    "file extension is changed" should {
+      "replace it if previously there was an extension" in {
+        val f = new File("/a/b/c.txt")
+        val newFile = FileOps.changeExtension(f, "dat")
+
+        newFile.getAbsolutePath() shouldBe "/a/b/c.dat"
+      }
+
+      "replace it if previously there was no extension" in {
+        val f = new File("/d/e/f")
+        val newFile = FileOps.changeExtension(f, "png")
+
+        newFile.getAbsolutePath() shouldBe "/d/e/f.png"
       }
     }
   }

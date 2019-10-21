@@ -118,17 +118,20 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val input = FileOps.stringFromResource("topologies/complex-topo.log")
-        val errOrTopology = Parser.run(input)
+        val errOrInput = FileOps.stringFromResource("topologies/complex-topo.log")
+        errOrInput.isRight shouldBe true
 
-        errOrTopology.isRight shouldBe true
-        errOrTopology.foreach(desc => {
-          val actual = Projektor.run[Dot]("complex-topo", desc).trim()
-          val expected = FileOps.stringFromResource("graphs/complex-topo.dot")
+        errOrInput.foreach(input => {
+          val errOrTopology = Parser.run(input)
 
-          actual shouldBe expected
+          errOrTopology.isRight shouldBe true
+          errOrTopology.foreach(desc => {
+            val actual = Projektor.run[Dot]("complex-topo", desc).trim()
+            val expected = FileOps.stringFromResource("graphs/complex-topo.dot")
+
+            actual shouldBe expected
+          })
         })
-
       }
     }
   }
