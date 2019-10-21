@@ -22,10 +22,10 @@ A binary image will be built: `kprojekt-cli-x.y.z`
 - Run from the command line:
 
   ```bash
-  ./kprojekt-cli-x.y.z /path/to/topology.log | dot -Tpng >/path/to/image.png
+  ./kprojekt-cli-x.y.z /path/to/topology.log
   ```
 
-- An output image will be produced.
+- An output image will be created in the directory with `topology.log` but with `.png` extension.
 
 ## Example
 
