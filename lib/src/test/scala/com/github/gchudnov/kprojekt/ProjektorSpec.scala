@@ -1,8 +1,9 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.format.Dot
 import com.github.gchudnov.kprojekt.format.DotInstances
+import com.github.gchudnov.kprojekt.parser.Parser
+import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.Materialized
@@ -12,7 +13,6 @@ import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.scalatest.{WordSpec, Matchers}
-import scala.io.Source
 import scala.jdk.CollectionConverters._
 
 /**
@@ -30,7 +30,7 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val expected = stringFromResource("graphs/fan-out.dot")
+        val expected = FileOps.stringFromResource("graphs/fan-out.dot").toOption.get
 
         val builder = new StreamsBuilder
         val stream1 = builder.stream[String, String]("topic-a")
@@ -51,7 +51,7 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val expected = stringFromResource("graphs/word-count.dot")
+        val expected = FileOps.stringFromResource("graphs/word-count.dot").toOption.get
 
         val builder = new StreamsBuilder
         val source = builder.stream[String, String]("streams-plaintext-input")
@@ -74,7 +74,7 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val expected = stringFromResource("graphs/global-store.dot")
+        val expected = FileOps.stringFromResource("graphs/global-store.dot").toOption.get
 
         val stateStoreName = "test-store"
 
@@ -118,22 +118,17 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val input = stringFromResource("topologies/complex-topo.log")
+        val input = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
         errOrTopology.foreach(desc => {
           val actual = Projektor.run[Dot]("complex-topo", desc).trim()
-          val expected = stringFromResource("graphs/complex-topo.dot")
+          val expected = FileOps.stringFromResource("graphs/complex-topo.dot").toOption.get
 
           actual shouldBe expected
         })
-
       }
     }
-  }
-
-  private def stringFromResource(resourcePath: String) = {
-    Source.fromResource(resourcePath).getLines.mkString("\n").trim()
   }
 }

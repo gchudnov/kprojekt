@@ -1,12 +1,12 @@
 package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.BuildInfo
-import com.github.gchudnov.kprojekt.runner.{Runner, RunnerConfig}
+import com.github.gchudnov.kprojekt.transform.{Transformer, TransformConfig}
 import java.io.File
 import scopt.OParser
 
 final case class AppConfig(topologyFile: File = null) {
-  def toRunnerConfig: RunnerConfig = RunnerConfig(topologyFile)
+  def toTransformConfig: TransformConfig = TransformConfig(topologyFile)
 }
 
 /**
@@ -38,7 +38,7 @@ object Cli extends App {
 
   OParser.parse(parser, args, AppConfig()) match {
     case Some(config) =>
-      Runner.run(config.toRunnerConfig) match {
+      Transformer.run(config.toTransformConfig) match {
         case Right(_) =>
         // no-op
         case Left(ex) =>

@@ -1,10 +1,10 @@
 package com.github.gchudnov.kprojekt.parser
 
+import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.TopologyDescription.Processor
 import org.apache.kafka.streams.TopologyDescription.Sink
 import org.apache.kafka.streams.TopologyDescription.Source
 import org.scalatest.{WordSpec, Matchers, EitherValues}
-import scala.io.{Source => IOSource}
 import scala.jdk.CollectionConverters._
 
 /**
@@ -18,7 +18,7 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
   "Parser" when {
     "parse fan-out topology description" should {
       "return the parsed structure" in {
-        val input = stringFromResource("topologies/fan-out.log")
+        val input = FileOps.stringFromResource("topologies/fan-out.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
@@ -65,7 +65,7 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
 
     "parse global-store topology description" should {
       "return the valid structure" in {
-        val input = stringFromResource("topologies/global-store.log")
+        val input = FileOps.stringFromResource("topologies/global-store.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
@@ -97,7 +97,7 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
 
     "parse complex topology description" should {
       "return the valid structure" in {
-        val input = stringFromResource("topologies/complex-topo.log")
+        val input = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
@@ -120,19 +120,13 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
       }
     }
 
-
     "parse an invalid input" should {
       "return an error" in {
-        val input = stringFromResource("topologies/invalid-structure.log")
+        val input = FileOps.stringFromResource("topologies/invalid-structure.log").toOption.get
         val errOrTopology = Parser.run(input)
-
         errOrTopology.left.value.isInstanceOf[ParseException] shouldBe true
       }
     }
-  }
-
-  private def stringFromResource(resourcePath: String) = {
-    IOSource.fromResource(resourcePath).getLines.mkString("\n")
   }
 
 }

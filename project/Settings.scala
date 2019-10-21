@@ -14,6 +14,7 @@ object Settings {
     "-language:experimental.macros",     // Allow macro definition (besides implementation and application)
     "-language:higherKinds",             // Allow higher-kinded types
     "-language:implicitConversions",     // Allow definition of implicit functions called views
+    "-language:postfixOps",              // Enable postfixOps
     "-unchecked",                        // Enable additional warnings where generated code depends on assumptions.
     "-Xlint",
     "-Ywarn-numeric-widen"               // Warn when numerics are widened.
