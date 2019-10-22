@@ -83,6 +83,12 @@ Graph
 
 ![word-count-png](example/word-count.png)
 
+## Command-Line Parameters
+
+- `--help` displays help information.
+- `--version` displayes version of the application.
+
+
 ## Contact
 
 [Grigorii Chudnov](mailto:g.chudnov@gmail.com)
