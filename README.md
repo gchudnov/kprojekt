@@ -12,17 +12,17 @@ To build an executable binary:
 sbt cli/assembly
 ```
 
-A binary image will be built: `kprojekt-cli-x.y.z`
+A binary image will be built: `kprojekt-cli`
 
 ## Usage
 
-- Download or build an executable binary `kprojekt-cli-x.y.z`.
+- Download or build an executable binary `kprojekt-cli`.
 - Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
 - Prepare a file with Kafka-topology.
 - Run from the command line:
 
   ```bash
-  ./kprojekt-cli-x.y.z /path/to/topology.log
+  ./kprojekt-cli /path/to/topology.log
   ```
 
 - An output image will be created in the directory with `topology.log` but with `.png` extension.

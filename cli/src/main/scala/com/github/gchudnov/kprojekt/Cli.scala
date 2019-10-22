@@ -32,7 +32,8 @@ object Cli extends App {
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(topologyFile = x))
-        .text("path to the topology description")
+        .text("path to the topology description"),
+      version("version")
     )
   }
 
