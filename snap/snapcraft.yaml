@@ -14,11 +14,6 @@ apps:
 
 parts:
   kprojekt-cli:
-    plugin: make
+    plugin: sbt
     source: https://github.com/gchudnov/kprojekt
-    build-packages:
-      - g++
-      - make
-      - flex
-      - bison
-      - libreadline-dev
+    source-type: git
