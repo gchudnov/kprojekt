@@ -4,6 +4,7 @@ The sbt build system is commonly used to build Scala projects.
 The plugin requires a build.sbt in the root of the source tree.
 """
 
+import tempfile
 import logging
 import os
 import urllib.parse
@@ -22,34 +23,28 @@ class SbtPlugin(snapcraft.BasePlugin):
     @classmethod
     def schema(cls):
         schema = super().schema()
-
-        # # Add a new property called "my-property"
-        # schema['properties']['my-property'] = {
-        #     'type': 'string',
-        # }
-
-        # # The "my-option" property is now required
-        # schema['required'].append('my-property')
-
         return schema
 
     def pull(self):
         super().pull()
-        print('Look ma, I pulled! Here is "my-property": {}'.format(
-            self.options.my_property))
+        self._setup_dependencies()
 
     def build(self):
         super().build()
-        print('Look ma, I built!')
 
-    def _run_in_bash(self, commandlist, cwd=None, env=None):
+    def _setup_dependencies(self):
+        self._run_in_bash("""curl -s "https://get.sdkman.io" | bash""")
+        self._run_in_bash(
+            """source "/root/.sdkman/bin/sdkman-init.sh" && sdk install java 11.0.4.hs-adpt && sdk install scala 2.13.1 && sdk install sbt 1.3.3""")
+        return
+
+    def _run_in_bash(self, command, cwd=None, env=None):
         with tempfile.NamedTemporaryFile(mode="w") as f:
             f.write("set -e\n")
-            f.write("exec {}\n".format(" ".join(commandlist)))
+            f.write("{}\n".format(command))
             f.flush()
 
             self.run(["/bin/bash", f.name], cwd=cwd, env=env)
-
 
 
 # https://snapcraft.io/docs/writing-local-plugins
