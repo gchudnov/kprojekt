@@ -6,26 +6,24 @@ Represents Kafka topology as an image.
 
 ## Building
 
-To build an executable binary:
+To build `kprojekt-cli` executable binary:
 
 ```bash
 sbt cli/assembly
 ```
 
-A binary image will be built: `kprojekt-cli`
-
 ## Usage
 
 - Download or build an executable binary `kprojekt-cli`.
 - Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
-- Prepare a file with Kafka-topology.
+- Prepare a file with Kafka-topology (an [example](example/word-count.log)).
 - Run from the command line:
 
   ```bash
   ./kprojekt-cli /path/to/topology.log
   ```
 
-- An output image will be created in the directory with `topology.log` but with `.png` extension.
+- An output png-image will be created in the directory with the provided topology.
 
 ## Example
 
