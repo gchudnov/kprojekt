@@ -26,4 +26,4 @@ parts:
     - zip
     - openjdk-11-jdk
     stage-packages:
-    - openjdk-11-jdk
+    - openjdk-11-jre-headless
