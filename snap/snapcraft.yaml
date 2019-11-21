@@ -11,6 +11,9 @@ confinement: strict
 apps:
   kprojekt-cli:
     command: bin/kprojekt-cli
+    environment:
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-amd64
+      PATH: $JAVA_HOME/jre/bin:$PATH
 
 parts:
   kprojekt-cli:
@@ -21,3 +24,4 @@ parts:
     - curl
     - unzip
     - zip
+    - openjdk-11-jdk

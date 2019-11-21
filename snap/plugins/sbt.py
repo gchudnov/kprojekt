@@ -55,7 +55,6 @@ class SbtPlugin(snapcraft.BasePlugin):
         self._run_in_bash("""curl -s "https://get.sdkman.io" | bash""")
         self._run_in_bash(
             """source "/root/.sdkman/bin/sdkman-init.sh" &&
-            sdk install java 11.0.5.hs-adpt &&
             sdk install scala 2.13.1 &&
             sdk install sbt 1.3.3""")
         return
