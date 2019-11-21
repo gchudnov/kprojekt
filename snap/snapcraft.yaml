@@ -1,6 +1,6 @@
 name: kprojekt-cli
 base: core18
-version: '1.0.0'
+version: '0.9.0'
 summary: Kafka Topology Visualization
 description: |
   Kafka Topology Visualization

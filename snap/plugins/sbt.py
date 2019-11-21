@@ -29,8 +29,9 @@ class SbtPlugin(snapcraft.BasePlugin):
     def __init__(self, name, options, project):
         super().__init__(name, options, project)
 
-        self._assembly_dir = os.path.join(self.partdir, "cli/target/scala-2.13/")
         self._src_dir = os.path.join(self.partdir, "src")
+        self._assembly_dir = os.path.join(
+            self._src_dir, "cli/target/scala-2.13/")
         self._install_bin_dir = os.path.join(self.installdir, "bin")
 
     def pull(self):
