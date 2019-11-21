@@ -5,6 +5,7 @@ The plugin requires a build.sbt in the root of the source tree.
 """
 
 import tempfile
+import shutil
 import logging
 import os
 import urllib.parse
@@ -31,12 +32,21 @@ class SbtPlugin(snapcraft.BasePlugin):
 
     def build(self):
         super().build()
+        self._run_in_bash("""
+            source "/root/.sdkman/bin/sdkman-init.sh" &&
+            cd /root/project &&
+            sbt assembly
+            """ )
+        install_bin_path = os.path.join(self.installdir, "bin")
+        os.makedirs(install_bin_path, exist_ok=True)
+        binary_path = "/root/project/cli/target/scala-2.13/kprojekt-cli"
+        shutil.copy2(binary_path, install_bin_path)
 
     def _setup_dependencies(self):
         self._run_in_bash("""curl -s "https://get.sdkman.io" | bash""")
         self._run_in_bash(
             """source "/root/.sdkman/bin/sdkman-init.sh" &&
-            sdk install java 11.0.4.hs-adpt &&
+            sdk install java 11.0.5.hs-adpt &&
             sdk install scala 2.13.1 &&
             sdk install sbt 1.3.3""")
         return
@@ -46,14 +56,8 @@ class SbtPlugin(snapcraft.BasePlugin):
             f.write("set -e\n")
             f.write("{}\n".format(command))
             f.flush()
-
             self.run(["/bin/bash", f.name], cwd=cwd, env=env)
 
+    def clean_build(self):
+        super().clean_build()
 
-# https://snapcraft.io/docs/writing-local-plugins
-
-# https://github.com/snapcore/snapcraft/blob/master/snapcraft/plugins/gradle.py
-
-# https://sdkman.io/install
-
-# https://kubuszok.com/2018/sbt-tips-and-tricks/
