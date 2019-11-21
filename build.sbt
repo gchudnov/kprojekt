@@ -45,5 +45,6 @@ lazy val root = (project in file("."))
   .aggregate(lib, cli)
   .settings(allSettings: _*)
   .settings(
-    name := "kprojekt"
+    name := "kprojekt",
+    target in assembly := target.value
   )
