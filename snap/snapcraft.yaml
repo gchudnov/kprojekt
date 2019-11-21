@@ -25,3 +25,5 @@ parts:
     - unzip
     - zip
     - openjdk-11-jdk
+    stage-packages:
+    - openjdk-11-jdk

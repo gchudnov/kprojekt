@@ -27,6 +27,7 @@ snapcraft --destructive-mode
 sudo snapcraft build --use-lxd --debug kproject-cli
 
 # after building, connect to the container
+sudo lxc start snapcraft-kprojekt-cli
 sudo lxc exec snapcraft-kprojekt-cli -- /bin/bash
 
 # run snapcraft once more
@@ -43,7 +44,7 @@ snapcraft
 # after snapping, go to your machine - a new file is created in the root directory `kprojekt-cli_1.0.0_amd64.snap`
 
 # install to test locally
-snap install --dangerous kprojekt-cli_1.0.0_amd64.snap
+snap install --dangerous --devmode kprojekt-cli_1.0.0_amd64.snap
 
 # go inside snap
 sudo snap run --shell kprojekt-cli
