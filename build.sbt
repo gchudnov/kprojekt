@@ -38,7 +38,7 @@ lazy val cli = (project in file("cli"))
     ),
     mainClass in assembly := Some("com.github.gchudnov.kprojekt.Cli"),
     assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultUniversalScript(shebang = false))),
-    assemblyJarName in assembly := s"${name.value}-${version.value}"
+    assemblyJarName in assembly := s"${name.value}"
   )
 
 lazy val root = (project in file("."))

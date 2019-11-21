@@ -3,3 +3,5 @@
 .idea
 *.class
 target
+*.snap
+__pycache__
