@@ -10,7 +10,7 @@ confinement: strict
 
 apps:
   kprojekt-cli:
-    command: kprojekt-cli
+    command: bin/kprojekt-cli
 
 parts:
   kprojekt-cli:

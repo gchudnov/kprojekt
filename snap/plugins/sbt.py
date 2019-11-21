@@ -26,6 +26,12 @@ class SbtPlugin(snapcraft.BasePlugin):
         schema = super().schema()
         return schema
 
+    def __init__(self, name, options, project):
+        super().__init__(name, options, project)
+
+        self._assembly_dir = os.path.join(
+            self.partdir, "cli/target/scala-2.13/")
+
     def pull(self):
         super().pull()
         self._setup_dependencies()
@@ -34,12 +40,12 @@ class SbtPlugin(snapcraft.BasePlugin):
         super().build()
         self._run_in_bash("""
             source "/root/.sdkman/bin/sdkman-init.sh" &&
-            cd /root/project &&
+            cd {} &&
             sbt assembly
-            """ )
+            """.format(self.partdir))
         install_bin_path = os.path.join(self.installdir, "bin")
         os.makedirs(install_bin_path, exist_ok=True)
-        binary_path = "/root/project/cli/target/scala-2.13/kprojekt-cli"
+        binary_path = "{}/kprojekt-cli".format(self._assembly_dir)
         shutil.copy2(binary_path, install_bin_path)
 
     def _setup_dependencies(self):
