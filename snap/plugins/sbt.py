@@ -31,6 +31,7 @@ class SbtPlugin(snapcraft.BasePlugin):
 
         self._assembly_dir = os.path.join(self.partdir, "cli/target/scala-2.13/")
         self._src_dir = os.path.join(self.partdir, "src")
+        self._install_bin_dir = os.path.join(self.installdir, "bin")
 
     def pull(self):
         super().pull()
@@ -43,10 +44,9 @@ class SbtPlugin(snapcraft.BasePlugin):
             cd {} &&
             sbt assembly
             """.format(self._src_dir))
-        install_bin_path = os.path.join(self.installdir, "bin")
-        os.makedirs(install_bin_path, exist_ok=True)
+        os.makedirs(self._install_bin_dir, exist_ok=True)
         binary_path = "{}/kprojekt-cli".format(self._assembly_dir)
-        shutil.copy2(binary_path, install_bin_path)
+        shutil.copy2(binary_path, self._install_bin_dir)
 
     def _setup_dependencies(self):
         self._run_in_bash("""curl -s "https://get.sdkman.io" | bash""")
