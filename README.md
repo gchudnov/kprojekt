@@ -1,4 +1,4 @@
-# [WIP] KProjekt -- Kafka Topology Visualization
+# KProjekt -- Kafka Topology Visualization
 
 [![Build Status](https://travis-ci.org/gchudnov/kprojekt.svg?branch=master)](https://travis-ci.org//gchudnov/kprojekt)
 
@@ -14,8 +14,8 @@ sbt cli/assembly
 
 ## Usage
 
-- Download or build an executable binary `kprojekt-cli`.
 - Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
+- Build an executable binary `kprojekt-cli`.
 - Prepare a file with Kafka-topology (an [example](example/word-count.log)).
 - Run from the command line:
 
@@ -27,7 +27,7 @@ sbt cli/assembly
 
 ## Example
 
-Code
+Topology that we want to represent as a graph
 
 ```scala
 val builder = new StreamsBuilder
@@ -84,6 +84,7 @@ Graph
 ## Command-Line Parameters
 
 - `--help` displays help information.
+- `--verbose` provides detailed output of the application.
 - `--version` displayes version of the application.
 
 
