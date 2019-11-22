@@ -49,6 +49,8 @@ snap install --dangerous --devmode kprojekt-cli_1.0.0_amd64.snap
 # go inside snap
 sudo snap run --shell kprojekt-cli
 
+# remove
+sudo snap remove kprojekt-cli
 
 ```
 

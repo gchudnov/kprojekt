@@ -13,7 +13,7 @@ apps:
     command: bin/kprojekt-cli
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-amd64
-      PATH: $JAVA_HOME/jre/bin:$PATH
+      PATH: $JAVA_HOME/bin:$PATH
 
 parts:
   kprojekt-cli:
@@ -24,6 +24,6 @@ parts:
     - curl
     - unzip
     - zip
-    - openjdk-11-jdk
     stage-packages:
     - openjdk-11-jre-headless
+    - graphviz
