@@ -16,9 +16,9 @@ sudo snapcraft clean --use-lxd kprojekt-cli
 
 sudo lxc list
 sudo lxc delete snapcraft-kprojekt-cli
+sudo lxc start snapcraft-kprojekt-cli
 sudo lxc exec snapcraft-kprojekt-cli -- /bin/bash
 
-snapcraft --destructive-mode
 ```
 
 ## STEPS
@@ -45,6 +45,9 @@ snapcraft
 
 # install to test locally
 snap install --dangerous --devmode kprojekt-cli_1.0.0_amd64.snap
+
+# test app
+kprojekt-cli /home/gchudnov/Projects/kprojekt/example/word-count.log
 
 # go inside snap
 sudo snap run --shell kprojekt-cli

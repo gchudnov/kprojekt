@@ -54,10 +54,29 @@ class SbtPlugin(snapcraft.BasePlugin):
     def _setup_dependencies(self):
         self._run_in_bash("""curl -s "https://get.sdkman.io" | bash""")
         self._run_in_bash(
-            """source "/root/.sdkman/bin/sdkman-init.sh" &&
-            sdk install java 11.0.5.hs-adpt &&
-            sdk install scala 2.13.1 &&
-            sdk install sbt 1.3.3""")
+            """source "/root/.sdkman/bin/sdkman-init.sh"
+
+            export IS_JAVA_INSTALLED=$(sdk current | grep -c java)
+            if [[ "${IS_JAVA_INSTALLED}" != "0" ]]; then
+                echo "Java is already installed"
+            else
+                sdk install java 11.0.5.hs-adpt
+            fi
+
+            export IS_SCALA_INSTALLED=$(sdk current | grep -c scala)
+            if [[ "${IS_SCALA_INSTALLED}" != "0" ]]; then
+                echo "Scala is already installed"
+            else
+                sdk install scala 2.13.1
+            fi
+
+            export IS_SBT_INSTALLED=$(sdk current | grep -c sbt)
+            if [[ "${IS_SBT_INSTALLED}" != "0" ]]; then
+                echo "Sbt is already installed"
+            else
+                sdk install sbt 1.3.3
+            fi
+            """)
         return
 
     def _run_in_bash(self, command, cwd=None, env=None):
@@ -69,4 +88,3 @@ class SbtPlugin(snapcraft.BasePlugin):
 
     def clean_build(self):
         super().clean_build()
-

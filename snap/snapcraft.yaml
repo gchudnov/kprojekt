@@ -27,3 +27,6 @@ parts:
     stage-packages:
     - openjdk-11-jre-headless
     - graphviz
+    override-stage: |
+      snapcraftctl stage
+      dot -c
