@@ -5,8 +5,8 @@ import com.github.gchudnov.kprojekt.transform.{Transformer, TransformConfig}
 import java.io.File
 import scopt.OParser
 
-final case class AppConfig(topologyFile: File = null) {
-  def toTransformConfig: TransformConfig = TransformConfig(topologyFile)
+final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false) {
+  def toTransformConfig: TransformConfig = TransformConfig(topologyFile, isVerbose)
 }
 
 /**
@@ -29,6 +29,9 @@ object Cli extends App {
       programName(BuildInfo.name),
       head(BuildInfo.name, BuildInfo.version),
       help("help").text("prints this usage text"),
+      opt[Unit]("verbose")
+        .action((_, c) => c.copy(isVerbose = true))
+        .text("verbose mode"),
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(topologyFile = x))

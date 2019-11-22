@@ -8,15 +8,19 @@ import java.io.File
 import scala.util.Either
 import sys.process._
 
-case class TransformConfig(topologyFile: File)
+case class TransformConfig(topologyFile: File, isVerbose: Boolean)
 
 object Transformer {
 
   private val tmpPrefix: String = "res"
   private val cylinderFileName = "cylinder.png"
 
-  private val logger = ProcessLogger(out => {}, err => {
-    if (!err.contains("size too small for label")) {
+  private def logger(isVerbose: Boolean) = ProcessLogger(str => {
+    if(isVerbose) {
+      Console.out.println(str)
+    }
+  }, err => {
+    if (!err.contains("size too small for label") || isVerbose) {
       Console.err.println(err)
     }
   })
@@ -43,7 +47,7 @@ object Transformer {
               })
               .map(_ => {
                 val pngFile = FileOps.changeExtension(config.topologyFile, "png")
-                s"dot -Tpng ${dotFile.getAbsolutePath()} -o${pngFile.getAbsolutePath}" ! (logger)
+                s"dot -Tpng -v ${dotFile.getAbsolutePath()} -o${pngFile.getAbsolutePath}" ! (logger(config.isVerbose))
               })
           })
       })
