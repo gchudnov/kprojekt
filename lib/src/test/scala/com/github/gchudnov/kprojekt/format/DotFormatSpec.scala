@@ -1,6 +1,7 @@
 package com.github.gchudnov.kprojekt.format
 
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 /**
  * DotFormatSpec
@@ -8,7 +9,7 @@ import org.scalatest.{ Matchers, WordSpec }
  * example:
  *   bloop test lib --only com.github.gchudnov.kprojekt.format.DotFormatSpec
  */
-class DotFormatSpec extends WordSpec with Matchers {
+class DotFormatSpec extends AnyWordSpec with Matchers {
 
   "DotFormat" when {
 

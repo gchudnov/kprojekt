@@ -5,11 +5,12 @@ import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.{ StreamsBuilder, Topology }
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.processor.{ Processor, ProcessorContext, ProcessorSupplier }
 import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
-import org.scalatest.{ Matchers, WordSpec }
+import org.apache.kafka.streams.{ StreamsBuilder, Topology }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.jdk.CollectionConverters._
 
@@ -21,7 +22,7 @@ import scala.jdk.CollectionConverters._
  *
  *   cat graph.dot | dot -Tpng > graph.png
  */
-class ProjektorSpec extends WordSpec with Matchers {
+class ProjektorSpec extends AnyWordSpec with Matchers {
 
   "Projektor" when {
     "rendering a fan-out toplogy" should {

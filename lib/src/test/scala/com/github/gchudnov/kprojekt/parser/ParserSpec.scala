@@ -2,7 +2,9 @@ package com.github.gchudnov.kprojekt.parser
 
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.TopologyDescription.{ Processor, Sink, Source }
-import org.scalatest.{ EitherValues, Matchers, WordSpec }
+import org.scalatest.EitherValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.jdk.CollectionConverters._
 
@@ -12,7 +14,7 @@ import scala.jdk.CollectionConverters._
  * example:
  *   bloop test lib --only com.github.gchudnov.parser.ParserSpec
  */
-class ParserSpec extends WordSpec with Matchers with EitherValues {
+class ParserSpec extends AnyWordSpec with Matchers with EitherValues {
 
   "Parser" when {
     "parse fan-out topology description" should {

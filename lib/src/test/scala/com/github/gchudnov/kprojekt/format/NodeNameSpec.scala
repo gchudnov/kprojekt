@@ -1,6 +1,8 @@
 package com.github.gchudnov.kprojekt.format
 
-import org.scalatest.{ EitherValues, Matchers, WordSpec }
+import org.scalatest.EitherValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 /**
  * NodeNameSpec
@@ -8,7 +10,7 @@ import org.scalatest.{ EitherValues, Matchers, WordSpec }
  * example:
  *   bloop test lib --only com.github.gchudnov.name.NodeNameSpec
  */
-class NodeNameSpec extends WordSpec with Matchers with EitherValues {
+class NodeNameSpec extends AnyWordSpec with Matchers with EitherValues {
 
   "NodeName" when {
     "stream name with one-word name is parsed" should {

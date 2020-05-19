@@ -2,7 +2,9 @@ package com.github.gchudnov.kprojekt.util
 
 import java.io.File
 
-import org.scalatest.{ EitherValues, Matchers, WordSpec }
+import org.scalatest.EitherValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 /**
  * FileOpsSpec
@@ -11,7 +13,7 @@ import org.scalatest.{ EitherValues, Matchers, WordSpec }
  *   bloop test lib --only com.github.gchudnov.kprojekt.util.FileOpsSpec
  *
  */
-class FileOpsSpec extends WordSpec with Matchers with EitherValues {
+class FileOpsSpec extends AnyWordSpec with Matchers with EitherValues {
 
   "FileOps" when {
     "a resource is retrieved" should {
