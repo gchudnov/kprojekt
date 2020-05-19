@@ -1,13 +1,13 @@
 package com.github.gchudnov.kprojekt.format
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.{ Matchers, WordSpec }
 
 /**
-  * DotFormatSpec
-  *
-  * example:
-  *   bloop test lib --only com.github.gchudnov.kprojekt.format.DotFormatSpec
-  */
+ * DotFormatSpec
+ *
+ * example:
+ *   bloop test lib --only com.github.gchudnov.kprojekt.format.DotFormatSpec
+ */
 class DotFormatSpec extends WordSpec with Matchers {
 
   "DotFormat" when {
@@ -17,7 +17,7 @@ class DotFormatSpec extends WordSpec with Matchers {
         val name = "some-name.txt"
 
         val expected = "some_name_txt"
-        val actual = DotFormat.toId(name)
+        val actual   = DotFormat.toId(name)
 
         actual shouldBe expected
       }
@@ -25,29 +25,31 @@ class DotFormatSpec extends WordSpec with Matchers {
 
     "searching stores to embed" should {
       "do not embed the store if 2 processors are connected to it" in {
+
         /**
-          *    p1
-          *    /
-          *  s1 - p2
-          */
-        val edges = Seq("p1" -> "s1", "p2" -> "s1")
+         *    p1
+         *    /
+         *  s1 - p2
+         */
+        val edges          = Seq("p1" -> "s1", "p2" -> "s1")
         val expectedStores = Set.empty[String]
-        val actualStores = DotFormat.findStoresToEmbed(edges)
+        val actualStores   = DotFormat.findStoresToEmbed(edges)
 
         actualStores shouldBe expectedStores
       }
 
       "return only the stores if there is one connection to it" in {
+
         /**
-          *    s3    s2
-          *    /      \
-          *  p3       p1
-          *           /
-          *         s1 - p2
-          */
-        val edges = Seq("p1" -> "s1", "p1" -> "s2", "p2" -> "s1", "p3" -> "s3")
+         *    s3    s2
+         *    /      \
+         *  p3       p1
+         *           /
+         *         s1 - p2
+         */
+        val edges          = Seq("p1" -> "s1", "p1" -> "s2", "p2" -> "s1", "p3" -> "s3")
         val expectedStores = Set("s3", "s2")
-        val actualStores = DotFormat.findStoresToEmbed(edges)
+        val actualStores   = DotFormat.findStoresToEmbed(edges)
 
         actualStores shouldBe expectedStores
       }
@@ -55,15 +57,15 @@ class DotFormatSpec extends WordSpec with Matchers {
       "return an empty set if no stores match" in {
 
         /**
-          *   s2
-          *  /  \
-          * p1   p2
-          *  \  /
-          *   s1
-          */
-        val edges = Seq("p1" -> "s1", "p1" -> "s2", "p2" -> "s1", "p2" -> "s2")
+         *   s2
+         *  /  \
+         * p1   p2
+         *  \  /
+         *   s1
+         */
+        val edges          = Seq("p1" -> "s1", "p1" -> "s2", "p2" -> "s1", "p2" -> "s2")
         val expectedStores = Set.empty[String]
-        val actualStores = DotFormat.findStoresToEmbed(edges)
+        val actualStores   = DotFormat.findStoresToEmbed(edges)
 
         actualStores shouldBe expectedStores
       }

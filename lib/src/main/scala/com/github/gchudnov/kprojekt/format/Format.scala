@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt.format
 
 trait Format[T <: Tag] {
 
-  override def toString(): String
+  def toString: String
 
   def topologyStart(name: String): Format[T]
   def topologyEnd(): Format[T]

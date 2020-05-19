@@ -1,8 +1,8 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.BuildInfo
-import com.github.gchudnov.kprojekt.transform.{Transformer, TransformConfig}
 import java.io.File
+
+import com.github.gchudnov.kprojekt.transform.{ TransformConfig, Transformer }
 import scopt.OParser
 
 final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false) {
@@ -10,16 +10,16 @@ final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false
 }
 
 /**
-  * Command-Line Application for topology parser
-  *
-  * building an image:
-  * sbt 'show graalvm-native-image:packageBin'
-  * OR
-  * sbt cli/assembly
-  *
-  * bloop run cli -m com.github.gchudnov.kprojekt.Cli
-  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
-  */
+ * Command-Line Application for topology parser
+ *
+ * building an image:
+ * sbt 'show graalvm-native-image:packageBin'
+ * OR
+ * sbt cli/assembly
+ *
+ * bloop run cli -m com.github.gchudnov.kprojekt.Cli
+ * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
+ */
 object Cli extends App {
 
   val builder = OParser.builder[AppConfig]
@@ -46,7 +46,7 @@ object Cli extends App {
         case Right(_) =>
         // no-op
         case Left(ex) =>
-          Console.err.println(ex.getMessage())
+          Console.err.println(ex.getMessage)
           sys.exit(-1)
       }
     case _ =>

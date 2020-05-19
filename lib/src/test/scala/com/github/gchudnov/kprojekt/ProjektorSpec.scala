@@ -1,28 +1,26 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.format.Dot
-import com.github.gchudnov.kprojekt.format.DotInstances
+import com.github.gchudnov.kprojekt.format.{ Dot, DotInstances }
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
+import org.apache.kafka.streams.{ StreamsBuilder, Topology }
 import org.apache.kafka.streams.kstream.Materialized
-import org.apache.kafka.streams.processor.{Processor, ProcessorContext, ProcessorSupplier}
-import org.apache.kafka.streams.state.{KeyValueStore, StoreBuilder, Stores}
-import org.apache.kafka.streams.state.KeyValueStore
-import org.apache.kafka.streams.StreamsBuilder
-import org.apache.kafka.streams.Topology
-import org.scalatest.{WordSpec, Matchers}
+import org.apache.kafka.streams.processor.{ Processor, ProcessorContext, ProcessorSupplier }
+import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
+import org.scalatest.{ Matchers, WordSpec }
+
 import scala.jdk.CollectionConverters._
 
 /**
-  * ProjektorSpec
-  *
-  * example:
-  *   bloop test lib --only com.github.gchudnov.kprojekt.ProjektorSpec
-  *
-  *   cat graph.dot | dot -Tpng > graph.png
-  */
+ * ProjektorSpec
+ *
+ * example:
+ *   bloop test lib --only com.github.gchudnov.kprojekt.ProjektorSpec
+ *
+ *   cat graph.dot | dot -Tpng > graph.png
+ */
 class ProjektorSpec extends WordSpec with Matchers {
 
   "Projektor" when {
@@ -40,8 +38,8 @@ class ProjektorSpec extends WordSpec with Matchers {
         stream3.to("output-2")
 
         val topology = builder.build()
-        val desc = topology.describe()
-        val actual = Projektor.run[Dot]("fan-out", desc).trim()
+        val desc     = topology.describe()
+        val actual   = Projektor.run[Dot]("fan-out", desc).trim()
 
         actual shouldBe expected
       }
@@ -54,7 +52,7 @@ class ProjektorSpec extends WordSpec with Matchers {
         val expected = FileOps.stringFromResource("graphs/word-count.dot").toOption.get
 
         val builder = new StreamsBuilder
-        val source = builder.stream[String, String]("streams-plaintext-input")
+        val source  = builder.stream[String, String]("streams-plaintext-input")
         source
           .flatMapValues(value => value.toLowerCase.split("\\W+").toList.asJava)
           .groupBy((key, value) => value)
@@ -63,8 +61,8 @@ class ProjektorSpec extends WordSpec with Matchers {
           .to("streams-wordcount-output")
 
         val topology = builder.build()
-        val desc = topology.describe()
-        val actual = Projektor.run[Dot]("word-count", desc).trim()
+        val desc     = topology.describe()
+        val actual   = Projektor.run[Dot]("word-count", desc).trim()
 
         actual shouldBe expected
       }
@@ -79,21 +77,19 @@ class ProjektorSpec extends WordSpec with Matchers {
         val stateStoreName = "test-store"
 
         val processor: Processor[String, String] = new Processor[String, String] {
-          var keyValueStore: KeyValueStore[String, java.lang.Long] = null
+          var keyValueStore: KeyValueStore[String, java.lang.Long] = _
 
-          override def init(context: ProcessorContext): Unit = {
+          override def init(context: ProcessorContext): Unit =
             keyValueStore = context.getStateStore(stateStoreName).asInstanceOf[KeyValueStore[String, java.lang.Long]]
-          }
 
-          override def process(key: String, value: String): Unit = {
+          override def process(key: String, value: String): Unit =
             keyValueStore.put(key, value.length.toLong)
-          }
 
           override def close(): Unit = {}
         }
 
         val stringSerde = new Serdes.StringSerde
-        val longSerde = new Serdes.LongSerde
+        val longSerde   = new Serdes.LongSerde
 
         val storeSupplier: StoreBuilder[KeyValueStore[String, java.lang.Long]] = Stores
           .keyValueStoreBuilder(Stores.persistentKeyValueStore(stateStoreName), stringSerde, longSerde)
@@ -107,7 +103,7 @@ class ProjektorSpec extends WordSpec with Matchers {
 
         topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
 
-        val desc = topology.describe()
+        val desc   = topology.describe()
         val actual = Projektor.run[Dot]("global-store-usage", desc).trim()
 
         actual shouldBe expected
@@ -118,16 +114,16 @@ class ProjektorSpec extends WordSpec with Matchers {
       "produce the expected graphviz output" in {
         import DotInstances._
 
-        val input = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
+        val input         = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
-        errOrTopology.foreach(desc => {
-          val actual = Projektor.run[Dot]("complex-topo", desc).trim()
+        errOrTopology.foreach { desc =>
+          val actual   = Projektor.run[Dot]("complex-topo", desc).trim()
           val expected = FileOps.stringFromResource("graphs/complex-topo.dot").toOption.get
 
           actual shouldBe expected
-        })
+        }
       }
     }
   }

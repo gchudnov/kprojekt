@@ -1,28 +1,27 @@
 package com.github.gchudnov.kprojekt.parser
 
 import com.github.gchudnov.kprojekt.util.FileOps
-import org.apache.kafka.streams.TopologyDescription.Processor
-import org.apache.kafka.streams.TopologyDescription.Sink
-import org.apache.kafka.streams.TopologyDescription.Source
-import org.scalatest.{WordSpec, Matchers, EitherValues}
+import org.apache.kafka.streams.TopologyDescription.{ Processor, Sink, Source }
+import org.scalatest.{ EitherValues, Matchers, WordSpec }
+
 import scala.jdk.CollectionConverters._
 
 /**
-  * ParserSpec
-  *
-  * example:
-  *   bloop test lib --only com.github.gchudnov.parser.ParserSpec
-  */
+ * ParserSpec
+ *
+ * example:
+ *   bloop test lib --only com.github.gchudnov.parser.ParserSpec
+ */
 class ParserSpec extends WordSpec with Matchers with EitherValues {
 
   "Parser" when {
     "parse fan-out topology description" should {
       "return the parsed structure" in {
-        val input = FileOps.stringFromResource("topologies/fan-out.log").toOption.get
+        val input         = FileOps.stringFromResource("topologies/fan-out.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
-        errOrTopology.foreach(t => {
+        errOrTopology.foreach { t =>
           val subtopologies = t.subtopologies()
           subtopologies.size() shouldBe 1
 
@@ -59,17 +58,17 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
           val sink2 = nodes.find(_.name() == "KSTREAM-SINK-0000000004").get
           sink2.predecessors().asScala.size shouldBe 1
           sink2.successors().asScala.isEmpty shouldBe true
-        })
+        }
       }
     }
 
     "parse global-store topology description" should {
       "return the valid structure" in {
-        val input = FileOps.stringFromResource("topologies/global-store.log").toOption.get
+        val input         = FileOps.stringFromResource("topologies/global-store.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
-        errOrTopology.foreach(t => {
+        errOrTopology.foreach { t =>
           val subtopologies = t.subtopologies()
           subtopologies.size() shouldBe 1
 
@@ -91,17 +90,17 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
 
           val sink = nodes.find(_.isInstanceOf[Sink])
           sink shouldBe None
-        })
+        }
       }
     }
 
     "parse complex topology description" should {
       "return the valid structure" in {
-        val input = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
+        val input         = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
         val errOrTopology = Parser.run(input)
 
         errOrTopology.isRight shouldBe true
-        errOrTopology.foreach(t => {
+        errOrTopology.foreach { t =>
           val subtopologies = t.subtopologies().asScala.toSet
           subtopologies.size shouldBe 2
 
@@ -116,13 +115,13 @@ class ParserSpec extends WordSpec with Matchers with EitherValues {
 
           val nodes1 = subtopology1.nodes().asScala
           nodes1.size shouldBe 19
-        })
+        }
       }
     }
 
     "parse an invalid input" should {
       "return an error" in {
-        val input = FileOps.stringFromResource("topologies/invalid-structure.log").toOption.get
+        val input         = FileOps.stringFromResource("topologies/invalid-structure.log").toOption.get
         val errOrTopology = Parser.run(input)
         errOrTopology.left.value.isInstanceOf[ParseException] shouldBe true
       }

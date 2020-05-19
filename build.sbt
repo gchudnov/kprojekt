@@ -1,5 +1,5 @@
+import sbt.Keys._
 import sbt._
-import sbt.Keys.{scalaSource, testFrameworks, _}
 import sbtassembly.AssemblyPlugin.defaultUniversalScript
 
 autoStartServer := false
@@ -22,7 +22,6 @@ lazy val lib = (project in file("lib"))
 
 lazy val cli = (project in file("cli"))
   .enablePlugins(BuildInfoPlugin)
-  .enablePlugins(GraalVMNativeImagePlugin)
   .dependsOn(lib)
   .settings(allSettings: _*)
   .settings(
@@ -30,12 +29,6 @@ lazy val cli = (project in file("cli"))
     libraryDependencies ++= Dependencies.All,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.github.gchudnov.kprojekt",
-    graalVMNativeImageGraalVersion := Some("19.2.1"),
-    graalVMNativeImageOptions ++= Seq(
-      "--initialize-at-build-time",
-      "--no-fallback",
-      "--allow-incomplete-classpath"
-    ),
     mainClass in assembly := Some("com.github.gchudnov.kprojekt.Cli"),
     assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultUniversalScript(shebang = false))),
     assemblyJarName in assembly := s"${name.value}"
@@ -47,3 +40,6 @@ lazy val root = (project in file("."))
   .settings(
     name := "kprojekt"
   )
+
+addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
+addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")

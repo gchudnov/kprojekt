@@ -1,20 +1,19 @@
 package com.github.gchudnov.kprojekt.format
 
 import cats.implicits._
-import com.github.gchudnov.kprojekt.format.NodeName
 
 /**
-  * Format Topology for GraphViz (Dot-Format)
-  * http://www.graphviz.org/
-  *
-  * cat graph.dot | dot -Tpng > graph.png
-  */
+ * Format Topology for GraphViz (Dot-Format)
+ * http://www.graphviz.org/
+ *
+ * cat graph.dot | dot -Tpng > graph.png
+ */
 final case class DotFormatState(storesToEmbed: Set[String] = Set.empty[String], indent: Int = 0)
 
 final case class DotFormat(inner: String, state: DotFormatState = DotFormatState()) extends Format[Dot] {
   import DotFormat._
 
-  override def toString(): String = inner
+  override def toString: String = inner
 
   override def topologyStart(name: String): Format[Dot] =
     DotFormat(
@@ -25,7 +24,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
           .append(s"""${T2}node [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
           .append(s"""${T2}edge [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
           .toString()
-      ),
+        ),
       state.copy(indent = state.indent + 1)
     )
 
@@ -52,16 +51,17 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
           .append(s"${T}subgraph cluster_${toId(name)} {\n")
           .append(s"${T}${T}style=dotted;\n")
           .toString()
-      ),
+        ),
       state.copy(indent = state.indent + 1)
     )
 
-  override def subtopologyEnd(): Format[Dot] = DotFormat(
-    inner |+| (
-      s"""${T_1}}\n"""
-    ),
-    state.copy(indent = state.indent - 1)
-  )
+  override def subtopologyEnd(): Format[Dot] =
+    DotFormat(
+      inner |+| (
+        s"""${T_1}}\n"""
+      ),
+      state.copy(indent = state.indent - 1)
+    )
 
   override def edge(fromName: String, toName: String): Format[Dot] =
     ifNotEmbedded(fromName, toName)(
@@ -80,16 +80,16 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
           new StringBuilder()
             .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
             .toString()
-        ),
+          ),
       state
     )
 
   override def processor(name: String, stores: Seq[String]): Format[Dot] = {
-    val text = if (stores.size == 1 && state.storesToEmbed.contains(stores(0))) {
-      s"""${T}${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(stores(0))})"];\n"""
-    } else {
-      s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
-    }
+    val text =
+      if (stores.size == 1 && state.storesToEmbed.contains(stores(0)))
+        s"""${T}${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(stores(0))})"];\n"""
+      else
+        s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
 
     DotFormat(
       inner |+|
@@ -97,7 +97,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
           new StringBuilder()
             .append(text)
             .toString()
-        ),
+          ),
       state
     )
   }
@@ -109,23 +109,22 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
           new StringBuilder()
             .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
             .toString()
-        ),
+          ),
       state
     )
 
   /**
-    * used to plan the embeddment of stores into the graph node
-    * A store `s` can be embedded if:
-    * - processor references only 1 store
-    * - there are no other references to this store
-    * That means dfs(s) = 1
-    */
-  override def storeEdges(edges: Seq[(String, String)]): Format[Dot] = {
+   * used to plan the embeddment of stores into the graph node
+   * A store `s` can be embedded if:
+   * - processor references only 1 store
+   * - there are no other references to this store
+   * That means dfs(s) = 1
+   */
+  override def storeEdges(edges: Seq[(String, String)]): Format[Dot] =
     DotFormat(
       inner,
       state.copy(storesToEmbed = DotFormat.findStoresToEmbed(edges))
     )
-  }
 
   override def store(name: String): Format[Dot] =
     ifNotEmbedded(name)(
@@ -135,7 +134,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
             new StringBuilder()
               .append(s"""${T}${toId(name)} [shape=cylinder, fixedsize=false, width=0.5, label="", xlabel="${toLabel(name)}"];\n""")
               .toString()
-          ),
+            ),
         state
       )
     )
@@ -148,21 +147,19 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
             new StringBuilder()
               .append(s"""${T}{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
               .toString()
-          ),
+            ),
         state
       )
     )
 
-  private def ifNotEmbedded(names: String*)(r: Format[Dot]): Format[Dot] = {
-    if (names.intersect(state.storesToEmbed.toSeq).nonEmpty) {
+  private def ifNotEmbedded(names: String*)(r: Format[Dot]): Format[Dot] =
+    if (names.intersect(state.storesToEmbed.toSeq).nonEmpty)
       this
-    } else {
+    else
       r
-    }
-  }
 
-  private def T: String = indent(state.indent)
-  private def T2: String = indent(state.indent + 1)
+  private def T: String   = indent(state.indent)
+  private def T2: String  = indent(state.indent + 1)
   private def T_1: String = indent(state.indent - 1)
 
   private def indent(value: Int): String = " " * (value * defaultIndent)
@@ -170,40 +167,36 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
 
 object DotFormat {
 
-  private val defaultIndent = 2
+  private val defaultIndent   = 2
   private val defaultFontName = "sans-serif"
   private val defaultFontSize = "10"
 
   def apply() = new DotFormat("")
 
-  def toId(name: String): String = {
+  def toId(name: String): String =
     name.replaceAll("""[-\.]""", "_")
-  }
 
   def toLabel(name: String): String =
     NodeName.parse(name).label
 
   def findStoresToEmbed(storeEdges: Seq[(String, String)]): Set[String] = {
-    val (stores, adjList) = storeEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]]))((acc, e) => {
+    val (stores, adjList) = storeEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]])) { (acc, e) =>
       val (stores, adjList) = acc
       (stores + e._2, adjList |+| Map(e._1 -> List(e._2)) |+| Map(e._2 -> List(e._1)))
-    })
+    }
 
-    stores.foldLeft(Set.empty[String])((acc, s) => {
+    stores.foldLeft(Set.empty[String]) { (acc, s) =>
       val as = adjList.getOrElse(s, List.empty[String])
-      if (as.size > 1) {
+      if (as.size > 1)
         acc
-      } else {
+      else
         acc + s
-      }
-    })
+    }
   }
 }
 
 sealed trait DotInstances {
-
   implicit val dotFormat: Format[Dot] = DotFormat()
-
 }
 
 object DotInstances extends DotInstances
