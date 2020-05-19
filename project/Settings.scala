@@ -1,6 +1,7 @@
 import sbt.Keys._
 import sbt._
 import sbtassembly.AssemblyKeys._
+import sbtassembly.MergeStrategy
 
 object Settings {
   private val scalaV = "2.13.2"
@@ -19,6 +20,19 @@ object Settings {
     "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
     "-Xlint",
     "-Ywarn-numeric-widen" // Warn when numerics are widened.
+  )
+
+  type MergeStrategySelector = String => MergeStrategy
+
+  def defaultMergeStrategy(fallbackStrategy: MergeStrategySelector): MergeStrategySelector = {
+    case x if x.contains("module-info.class") => MergeStrategy.discard
+    case x                                    => fallbackStrategy(x)
+  }
+
+  val assemblySettings: Seq[Setting[_]] = Seq(
+    test in assembly := {},
+    assemblyOutputPath in assembly := new File("./target") / (assemblyJarName in assembly).value,
+    assemblyMergeStrategy in assembly := defaultMergeStrategy((assemblyMergeStrategy in assembly).value)
   )
 
   val sharedResolvers: Vector[MavenRepository] = Seq(

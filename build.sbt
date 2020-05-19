@@ -24,6 +24,7 @@ lazy val cli = (project in file("cli"))
   .enablePlugins(BuildInfoPlugin)
   .dependsOn(lib)
   .settings(allSettings: _*)
+  .settings(Settings.assemblySettings)
   .settings(
     name := "kprojekt-cli",
     libraryDependencies ++= Dependencies.All,
