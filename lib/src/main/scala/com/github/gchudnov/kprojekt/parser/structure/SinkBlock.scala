@@ -1,4 +1,4 @@
-package com.github.gchudnov.kprojekt.parser.blocks
+package com.github.gchudnov.kprojekt.parser.structure
 
 import org.apache.kafka.streams.TopologyDescription.Sink
 import org.apache.kafka.streams.processor.TopicNameExtractor

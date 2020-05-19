@@ -1,4 +1,4 @@
-package com.github.gchudnov.kprojekt.parser.blocks
+package com.github.gchudnov.kprojekt.parser.structure
 
 import java.util.{ Set => JSet }
 

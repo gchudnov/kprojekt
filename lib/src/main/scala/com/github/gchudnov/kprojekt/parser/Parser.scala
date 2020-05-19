@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.parser
 
-import com.github.gchudnov.kprojekt.parser.blocks._
+import com.github.gchudnov.kprojekt.parser.structure._
 import fastparse.MultiLineWhitespace._
 import fastparse._
 import org.apache.kafka.streams.TopologyDescription
