@@ -1,4 +1,4 @@
-package com.github.gchudnov.kprojekt.format
+package com.github.gchudnov.kprojekt.formatter
 
 import org.scalatest.EitherValues
 import org.scalatest.matchers.should.Matchers

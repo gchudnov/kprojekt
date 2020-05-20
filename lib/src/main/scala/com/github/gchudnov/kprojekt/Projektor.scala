@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.format.{ Format, Tag }
+import com.github.gchudnov.kprojekt.formatter.{ Format, Tag }
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription._
 

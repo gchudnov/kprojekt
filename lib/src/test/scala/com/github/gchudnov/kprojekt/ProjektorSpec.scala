@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.format.{ Dot, DotInstances }
+import com.github.gchudnov.kprojekt.formatter.{ Dot, DotInstances }
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes

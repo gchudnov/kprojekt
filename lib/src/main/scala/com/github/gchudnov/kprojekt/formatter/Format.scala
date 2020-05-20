@@ -1,4 +1,4 @@
-package com.github.gchudnov.kprojekt.format
+package com.github.gchudnov.kprojekt.formatter
 
 trait Format[T <: Tag] {
 
