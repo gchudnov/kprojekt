@@ -1,4 +1,4 @@
-package com.github.gchudnov.kprojekt.formatter
+package com.github.gchudnov.kprojekt.formatter.dot
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

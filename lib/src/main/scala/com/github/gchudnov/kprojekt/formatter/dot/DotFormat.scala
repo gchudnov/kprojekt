@@ -1,6 +1,7 @@
-package com.github.gchudnov.kprojekt.formatter
+package com.github.gchudnov.kprojekt.formatter.dot
 
 import cats.implicits._
+import com.github.gchudnov.kprojekt.formatter.{Dot, Format, NodeName}
 
 /**
  * Format Topology for GraphViz (Dot-Format)

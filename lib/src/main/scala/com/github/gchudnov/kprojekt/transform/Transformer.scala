@@ -41,7 +41,7 @@ object Transformer {
             if (isVerbose)
               logger.out(s"Temp directory: ${tmpDir.toString} is created.")
 
-            import com.github.gchudnov.kprojekt.formatter.DotInstances._
+            import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
             val data = Projektor.run[Dot](name, desc)
 
             val dotFile: File = FileOps.changeExtension(new File(tmpDir, name), "dot")

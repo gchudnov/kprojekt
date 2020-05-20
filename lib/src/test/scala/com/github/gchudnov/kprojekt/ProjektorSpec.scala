@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.formatter.{ Dot, DotInstances }
+import com.github.gchudnov.kprojekt.formatter.Dot
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
@@ -27,7 +27,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
   "Projektor" when {
     "rendering a fan-out toplogy" should {
       "produce the expected graphviz output" in {
-        import DotInstances._
+        import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
 
         val expected = FileOps.stringFromResource("graphs/fan-out.dot").toOption.get
 
@@ -48,7 +48,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
 
     "rendering a word-count topology" should {
       "produce the expected graphviz output" in {
-        import DotInstances._
+        import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
 
         val expected = FileOps.stringFromResource("graphs/word-count.dot").toOption.get
 
@@ -71,7 +71,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
 
     "rendreing a topology with global store" should {
       "produce the expected graphviz output" in {
-        import DotInstances._
+        import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
 
         val expected = FileOps.stringFromResource("graphs/global-store.dot").toOption.get
 
@@ -113,7 +113,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
 
     "parsing and rendering a complex topology" should {
       "produce the expected graphviz output" in {
-        import DotInstances._
+        import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
 
         val input         = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
         val errOrTopology = Parser.run(input)
