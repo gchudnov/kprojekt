@@ -6,7 +6,7 @@ import org.apache.kafka.streams.TopologyDescription.{ Node, Subtopology }
 
 import scala.jdk.CollectionConverters._
 
-class SubtopologyBlock(sid: Int) extends Subtopology {
+final class SubtopologyBlock(sid: Int) extends Subtopology {
 
   private val nodeSet: JSet[Node] = new JHashSet[Node]
 

@@ -7,7 +7,7 @@ import org.apache.kafka.streams.TopologyDescription.{ GlobalStore, Subtopology }
 
 import scala.jdk.CollectionConverters._
 
-class TopologyDescriptionBlock() extends TopologyDescription {
+final class TopologyDescriptionBlock() extends TopologyDescription {
 
   private val subtopologySet: JSet[Subtopology] = new JHashSet[Subtopology]
   private val globalStoreSet: JSet[GlobalStore] = new JHashSet[GlobalStore]
