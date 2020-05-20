@@ -11,7 +11,7 @@ import org.apache.kafka.streams.TopologyDescription.{ Node, Subtopology }
  */
 object Parser {
 
-  trait NodeRef
+  sealed trait NodeRef
 
   final case class TopologyRef(subtopologies: Seq[SubtopologyRef])
   final case class SubtopologyRef(name: String, nodes: Seq[NodeRef])
