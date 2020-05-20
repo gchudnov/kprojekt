@@ -8,7 +8,7 @@ import java.io.File
 import scala.util.Either
 import sys.process._
 
-case class TransformConfig(topologyFile: File, isVerbose: Boolean)
+final case class TransformConfig(topologyFile: File, isVerbose: Boolean)
 
 object Transformer {
 
@@ -59,7 +59,7 @@ object Transformer {
               }
               .map { _ =>
                 if (isVerbose)
-                  logger.out(s"Cylinder-file: ${cylinderFile.toString()} is created.")
+                  logger.out(s"Cylinder-file: ${cylinderFile.toString} is created.")
 
                 val pngFile = FileOps.changeExtension(config.topologyFile, "png")
                 s"dot -Tpng -v ${dotFile.getAbsolutePath} -o${pngFile.getAbsolutePath}" ! (logger)

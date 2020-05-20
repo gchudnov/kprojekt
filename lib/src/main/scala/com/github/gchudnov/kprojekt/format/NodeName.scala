@@ -5,7 +5,7 @@ import scala.util.matching.Regex
 /**
  * Represents a node name, like: KSTREAM-MAPVALUES-0000000002 or KSTREAM-SELECT-KEY-0000000002
  */
-case class NodeName(kind: String, label: String, uid: String)
+final case class NodeName(kind: String, label: String, uid: String)
 
 object NodeName {
 
