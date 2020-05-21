@@ -1,10 +1,14 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.formatter.{ Format, Tag }
+import java.io.File
+
+import com.github.gchudnov.kprojekt.formatter.{ Bundler, Encoder, Tag }
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription._
 
 import scala.jdk.CollectionConverters._
+import scala.sys.process.ProcessLogger
+import scala.util.Either
 
 /**
  * Present topology with the given builder
@@ -15,7 +19,7 @@ object Projektor {
   private val KeyProcessor = "p"
   private val KeySink      = "k"
 
-  def run[T <: Tag: Format](name: String, desc: TopologyDescription): String = {
+  def encode[T <: Tag: Encoder](name: String, desc: TopologyDescription): String = {
     val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
     val globalStores  = desc.globalStores().asScala.toSeq.sortBy(_.id())
 
@@ -23,7 +27,7 @@ object Projektor {
     val topics                 = collectTopics(maybeTopicRelatedNodes)
     val topicEdges             = collectTopicEdges(maybeTopicRelatedNodes)
 
-    implicitly[Format[T]]
+    implicitly[Encoder[T]]
       .topologyStart(name)
       .topics { ra =>
         topics.foldLeft(ra) { (acc, t) =>
@@ -54,7 +58,11 @@ object Projektor {
       .toString
   }
 
-  private def formatSubtopology[T <: Tag: Format](ra: Format[T])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Format[T] = {
+  def bundle[T <: Tag: Bundler](isVerbose: Boolean, logger: ProcessLogger, topologyPath: File, data: String): Either[Throwable, File] =
+    implicitly[Bundler[T]]
+      .bundle(isVerbose, logger, topologyPath, data)
+
+  private def formatSubtopology[T <: Tag: Encoder](ra: Encoder[T])(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Encoder[T] = {
     val nodeEdges  = collectNodeEdges(sources ++ processors ++ sinks.asInstanceOf[Seq[Node]])
     val stores     = collectStores(processors)
     val storeEdges = collectStoreEdges(processors)

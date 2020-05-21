@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.formatter.Dot
+import com.github.gchudnov.kprojekt.formatter.dot.Dot
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
@@ -40,7 +40,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
 
         val topology = builder.build()
         val desc     = topology.describe()
-        val actual   = Projektor.run[Dot]("fan-out", desc).trim()
+        val actual   = Projektor.encode[Dot]("fan-out", desc).trim()
 
         actual shouldBe expected
       }
@@ -63,7 +63,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
 
         val topology = builder.build()
         val desc     = topology.describe()
-        val actual   = Projektor.run[Dot]("word-count", desc).trim()
+        val actual   = Projektor.encode[Dot]("word-count", desc).trim()
 
         actual shouldBe expected
       }
@@ -105,7 +105,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
         topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
 
         val desc   = topology.describe()
-        val actual = Projektor.run[Dot]("global-store-usage", desc).trim()
+        val actual = Projektor.encode[Dot]("global-store-usage", desc).trim()
 
         actual shouldBe expected
       }
@@ -120,7 +120,7 @@ class ProjektorSpec extends AnyWordSpec with Matchers {
 
         errOrTopology.isRight shouldBe true
         errOrTopology.foreach { desc =>
-          val actual   = Projektor.run[Dot]("complex-topo", desc).trim()
+          val actual   = Projektor.encode[Dot]("complex-topo", desc).trim()
           val expected = FileOps.stringFromResource("graphs/complex-topo.dot").toOption.get
 
           actual shouldBe expected

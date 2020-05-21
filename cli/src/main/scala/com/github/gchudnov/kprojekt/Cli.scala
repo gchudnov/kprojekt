@@ -2,12 +2,8 @@ package com.github.gchudnov.kprojekt
 
 import java.io.File
 
-import com.github.gchudnov.kprojekt.transform.{ TransformConfig, Transformer }
+import com.github.gchudnov.kprojekt.process.{ Processor }
 import scopt.OParser
-
-final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false) {
-  def toTransformConfig: TransformConfig = TransformConfig(topologyFile, isVerbose)
-}
 
 /**
  * Command-Line Application for topology parser
@@ -21,6 +17,8 @@ final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
  */
 object Cli extends App {
+
+  final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false)
 
   val builder = OParser.builder[AppConfig]
   val parser = {
@@ -42,7 +40,8 @@ object Cli extends App {
 
   OParser.parse(parser, args, AppConfig()) match {
     case Some(config) =>
-      Transformer.run(config.toTransformConfig) match {
+      import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
+      Processor.run(config.isVerbose, config.topologyFile) match {
         case Right(_) =>
         // no-op
         case Left(ex) =>

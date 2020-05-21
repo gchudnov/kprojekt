@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt.formatter.dot
 
 import cats.implicits._
-import com.github.gchudnov.kprojekt.formatter.{Dot, Format, NodeName}
+import com.github.gchudnov.kprojekt.formatter.Encoder
 
 /**
  * Format Topology for GraphViz (Dot-Format)
@@ -11,12 +11,12 @@ import com.github.gchudnov.kprojekt.formatter.{Dot, Format, NodeName}
  */
 final case class DotFormatState(storesToEmbed: Set[String] = Set.empty[String], indent: Int = 0)
 
-final case class DotFormat(inner: String, state: DotFormatState = DotFormatState()) extends Format[Dot] {
+final case class DotFormat(inner: String, state: DotFormatState = DotFormatState()) extends Encoder[Dot] {
   import DotFormat._
 
   override def toString: String = inner
 
-  override def topologyStart(name: String): Format[Dot] =
+  override def topologyStart(name: String): Encoder[Dot] =
     DotFormat(
       inner |+| (
         new StringBuilder()
@@ -29,7 +29,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       state.copy(indent = state.indent + 1)
     )
 
-  override def topologyEnd(): Format[Dot] =
+  override def topologyEnd(): Encoder[Dot] =
     DotFormat(
       inner |+| (
         s"""${T_1}}\n"""
@@ -37,7 +37,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       state.copy(indent = state.indent - 1)
     )
 
-  override def topic(name: String): Format[Dot] =
+  override def topic(name: String): Encoder[Dot] =
     DotFormat(
       inner |+| (
         s"""${T}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
@@ -45,7 +45,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       state
     )
 
-  override def subtopologyStart(name: String): Format[Dot] =
+  override def subtopologyStart(name: String): Encoder[Dot] =
     DotFormat(
       inner |+| (
         new StringBuilder()
@@ -56,7 +56,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       state.copy(indent = state.indent + 1)
     )
 
-  override def subtopologyEnd(): Format[Dot] =
+  override def subtopologyEnd(): Encoder[Dot] =
     DotFormat(
       inner |+| (
         s"""${T_1}}\n"""
@@ -64,7 +64,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       state.copy(indent = state.indent - 1)
     )
 
-  override def edge(fromName: String, toName: String): Format[Dot] =
+  override def edge(fromName: String, toName: String): Encoder[Dot] =
     ifNotEmbedded(fromName, toName)(
       DotFormat(
         inner |+| (
@@ -74,7 +74,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       )
     )
 
-  override def source(name: String, topics: Seq[String]): Format[Dot] =
+  override def source(name: String, topics: Seq[String]): Encoder[Dot] =
     DotFormat(
       inner |+|
         (
@@ -85,10 +85,12 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       state
     )
 
-  override def processor(name: String, stores: Seq[String]): Format[Dot] = {
+  override def processor(name: String, stores: Seq[String]): Encoder[Dot] = {
     val text =
-      if (stores.size == 1 && state.storesToEmbed.contains(stores(0)))
-        s"""${T}${toId(name)} [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(stores(0))})"];\n"""
+      if (stores.size == 1 && state.storesToEmbed.contains(stores.head))
+        s"""${T}${toId(name)} [shape=ellipse, image="${DotConfig.CylinderFileName}", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(
+          stores(0)
+        )})"];\n"""
       else
         s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
 
@@ -103,7 +105,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
     )
   }
 
-  override def sink(name: String, topic: String): Format[Dot] =
+  override def sink(name: String, topic: String): Encoder[Dot] =
     DotFormat(
       inner |+|
         (
@@ -121,13 +123,13 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
    * - there are no other references to this store
    * That means dfs(s) = 1
    */
-  override def storeEdges(edges: Seq[(String, String)]): Format[Dot] =
+  override def storeEdges(edges: Seq[(String, String)]): Encoder[Dot] =
     DotFormat(
       inner,
       state.copy(storesToEmbed = DotFormat.findStoresToEmbed(edges))
     )
 
-  override def store(name: String): Format[Dot] =
+  override def store(name: String): Encoder[Dot] =
     ifNotEmbedded(name)(
       DotFormat(
         inner |+|
@@ -140,7 +142,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       )
     )
 
-  override def rank(name1: String, name2: String): Format[Dot] =
+  override def rank(name1: String, name2: String): Encoder[Dot] =
     ifNotEmbedded(name1, name2)(
       DotFormat(
         inner |+|
@@ -153,7 +155,7 @@ final case class DotFormat(inner: String, state: DotFormatState = DotFormatState
       )
     )
 
-  private def ifNotEmbedded(names: String*)(r: Format[Dot]): Format[Dot] =
+  private def ifNotEmbedded(names: String*)(r: Encoder[Dot]): Encoder[Dot] =
     if (names.intersect(state.storesToEmbed.toSeq).nonEmpty)
       this
     else
@@ -175,10 +177,10 @@ object DotFormat {
   def apply() = new DotFormat("")
 
   def toId(name: String): String =
-    name.replaceAll("""[-\.]""", "_")
+    name.replaceAll("""[-.]""", "_")
 
   def toLabel(name: String): String =
-    NodeName.parse(name).label
+    DotNodeName.parse(name).label
 
   def findStoresToEmbed(storeEdges: Seq[(String, String)]): Set[String] = {
     val (stores, adjList) = storeEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]])) { (acc, e) =>
@@ -195,9 +197,3 @@ object DotFormat {
     }
   }
 }
-
-sealed trait DotInstances {
-  implicit val dotFormat: Format[Dot] = DotFormat()
-}
-
-object DotInstances extends DotInstances
