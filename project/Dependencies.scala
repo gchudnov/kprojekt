@@ -10,6 +10,7 @@ object Dependencies {
     val log4j         = "1.2.17"
     val scalatest     = "3.1.2"
     val scopt         = "4.0.0-RC2"
+    val zio           = "1.0.0-RC19-2"
   }
 
   private val compiler = Seq(
@@ -22,18 +23,22 @@ object Dependencies {
   private val kafkaClients = "org.apache.kafka"  % "kafka-clients" % versions.kafka
   private val scalatest    = "org.scalatest"    %% "scalatest"     % versions.scalatest
   private val scopt        = "com.github.scopt" %% "scopt"         % versions.scopt
+  private val zio          = "dev.zio"          %% "zio"           % versions.zio
+  private val zioStreams   = "dev.zio"          %% "zio-streams"   % versions.zio
 
   val All: Seq[ModuleID] = {
     val compile = Seq(
       cats,
-      kafka,
       fastparse,
-      scopt
+      kafka,
+      scopt,
+      zio,
+      zioStreams
     )
     val test = Seq(
-      scalatest,
       kafka,
-      kafkaClients
+      kafkaClients,
+      scalatest,
     ) map (_ % "test")
     compile ++ test ++ compiler
   }
