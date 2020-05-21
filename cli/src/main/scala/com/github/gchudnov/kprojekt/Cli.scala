@@ -2,8 +2,8 @@ package com.github.gchudnov.kprojekt
 
 import java.io.File
 
-import com.github.gchudnov.kprojekt.process.{ Processor }
-import scopt.OParser
+import com.github.gchudnov.kprojekt.process.Processor
+import scopt.{ OParser, OParserBuilder }
 
 /**
  * Command-Line Application for topology parser
@@ -20,8 +20,8 @@ object Cli extends App {
 
   final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false)
 
-  val builder = OParser.builder[AppConfig]
-  val parser = {
+  val builder: OParserBuilder[AppConfig] = OParser.builder[AppConfig]
+  val parser: OParser[Unit, AppConfig] = {
     import builder._
     OParser.sequence(
       programName(BuildInfo.name),
