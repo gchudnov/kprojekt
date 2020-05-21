@@ -38,7 +38,7 @@ object Dependencies {
     val test = Seq(
       kafka,
       kafkaClients,
-      scalatest,
+      scalatest
     ) map (_ % "test")
     compile ++ test ++ compiler
   }

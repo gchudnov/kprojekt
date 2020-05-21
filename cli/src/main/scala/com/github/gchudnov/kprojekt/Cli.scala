@@ -4,6 +4,7 @@ import java.io.File
 
 import com.github.gchudnov.kprojekt.process.Processor
 import scopt.{ OParser, OParserBuilder }
+import zio.ZIO
 
 /**
  * Command-Line Application for topology parser
@@ -16,11 +17,12 @@ import scopt.{ OParser, OParserBuilder }
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
  */
-object Cli extends App {
+object Cli extends zio.App {
 
-  final case class AppConfig(topologyFile: File = null, isVerbose: Boolean = false)
+  final case class AppConfig(topologyFile: File = new File("."), isVerbose: Boolean = false)
 
   val builder: OParserBuilder[AppConfig] = OParser.builder[AppConfig]
+
   val parser: OParser[Unit, AppConfig] = {
     import builder._
     OParser.sequence(
@@ -33,23 +35,19 @@ object Cli extends App {
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(topologyFile = x))
-        .text("path to the topology description"),
+        .text("path to topology description"),
       version("version")
     )
   }
 
-  OParser.parse(parser, args, AppConfig()) match {
-    case Some(config) =>
-      import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
-      Processor.run(config.isVerbose, config.topologyFile) match {
-        case Right(_) =>
-        // no-op
-        case Left(ex) =>
-          Console.err.println(ex.getMessage)
-          sys.exit(-1)
-      }
-    case _ =>
-    // no-op
-  }
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+    import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
 
+    val program = for {
+      config <- ZIO.fromOption(OParser.parse(parser, args, AppConfig()))
+      _      <- ZIO.fromEither(Processor.run(config.isVerbose, config.topologyFile))
+    } yield ()
+
+    program.fold(_ => 1, _ => 0)
+  }
 }
