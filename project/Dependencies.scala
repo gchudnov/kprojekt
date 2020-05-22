@@ -11,6 +11,7 @@ object Dependencies {
     val scalatest     = "3.1.2"
     val scopt         = "4.0.0-RC2"
     val zio           = "1.0.0-RC19-2"
+    val zioLogging = "0.2.9"
   }
 
   private val compiler = Seq(
@@ -25,6 +26,7 @@ object Dependencies {
   private val scopt        = "com.github.scopt" %% "scopt"         % versions.scopt
   private val zio          = "dev.zio"          %% "zio"           % versions.zio
   private val zioStreams   = "dev.zio"          %% "zio-streams"   % versions.zio
+  private val zioLogging = "dev.zio" %% "zio-logging" % versions.zioLogging
 
   val All: Seq[ModuleID] = {
     val compile = Seq(
@@ -33,7 +35,8 @@ object Dependencies {
       kafka,
       scopt,
       zio,
-      zioStreams
+      zioStreams,
+      zioLogging
     )
     val test = Seq(
       kafka,
