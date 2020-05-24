@@ -22,9 +22,9 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
         inner = state.inner |+| (
           new StringBuilder()
             .append(s"""${T}digraph g_${toId(name)} {\n""")
-            .append(s"""${T2}graph [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
-            .append(s"""${T2}node [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
-            .append(s"""${T2}edge [fontname = "${defaultFontName}", fontsize=${defaultFontSize}];\n""")
+            .append(s"""${T2}graph [fontname = "${dotConfig.fontName}", fontsize=${dotConfig.fontSize}];\n""")
+            .append(s"""${T2}node [fontname = "${dotConfig.fontName}", fontsize=${dotConfig.fontSize}];\n""")
+            .append(s"""${T2}edge [fontname = "${dotConfig.fontName}", fontsize=${dotConfig.fontSize}];\n""")
             .toString()
           ),
         indent = state.indent + 1
@@ -179,14 +179,14 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
   private def T2: String  = indent(state.indent + 1)
   private def T_1: String = indent(state.indent - 1)
 
-  private def indent(value: Int): String = " " * (value * defaultIndent)
+  private def indent(value: Int): String = " " * (value * dotConfig.indent)
 }
 
 object DotFolder {
+  import pureconfig._
+  import pureconfig.generic.auto._
 
-  private val defaultIndent   = 2
-  private val defaultFontName = "sans-serif"
-  private val defaultFontSize = "10"
+  val dotConfig: DotConfig = ConfigSource.default.at("formatters.dot").loadOrThrow[DotConfig]
 
   def toId(name: String): String =
     name.replaceAll("""[-.]""", "_")

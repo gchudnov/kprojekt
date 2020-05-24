@@ -4,17 +4,9 @@ import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
-import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.kstream.Materialized
-import org.apache.kafka.streams.processor.{ Processor, ProcessorContext, ProcessorSupplier }
-import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
-import org.apache.kafka.streams.{ StreamsBuilder, Topology }
 import zio.ZIO
 import zio.test.Assertion._
 import zio.test._
-
-import scala.jdk.CollectionConverters._
 
 /**
  * ProjektorSpec
