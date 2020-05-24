@@ -2,12 +2,23 @@ package com.github.gchudnov.kprojekt.formatter
 
 import java.io.File
 
-import scala.sys.process.ProcessLogger
-import scala.util.Either
+import com.github.gchudnov.kprojekt.formatter.dot.DotBundler
+import zio.logging.{ Logger, Logging }
+import zio.{ Has, RIO, Task, ZIO, ZLayer }
 
-/**
- * Bundle encoded data to the output directory derived from path-file.
- */
-trait Bundler[T <: Tag] {
-  def bundle(isVerbose: Boolean, logger: ProcessLogger, topologyPath: File, data: String): Either[Throwable, File]
+object Bundler {
+  type Bundler = Has[Bundler.Service]
+
+  trait Service {
+    def bundle(topologyPath: File, data: String): Task[File]
+  }
+
+  val any: ZLayer[Bundler, Nothing, Bundler] =
+    ZLayer.requires[Bundler]
+
+  val live: ZLayer[Logging, Nothing, Bundler] = ZLayer.fromService { (logging: Logger[String]) =>
+    new DotBundler(logging)
+  }
+
+  def bundle(topologyPath: File, data: String): RIO[Bundler, File] = ZIO.accessM(_.get.bundle(topologyPath, data))
 }

@@ -2,16 +2,7 @@ import sbt.Keys._
 import sbt._
 import sbtassembly.AssemblyPlugin.defaultUniversalScript
 
-autoStartServer := false
-Global / cancelable := true
-
-def testFilter(name: String): Boolean = (name endsWith "Spec")
-
-lazy val testSettings = Seq(
-  testOptions in Test ++= Seq(Tests.Filter(testFilter))
-)
-
-lazy val allSettings = Settings.shared ++ testSettings
+lazy val allSettings = Settings.sharedSettings ++ Settings.testSettings
 
 lazy val lib = (project in file("lib"))
   .settings(allSettings: _*)

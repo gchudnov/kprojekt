@@ -2,9 +2,9 @@ package com.github.gchudnov.kprojekt.parser
 
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.TopologyDescription.{ Processor, Sink, Source }
-import org.scalatest.EitherValues
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import zio.ZIO
+import zio.test.Assertion._
+import zio.test._
 
 import scala.jdk.CollectionConverters._
 
@@ -14,120 +14,99 @@ import scala.jdk.CollectionConverters._
  * example:
  *   bloop test lib --only com.github.gchudnov.parser.ParserSpec
  */
-class ParserSpec extends AnyWordSpec with Matchers with EitherValues {
+object ParserSpec extends DefaultRunnableSpec {
+  override def spec: ZSpec[Environment, Failure] =
+    suite("ParserSpec")(
+      testM("parse fan-out topology description should return the parsed structure") {
+        for {
+          input <- ZIO.fromEither(FileOps.stringFromResource("topologies/fan-out.log"))
+          desc  <- Parser.run(input).provideLayer(Parser.live)
+        } yield {
+          val subtopologies = desc.subtopologies().asScala.toSeq
+          val subtopology   = subtopologies.head
+          val nodes         = subtopology.nodes().asScala
+          val source        = nodes.find(_.name() == "KSTREAM-SOURCE-0000000000").get
+          val proc1         = nodes.find(_.name() == "KSTREAM-MAPVALUES-0000000001").get
+          val proc2         = nodes.find(_.name() == "KSTREAM-MAPVALUES-0000000002").get
+          val sink1         = nodes.find(_.name() == "KSTREAM-SINK-0000000003").get
+          val sink2         = nodes.find(_.name() == "KSTREAM-SINK-0000000004").get
 
-  "Parser" when {
-    "parse fan-out topology description" should {
-      "return the parsed structure" in {
-        val input         = FileOps.stringFromResource("topologies/fan-out.log").toOption.get
-        val errOrTopology = Parser.run(input)
-
-        errOrTopology.isRight shouldBe true
-        errOrTopology.foreach { t =>
-          val subtopologies = t.subtopologies()
-          subtopologies.size() shouldBe 1
-
-          val subtopology = subtopologies.stream().findFirst().get()
-          subtopology.id() shouldBe 0
-
-          val nodes = subtopology.nodes().asScala
-          nodes.size shouldBe 5
-
-          nodes.toList.map(_.name()) should contain allElementsOf [String](List(
-            "KSTREAM-SINK-0000000003",
-            "KSTREAM-MAPVALUES-0000000002",
-            "KSTREAM-MAPVALUES-0000000001",
-            "KSTREAM-SOURCE-0000000000",
-            "KSTREAM-SINK-0000000004"
-          ))
-
-          val source = nodes.find(_.name() == "KSTREAM-SOURCE-0000000000").get
-          source.predecessors().asScala.isEmpty shouldBe true
-          source.successors().asScala.size shouldBe 2
-
-          val proc1 = nodes.find(_.name() == "KSTREAM-MAPVALUES-0000000001").get
-          proc1.predecessors().asScala.size shouldBe 1
-          proc1.successors().asScala.size shouldBe 1
-
-          val proc2 = nodes.find(_.name() == "KSTREAM-MAPVALUES-0000000002").get
-          proc2.predecessors().asScala.size shouldBe 1
-          proc2.successors().asScala.size shouldBe 1
-
-          val sink1 = nodes.find(_.name() == "KSTREAM-SINK-0000000003").get
-          sink1.predecessors().asScala.size shouldBe 1
-          sink1.successors().asScala.isEmpty shouldBe true
-
-          val sink2 = nodes.find(_.name() == "KSTREAM-SINK-0000000004").get
-          sink2.predecessors().asScala.size shouldBe 1
-          sink2.successors().asScala.isEmpty shouldBe true
+          assert(subtopologies)(hasSize(equalTo(1))) &&
+          assert(subtopology)(hasField("id", _.id(), equalTo(0))) &&
+          assert(nodes)(hasSize(equalTo(5))) &&
+          assert(nodes.map(_.name()))(
+            hasSameElements(
+              List(
+                "KSTREAM-SINK-0000000003",
+                "KSTREAM-MAPVALUES-0000000002",
+                "KSTREAM-MAPVALUES-0000000001",
+                "KSTREAM-SOURCE-0000000000",
+                "KSTREAM-SINK-0000000004"
+              )
+            )
+          ) &&
+          assert(source.predecessors().asScala)(isEmpty) &&
+          assert(source.successors().asScala)(hasSize(equalTo(2))) &&
+          assert(proc1.predecessors().asScala)(hasSize(equalTo(1))) &&
+          assert(proc1.successors().asScala)(hasSize(equalTo(1))) &&
+          assert(proc2.predecessors().asScala)(hasSize(equalTo(1))) &&
+          assert(proc2.successors().asScala)(hasSize(equalTo(1))) &&
+          assert(sink1.predecessors().asScala)(hasSize(equalTo(1))) &&
+          assert(sink1.successors().asScala)(hasSize(equalTo(0))) &&
+          assert(sink2.predecessors().asScala)(hasSize(equalTo(1))) &&
+          assert(sink2.successors().asScala)(hasSize(equalTo(0)))
         }
-      }
-    }
+      },
+      testM("parse global-store topology description should return the valid structure") {
+        for {
+          input <- ZIO.fromEither(FileOps.stringFromResource("topologies/global-store.log"))
+          desc  <- Parser.run(input).provideLayer(Parser.live)
+        } yield {
+          val subtopologies = desc.subtopologies().asScala.toSeq
+          val subtopology   = subtopologies.head
+          val nodes         = subtopology.nodes().asScala
+          val source        = nodes.find(_.name() == "test-source").get.asInstanceOf[Source]
+          val proc          = nodes.find(_.name() == "test-processor").get.asInstanceOf[Processor]
+          val sink          = nodes.find(_.isInstanceOf[Sink])
 
-    "parse global-store topology description" should {
-      "return the valid structure" in {
-        val input         = FileOps.stringFromResource("topologies/global-store.log").toOption.get
-        val errOrTopology = Parser.run(input)
-
-        errOrTopology.isRight shouldBe true
-        errOrTopology.foreach { t =>
-          val subtopologies = t.subtopologies()
-          subtopologies.size() shouldBe 1
-
-          val subtopology = subtopologies.stream().findFirst().get()
-          subtopology.id() shouldBe 0
-
-          val nodes = subtopology.nodes().asScala
-          nodes.size shouldBe 2
-
-          val source = nodes.find(_.name() == "test-source").get.asInstanceOf[Source]
-          source.predecessors().asScala.isEmpty shouldBe true
-          source.successors().asScala.size shouldBe 1
-          source.topicSet().asScala.size shouldBe 1
-
-          val proc = nodes.find(_.name() == "test-processor").get.asInstanceOf[Processor]
-          proc.predecessors().asScala.size shouldBe 1
-          proc.successors().asScala.size shouldBe 0
-          proc.stores().asScala.size shouldBe 1
-
-          val sink = nodes.find(_.isInstanceOf[Sink])
-          sink shouldBe None
+          assert(subtopologies)(hasSize(equalTo(1))) &&
+          assert(subtopology)(hasField("id", _.id(), equalTo(0))) &&
+          assert(nodes)(hasSize(equalTo(2))) &&
+          assert(source.predecessors().asScala)(hasSize(equalTo(0))) &&
+          assert(source.successors().asScala)(hasSize(equalTo(1))) &&
+          assert(source.topicSet().asScala)(hasSize(equalTo(1))) &&
+          assert(proc.predecessors().asScala)(hasSize(equalTo(1))) &&
+          assert(proc.successors().asScala)(hasSize(equalTo(0))) &&
+          assert(proc.stores().asScala)(hasSize(equalTo(1))) &&
+          assert(sink)(isNone)
         }
-      }
-    }
+      },
+      testM("parse complex topology description should return the valid structure") {
+        for {
+          input <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo.log"))
+          desc  <- Parser.run(input).provideLayer(Parser.live)
+        } yield {
+          val subtopologies = desc.subtopologies().asScala.toSet
+          val subtopology0  = subtopologies.find(_.id() == 0).get
+          val subtopology1  = subtopologies.find(_.id() == 1).get
+          val nodes0        = subtopology0.nodes().asScala
+          val nodes1        = subtopology1.nodes().asScala
 
-    "parse complex topology description" should {
-      "return the valid structure" in {
-        val input         = FileOps.stringFromResource("topologies/complex-topo.log").toOption.get
-        val errOrTopology = Parser.run(input)
-
-        errOrTopology.isRight shouldBe true
-        errOrTopology.foreach { t =>
-          val subtopologies = t.subtopologies().asScala.toSet
-          subtopologies.size shouldBe 2
-
-          val subtopology0 = subtopologies.find(_.id() == 0).get
-          subtopology0.id() shouldBe 0
-
-          val nodes0 = subtopology0.nodes().asScala
-          nodes0.size shouldBe 7
-
-          val subtopology1 = subtopologies.find(_.id() == 1).get
-          subtopology1.id() shouldBe 1
-
-          val nodes1 = subtopology1.nodes().asScala
-          nodes1.size shouldBe 19
+          assert(subtopologies)(hasSize(equalTo(2))) &&
+          assert(subtopology0)(hasField("id", _.id(), equalTo(0))) &&
+          assert(subtopology1)(hasField("id", _.id(), equalTo(1))) &&
+          assert(nodes0)(hasSize(equalTo(7))) &&
+          assert(nodes1)(hasSize(equalTo(19)))
         }
-      }
-    }
+      },
+      testM("parse an invalid input should return an error") {
+        val res = for {
+          input <- ZIO.fromEither(FileOps.stringFromResource("topologies/invalid-structure.log"))
+          desc  <- Parser.run(input).provideLayer(Parser.live)
+        } yield desc
 
-    "parse an invalid input" should {
-      "return an error" in {
-        val input         = FileOps.stringFromResource("topologies/invalid-structure.log").toOption.get
-        val errOrTopology = Parser.run(input)
-        errOrTopology.left.value.isInstanceOf[ParseException] shouldBe true
+        assertM(res.run)(fails(isSubtype[ParseException](anything)))
       }
-    }
-  }
+    )
 
 }

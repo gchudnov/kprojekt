@@ -4,43 +4,41 @@ import java.io.File
 
 import com.github.gchudnov.kprojekt.formatter.Bundler
 import com.github.gchudnov.kprojekt.util.FileOps
+import zio.logging.Logger
+import zio.{ Task, ZIO }
 
-import scala.sys.process.ProcessLogger
-import scala.sys.process._
+import scala.sys.process.{ ProcessLogger, _ }
 
-final case class DotBundler() extends Bundler[Dot] {
+final class DotBundler(logger: Logger[String]) extends Bundler.Service {
+  import DotBundler._
 
-  private val dirPrefix: String = "dot-bundle"
+  override def bundle(topologyPath: File, data: String): Task[File] =
+    for {
+      tmpDir      <- ZIO.fromEither(FileOps.createTempDir(DirPrefix))
+      _           <- logger.debug(s"Created temp directory: '${tmpDir.toString}'.")
+      fileName     = topologyPath.getName
+      dotFile      = FileOps.changeExtension(new File(tmpDir, fileName), ExtDot)
+      cylinderFile = new File(tmpDir, DotConfig.CylinderFileName)
+      updData      = data.replaceAll(DotConfig.CylinderFileName, cylinderFile.toString)
+      _           <- ZIO.fromEither(FileOps.saveString(dotFile)(updData))
+      _           <- logger.debug(s"Created Dot-file: '${dotFile.toString}'.")
+      _           <- ZIO.fromEither(FileOps.saveResource(cylinderFile)(s"images/${DotConfig.CylinderFileName}"))
+      _           <- logger.debug(s"Created Cylinder-file: '${cylinderFile.toString}'.")
+      procLogger   = buildProcessLogger()
+      pngFile      = FileOps.changeExtension(topologyPath, ExtPng)
+      _           <- logger.debug(s"Producing PNG: '${pngFile.toString}'.")
+      _            = s"dot -Tpng -v ${dotFile.getAbsolutePath} -o${pngFile.getAbsolutePath}" ! procLogger
+    } yield pngFile
 
-  override def bundle(isVerbose: Boolean, logger: ProcessLogger, topologyPath: File, data: String): Either[Throwable, File] =
-    FileOps
-      .createTempDir(dirPrefix)
-      .flatMap { tmpDir =>
-        if (isVerbose)
-          logger.out(s"Temp directory: ${tmpDir.toString} is created.")
+  private def buildProcessLogger(): ProcessLogger =
+    ProcessLogger(
+      str => logger.debug(str),
+      err => logger.error(err)
+    )
+}
 
-        val fileName           = topologyPath.getName
-        val dotFile: File      = FileOps.changeExtension(new File(tmpDir, fileName), "dot")
-        val cylinderFile: File = new File(tmpDir, DotConfig.CylinderFileName)
-
-        val updData = data.replaceAll(DotConfig.CylinderFileName, cylinderFile.toString)
-
-        FileOps
-          .saveString(dotFile)(updData)
-          .flatMap { _ =>
-            if (isVerbose)
-              logger.out(s"Dot-file: ${dotFile.toString} is created.")
-
-            FileOps.saveResource(cylinderFile)(s"images/${DotConfig.CylinderFileName}")
-          }
-          .map { _ =>
-            if (isVerbose)
-              logger.out(s"Cylinder-file: ${cylinderFile.toString} is created.")
-
-            val pngFile = FileOps.changeExtension(topologyPath, "png")
-            s"dot -Tpng -v ${dotFile.getAbsolutePath} -o${pngFile.getAbsolutePath}" ! (logger)
-
-            pngFile
-          }
-      }
+object DotBundler {
+  private val DirPrefix: String = "dot-bundle"
+  private val ExtDot: String    = "dot"
+  private val ExtPng: String    = "png"
 }

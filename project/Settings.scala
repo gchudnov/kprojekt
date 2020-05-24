@@ -19,7 +19,9 @@ object Settings {
     "-language:postfixOps",          // Enable postfixOps
     "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
     "-Xlint",
-    "-Ywarn-numeric-widen" // Warn when numerics are widened.
+    "-Ywarn-numeric-widen", // Warn when numerics are widened.
+    "-Ymacro-annotations",
+    "-Xcheckinit"
   )
 
   type MergeStrategySelector = String => MergeStrategy
@@ -40,13 +42,21 @@ object Settings {
     Resolver.mavenLocal
   ).toVector
 
-  val shared: Seq[Setting[_]] = Seq(
+  val sharedSettings: Seq[Setting[_]] = Seq(
     scalacOptions ++= sharedScalacOptions,
     scalaVersion := scalaV,
-    test in assembly := {},
     ThisBuild / turbo := true,
+    cancelable in Global := true,
+    fork in Global := true,
     resolvers := Resolver.combineDefaultResolvers(sharedResolvers),
     compileOrder := CompileOrder.JavaThenScala,
     organization := "com.github.gchudnov"
+  )
+
+  def testFilter(name: String): Boolean = (name endsWith "Spec")
+
+  val testSettings: Seq[Setting[_]] = Seq(
+    testOptions in Test ++= Seq(Tests.Filter(testFilter)),
+    testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
   )
 }

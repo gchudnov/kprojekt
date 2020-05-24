@@ -2,9 +2,12 @@ package com.github.gchudnov.kprojekt
 
 import java.io.File
 
-import com.github.gchudnov.kprojekt.process.Processor
+import com.github.gchudnov.kprojekt.encoder.Encoder
+import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder }
+import com.github.gchudnov.kprojekt.parser.Parser
 import scopt.{ OParser, OParserBuilder }
 import zio.ZIO
+import zio.logging._
 
 /**
  * Command-Line Application for topology parser
@@ -41,13 +44,14 @@ object Cli extends zio.App {
   }
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
-    import com.github.gchudnov.kprojekt.formatter.dot.DotInstances._
+    val logEnv = Logging.console(format = (_, logEntry) => logEntry)
+    val env    = (Parser.live ++ (Folder.live >>> Encoder.live) ++ (logEnv >>> Bundler.live)) >>> Projektor.live
 
     val program = for {
       config <- ZIO.fromOption(OParser.parse(parser, args, AppConfig()))
-      _      <- ZIO.fromEither(Processor.run(config.isVerbose, config.topologyFile))
+      _      <- Projektor.run(config.topologyFile)
     } yield ()
 
-    program.fold(_ => 1, _ => 0)
+    program.provideLayer(env).fold(_ => 1, _ => 0)
   }
 }
