@@ -1,6 +1,7 @@
 package com.github.gchudnov.kprojekt.encoder
 
-import com.github.gchudnov.kprojekt.formatter.Folder
+import com.github.gchudnov.kprojekt.formatter.{ Folder, FolderConfig }
+import com.github.gchudnov.kprojekt.formatter.dot.DotConfig
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
@@ -35,7 +36,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/fan-out.dot"))
-          actual   <- Encoder.encode("fan-out", desc).provideLayer(Encoder.live).provideLayer(Folder.live)
+          actual   <- Encoder.encode("fan-out", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(FolderConfig.live)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
       testM("encoding the word-count topology should produce the expected graphviz output") {
@@ -53,7 +54,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/word-count.dot"))
-          actual   <- Encoder.encode("word-count", desc).provideLayer(Encoder.live).provideLayer(Folder.live)
+          actual   <- Encoder.encode("word-count", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(FolderConfig.live)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
       testM("encoding a topology with global store should produce the expected graphviz output") {
@@ -88,7 +89,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/global-store.dot"))
-          actual   <- Encoder.encode("global-store-usage", desc).provideLayer(Encoder.live).provideLayer(Folder.live)
+          actual   <- Encoder.encode("global-store-usage", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(FolderConfig.live)
         } yield assert(actual.trim)(equalTo(expected.trim))
       }
     )

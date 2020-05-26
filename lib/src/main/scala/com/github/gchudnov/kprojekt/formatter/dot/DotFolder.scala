@@ -11,20 +11,21 @@ final case class DotFolderState(inner: String = "", storesToEmbed: Set[String] =
  *
  * cat graph.dot | dot -Tpng > graph.png
  */
-final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.Service {
+final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState()) extends Folder.Service {
   import DotFolder._
 
   override def toString: String = state.inner
 
   override def topologyStart(name: String): DotFolder =
     new DotFolder(
-      state.copy(
+      config = config,
+      state = state.copy(
         inner = state.inner |+| (
           new StringBuilder()
             .append(s"""${T}digraph g_${toId(name)} {\n""")
-            .append(s"""${T2}graph [fontname = "${dotConfig.fontName}", fontsize=${dotConfig.fontSize}];\n""")
-            .append(s"""${T2}node [fontname = "${dotConfig.fontName}", fontsize=${dotConfig.fontSize}];\n""")
-            .append(s"""${T2}edge [fontname = "${dotConfig.fontName}", fontsize=${dotConfig.fontSize}];\n""")
+            .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
+            .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
+            .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .toString()
           ),
         indent = state.indent + 1
@@ -33,7 +34,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
 
   override def topologyEnd(): DotFolder =
     new DotFolder(
-      state.copy(
+      config = config,
+      state = state.copy(
         inner = state.inner |+| (
           s"""${T_1}}\n"""
         ),
@@ -43,7 +45,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
 
   override def topic(name: String): DotFolder =
     new DotFolder(
-      state.copy(inner =
+      config = config,
+      state = state.copy(inner =
         state.inner |+| (
           s"""${T}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
         )
@@ -52,7 +55,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
 
   override def subtopologyStart(name: String): DotFolder =
     new DotFolder(
-      state.copy(
+      config = config,
+      state = state.copy(
         inner = state.inner |+| (
           new StringBuilder()
             .append(s"${T}subgraph cluster_${toId(name)} {\n")
@@ -65,7 +69,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
 
   override def subtopologyEnd(): DotFolder =
     new DotFolder(
-      state.copy(
+      config = config,
+      state = state.copy(
         inner = state.inner |+| (
           s"""${T_1}}\n"""
         ),
@@ -76,7 +81,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
   override def edge(fromName: String, toName: String): DotFolder =
     ifNotEmbedded(fromName, toName)(
       new DotFolder(
-        state.copy(inner =
+        config = config,
+        state = state.copy(inner =
           state.inner |+| (
             s"${T}${toId(fromName)} -> ${toId(toName)};\n"
           )
@@ -86,7 +92,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
 
   override def source(name: String, topics: Seq[String]): DotFolder =
     new DotFolder(
-      state.copy(inner =
+      config = config,
+      state = state.copy(inner =
         state.inner |+|
           (
             new StringBuilder()
@@ -99,14 +106,15 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
   override def processor(name: String, stores: Seq[String]): DotFolder = {
     val text =
       if (stores.size == 1 && state.storesToEmbed.contains(stores.head))
-        s"""${T}${toId(name)} [shape=ellipse, image="${DotConfig.CylinderFileName}", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(
+        s"""${T}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(
           stores.head
         )})"];\n"""
       else
         s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
 
     new DotFolder(
-      state.copy(inner =
+      config = config,
+      state = state.copy(inner =
         state.inner |+|
           (
             new StringBuilder()
@@ -119,7 +127,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
 
   override def sink(name: String, topic: String): DotFolder =
     new DotFolder(
-      state.copy(inner =
+      config = config,
+      state = state.copy(inner =
         state.inner |+|
           (
             new StringBuilder()
@@ -138,13 +147,15 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
    */
   override def storeEdges(edges: Seq[(String, String)]): DotFolder =
     new DotFolder(
-      state.copy(storesToEmbed = DotFolder.findStoresToEmbed(edges))
+      config = config,
+      state = state.copy(storesToEmbed = DotFolder.findStoresToEmbed(edges))
     )
 
   override def store(name: String): DotFolder =
     ifNotEmbedded(name)(
       new DotFolder(
-        state.copy(inner =
+        config = config,
+        state = state.copy(inner =
           state.inner |+|
             (
               new StringBuilder()
@@ -158,7 +169,8 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
   override def rank(name1: String, name2: String): DotFolder =
     ifNotEmbedded(name1, name2)(
       new DotFolder(
-        state.copy(inner =
+        config = config,
+        state = state.copy(inner =
           state.inner |+|
             (
               new StringBuilder()
@@ -179,14 +191,10 @@ final class DotFolder(state: DotFolderState = DotFolderState()) extends Folder.S
   private def T2: String  = indent(state.indent + 1)
   private def T_1: String = indent(state.indent - 1)
 
-  private def indent(value: Int): String = " " * (value * dotConfig.indent)
+  private def indent(value: Int): String = " " * (value * config.indent)
 }
 
 object DotFolder {
-  import pureconfig._
-  import pureconfig.generic.auto._
-
-  val dotConfig: DotConfig = ConfigSource.default.at("formatters.dot").loadOrThrow[DotConfig]
 
   def toId(name: String): String =
     name.replaceAll("""[-.]""", "_")

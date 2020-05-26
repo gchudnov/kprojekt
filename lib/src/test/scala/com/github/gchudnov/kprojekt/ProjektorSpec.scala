@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.encoder.Encoder
-import com.github.gchudnov.kprojekt.formatter.Folder
+import com.github.gchudnov.kprojekt.formatter.{ Folder, FolderConfig }
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
 import zio.ZIO
@@ -24,7 +24,7 @@ object ProjektorSpec extends DefaultRunnableSpec {
           input    <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo.log"))
           desc     <- Parser.run(input).provideLayer(Parser.live)
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/complex-topo.dot"))
-          actual   <- Encoder.encode("complex-topo", desc).provideLayer(Encoder.live).provideLayer(Folder.live)
+          actual   <- Encoder.encode("complex-topo", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(FolderConfig.live)
         } yield assert(actual.trim)(equalTo(expected.trim))
       }
     )

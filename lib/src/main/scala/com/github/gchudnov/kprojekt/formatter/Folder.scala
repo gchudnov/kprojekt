@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.formatter
 
-import com.github.gchudnov.kprojekt.formatter.dot.DotFolder
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder }
 import zio.{ Has, ZLayer }
 
 object Folder {
@@ -42,5 +42,6 @@ object Folder {
   val any: ZLayer[Folder, Nothing, Folder] =
     ZLayer.requires[Folder]
 
-  val live: ZLayer[Any, Nothing, Folder] = ZLayer.succeed(new DotFolder())
+  val live: ZLayer[DotConfig, Nothing, Folder] =
+    ZLayer.fromFunction(config => new DotFolder(config))
 }

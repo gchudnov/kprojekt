@@ -3,7 +3,7 @@ package com.github.gchudnov.kprojekt
 import java.io.File
 
 import com.github.gchudnov.kprojekt.encoder.Encoder
-import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder }
+import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder, FolderConfig }
 import com.github.gchudnov.kprojekt.parser.Parser
 import scopt.{ OParser, OParserBuilder }
 import zio.logging._
@@ -45,7 +45,8 @@ object Cli extends zio.App {
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
     val logEnv = Logging.console(format = (_, logEntry) => logEntry)
-    val env    = (Parser.live ++ (Folder.live >>> Encoder.live) ++ (logEnv >>> Bundler.live)) >>> Projektor.live
+
+    val env = (Parser.live ++ ((FolderConfig.live >>> Folder.live) >>> Encoder.live) ++ (logEnv >>> Bundler.live)) >>> Projektor.live
 
     val program = for {
       config <- ZIO.fromOption(OParser.parse(parser, args, AppConfig()))
