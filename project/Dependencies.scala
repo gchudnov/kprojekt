@@ -10,8 +10,8 @@ object Dependencies {
     val log4j         = "1.2.17"
     val pureConfig    = "0.12.3"
     val scopt         = "4.0.0-RC2"
-    val zio           = "1.0.0-RC19-2"
-    val zioLogging    = "0.2.9"
+    val zio           = "1.0.0-RC20"
+    val zioLogging    = "0.3.0"
   }
 
   private val compiler = Seq(

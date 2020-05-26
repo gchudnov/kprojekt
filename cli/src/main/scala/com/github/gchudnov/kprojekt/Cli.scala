@@ -6,8 +6,8 @@ import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder }
 import com.github.gchudnov.kprojekt.parser.Parser
 import scopt.{ OParser, OParserBuilder }
-import zio.ZIO
 import zio.logging._
+import zio.{ ExitCode, ZEnv, ZIO }
 
 /**
  * Command-Line Application for topology parser
@@ -43,7 +43,7 @@ object Cli extends zio.App {
     )
   }
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
     val logEnv = Logging.console(format = (_, logEntry) => logEntry)
     val env    = (Parser.live ++ (Folder.live >>> Encoder.live) ++ (logEnv >>> Bundler.live)) >>> Projektor.live
 
@@ -52,6 +52,6 @@ object Cli extends zio.App {
       _      <- Projektor.run(config.topologyFile)
     } yield ()
 
-    program.provideLayer(env).fold(_ => 1, _ => 0)
+    program.provideLayer(env).fold(_ => ExitCode.failure, _ => ExitCode.success)
   }
 }
