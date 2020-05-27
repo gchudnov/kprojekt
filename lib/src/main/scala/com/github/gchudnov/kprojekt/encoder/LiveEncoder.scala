@@ -108,6 +108,7 @@ object LiveEncoder {
         case k: Sink   => Set(k.topic())
       })
       .flatten
+      .distinct
       .sorted
 
   private def collectTopicEdges(nodes: Seq[Node]): Seq[(String, String)] =
@@ -117,13 +118,14 @@ object LiveEncoder {
         case k: Sink   => Set(k.topic()).map(t => (k.name(), t))
       })
       .flatten
+      .distinct
       .sorted
 
   private def collectNodes(subtopology: Subtopology): Seq[Node] =
-    subtopology.nodes().asScala.toSeq.sortBy(_.name())
+    subtopology.nodes().asScala.toSeq.distinctBy(_.name()).sortBy(_.name())
 
   private def collectNodeEdges(nodes: Seq[Node]): Seq[(String, String)] =
-    nodes.flatMap(from => from.successors().asScala.map(to => (from.name(), to.name()))).sorted
+    nodes.flatMap(from => from.successors().asScala.map(to => (from.name(), to.name()))).distinct.sorted
 
   private def collectNodeByType(nodes: Seq[Node]): (Seq[Source], Seq[Processor], Seq[Sink]) = {
     val m = nodes.groupBy({
@@ -136,7 +138,7 @@ object LiveEncoder {
     val processors = m.getOrElse(KeyProcessor, Set.empty[Node]).map(_.asInstanceOf[Processor])
     val sinks      = m.getOrElse(KeySink, Set.empty[Node]).map(_.asInstanceOf[Sink])
 
-    (sources.toSeq.sortBy(_.name()), processors.toSeq.sortBy(_.name()), sinks.toSeq.sortBy(_.name()))
+    (sources.toSeq.distinctBy(_.name()).sortBy(_.name()), processors.toSeq.distinctBy(_.name()).sortBy(_.name()), sinks.toSeq.distinctBy(_.name()).sortBy(_.name()))
   }
 
   private def collectStores(processors: Seq[Processor]): Seq[String] =
@@ -145,6 +147,7 @@ object LiveEncoder {
         acc ++ p.stores().asScala
       }
       .toSeq
+      .distinct
       .sorted
 
   private def collectStoreEdges(processors: Seq[Processor]): Seq[(String, String)] =
@@ -153,5 +156,6 @@ object LiveEncoder {
         acc ++ p.stores().asScala.map(storeName => (p.name(), storeName))
       }
       .toSeq
+      .distinct
       .sorted
 }

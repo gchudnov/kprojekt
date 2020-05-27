@@ -3,7 +3,6 @@ digraph g_word_count {
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
   counts_store_repartition [shape=box, fixedsize=true, label="counts-store-repartition", xlabel=""];
-  counts_store_repartition [shape=box, fixedsize=true, label="counts-store-repartition", xlabel=""];
   streams_plaintext_input [shape=box, fixedsize=true, label="streams-plaintext-input", xlabel=""];
   streams_wordcount_output [shape=box, fixedsize=true, label="streams-wordcount-output", xlabel=""];
   KSTREAM_SINK_0000000008 -> streams_wordcount_output;

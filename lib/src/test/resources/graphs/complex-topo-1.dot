@@ -1,8 +1,7 @@
-digraph g_complex_topo {
+digraph g_complex_topo_1 {
   graph [fontname = "sans-serif", fontsize=10];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
-  count_stream_repartition [shape=box, fixedsize=true, label="count-stream-repartition", xlabel=""];
   count_stream_repartition [shape=box, fixedsize=true, label="count-stream-repartition", xlabel=""];
   input [shape=box, fixedsize=true, label="input", xlabel=""];
   outputTopicForJoin [shape=box, fixedsize=true, label="outputTopicForJoin", xlabel=""];

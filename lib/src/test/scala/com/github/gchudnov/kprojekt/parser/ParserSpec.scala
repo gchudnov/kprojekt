@@ -83,7 +83,7 @@ object ParserSpec extends DefaultRunnableSpec {
       },
       testM("parse complex topology description should return the valid structure") {
         for {
-          input <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo.log"))
+          input <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-1.log"))
           desc  <- Parser.run(input).provideLayer(Parser.live)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSet

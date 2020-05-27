@@ -1,6 +1,5 @@
 # TODO
 
-- some dot nodes are duplicated - fix that.
 - improve visualization.
 - reduce text overlapping.
 - add legend.

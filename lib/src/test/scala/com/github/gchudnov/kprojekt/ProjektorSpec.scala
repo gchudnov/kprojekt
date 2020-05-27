@@ -1,13 +1,13 @@
 package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.encoder.Encoder
+import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.formatter.dot.DotConfig
-import com.github.gchudnov.kprojekt.formatter.{ Folder }
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
-import zio.{ ZIO, ZLayer }
 import zio.test.Assertion._
 import zio.test._
+import zio.{ ZIO, ZLayer }
 
 /**
  * ProjektorSpec
@@ -22,10 +22,18 @@ object ProjektorSpec extends DefaultRunnableSpec {
     suite("ProjektorSpec")(
       testM("parsing and rendering a complex topology should produce the expected graphviz output") {
         for {
-          input    <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo.log"))
+          input    <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-1.log"))
           desc     <- Parser.run(input).provideLayer(Parser.live)
-          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/complex-topo.dot"))
-          actual   <- Encoder.encode("complex-topo", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
+          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/complex-topo-1.dot"))
+          actual   <- Encoder.encode("complex-topo-1", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
+        } yield assert(actual.trim)(equalTo(expected.trim))
+      },
+      testM("parsing a complex topology should produce no duplicates for sources") {
+        for {
+          input    <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-2.log"))
+          desc     <- Parser.run(input).provideLayer(Parser.live)
+          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/complex-topo-2.dot"))
+          actual   <- Encoder.encode("complex-topo-2", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
         } yield assert(actual.trim)(equalTo(expected.trim))
       }
     )
