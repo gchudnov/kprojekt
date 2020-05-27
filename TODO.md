@@ -1,10 +1,8 @@
 # TODO
 
-- add application.conf with default params.
-- improve visualization
-- add setting to disable inline storages.
+- some dot nodes are duplicated - fix that.
+- improve visualization.
+- reduce text overlapping.
 - add legend.
 - add stores to the legend.
-- reduce text overlapping.
-- some dot nodes are duplicated - remove that.
-- center label for storages
+- build executables with graal vm.

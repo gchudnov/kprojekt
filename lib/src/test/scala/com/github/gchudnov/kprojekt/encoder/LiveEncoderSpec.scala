@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.encoder
 
-import com.github.gchudnov.kprojekt.formatter.{ Folder, FolderConfig }
+import com.github.gchudnov.kprojekt.formatter.{ Folder }
 import com.github.gchudnov.kprojekt.formatter.dot.DotConfig
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
@@ -9,7 +9,7 @@ import org.apache.kafka.streams.{ StreamsBuilder, Topology }
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.processor.{ Processor, ProcessorContext, ProcessorSupplier }
 import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
-import zio.ZIO
+import zio.{ ZIO, ZLayer }
 import zio.test.Assertion._
 import zio.test._
 
@@ -36,7 +36,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/fan-out.dot"))
-          actual   <- Encoder.encode("fan-out", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(FolderConfig.live)
+          actual   <- Encoder.encode("fan-out", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
       testM("encoding the word-count topology should produce the expected graphviz output") {
@@ -54,7 +54,25 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/word-count.dot"))
-          actual   <- Encoder.encode("word-count", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(FolderConfig.live)
+          actual   <- Encoder.encode("word-count", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
+        } yield assert(actual.trim)(equalTo(expected.trim))
+      },
+      testM("encoding the word-count topology should produce the expected graphviz output (embed stores)") {
+        val builder = new StreamsBuilder
+        val source  = builder.stream[String, String]("streams-plaintext-input")
+        source
+          .flatMapValues(value => value.toLowerCase.split("\\W+").toList.asJava)
+          .groupBy((key, value) => value)
+          .count(Materialized.as[String, java.lang.Long, KeyValueStore[Bytes, Array[Byte]]]("counts-store"))
+          .toStream()
+          .to("streams-wordcount-output")
+
+        val topology = builder.build()
+        val desc     = topology.describe()
+
+        for {
+          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/word-count-embed.dot"))
+          actual   <- Encoder.encode("word-count", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(embedConfig))
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
       testM("encoding a topology with global store should produce the expected graphviz output") {
@@ -89,8 +107,14 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/global-store.dot"))
-          actual   <- Encoder.encode("global-store-usage", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(FolderConfig.live)
+          actual   <- Encoder.encode("global-store-usage", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
         } yield assert(actual.trim)(equalTo(expected.trim))
       }
     )
+
+  def withConfig(c: DotConfig): ZLayer[Any, Nothing, DotConfig] =
+    ZLayer.succeedMany(c)
+
+  private val defaultConfig = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false)
+  private val embedConfig   = defaultConfig.copy(isEmbedStore = true)
 }

@@ -105,11 +105,10 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
 
   override def processor(name: String, stores: Seq[String]): DotFolder = {
     val text =
-      if (stores.size == 1 && state.storesToEmbed.contains(stores.head))
-        s"""${T}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="", xlabel="${toLabel(name)}\n(${toLabel(
-          stores.head
-        )})"];\n"""
-      else
+      if (stores.size == 1 && state.storesToEmbed.contains(stores.head) && config.isEmbedStore) {
+        val label = s"${toLabel(name)}\n(${toLabel(stores.head)})"
+        s"""${T}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
+      } else
         s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
 
     new DotFolder(
@@ -159,7 +158,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
           state.inner |+|
             (
               new StringBuilder()
-                .append(s"""${T}${toId(name)} [shape=cylinder, fixedsize=false, width=0.5, label="", xlabel="${toLabel(name)}"];\n""")
+                .append(s"""${T}${toId(name)} [shape=cylinder, fixedsize=true, width=0.5, label="${toLabel(name)}", xlabel=""];\n""")
                 .toString()
               )
         )
@@ -181,8 +180,8 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       )
     )
 
-  private def ifNotEmbedded(names: String*)(r: DotFolder): DotFolder =
-    if (names.intersect(state.storesToEmbed.toSeq).nonEmpty)
+  private def ifNotEmbedded(names: String*)(r: => DotFolder): DotFolder =
+    if (config.isEmbedStore && names.intersect(state.storesToEmbed.toSeq).nonEmpty)
       this
     else
       r

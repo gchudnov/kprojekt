@@ -28,10 +28,9 @@ digraph g_word_count {
     KTABLE_TOSTREAM_0000000007 -> KSTREAM_SINK_0000000008;
     counts_store_repartition_source -> KSTREAM_AGGREGATE_0000000003;
     counts_store_repartition_source [shape=ellipse, fixedsize=true, label="counts-store-repartition-source", xlabel=""];
-    KSTREAM_AGGREGATE_0000000003 [shape=ellipse, fixedsize=true, label="AGGREGATE", xlabel=""];
+    KSTREAM_AGGREGATE_0000000003 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="AGGREGATE
+(counts-store)", xlabel=""];
     KTABLE_TOSTREAM_0000000007 [shape=ellipse, fixedsize=true, label="TOSTREAM", xlabel=""];
     KSTREAM_SINK_0000000008 [shape=ellipse, fixedsize=true, label="SINK", xlabel=""];
-    counts_store [shape=cylinder, fixedsize=true, width=0.5, label="counts-store", xlabel=""];
-    KSTREAM_AGGREGATE_0000000003 -> counts_store;
   }
 }

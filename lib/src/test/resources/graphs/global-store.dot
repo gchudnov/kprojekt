@@ -8,7 +8,8 @@ digraph g_global_store_usage {
     style=dotted;
     test_source -> test_processor;
     test_source [shape=ellipse, fixedsize=true, label="test-source", xlabel=""];
-    test_processor [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="test-processor
-(test-store)"];
+    test_processor [shape=ellipse, fixedsize=true, label="test-processor", xlabel=""];
+    test_store [shape=cylinder, fixedsize=true, width=0.5, label="test-store", xlabel=""];
+    test_processor -> test_store;
   }
 }

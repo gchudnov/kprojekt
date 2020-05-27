@@ -54,15 +54,12 @@ digraph g_complex_topo {
     joined_stream_this_join -> joined_stream_merge;
     joined_stream_this_windowed -> joined_stream_this_join;
     KSTREAM_SOURCE_0000000041 [shape=ellipse, fixedsize=true, label="SOURCE", xlabel=""];
-    KSTREAM_AGGREGATE_0000000007 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="AGGREGATE
-(AGGREGATE-STATE-STORE)"];
-    KSTREAM_AGGREGATE_0000000014 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="AGGREGATE
-(AGGREGATE-STATE-STORE)"];
+    KSTREAM_AGGREGATE_0000000007 [shape=ellipse, fixedsize=true, label="AGGREGATE", xlabel=""];
+    KSTREAM_AGGREGATE_0000000014 [shape=ellipse, fixedsize=true, label="AGGREGATE", xlabel=""];
     KSTREAM_FILTER_0000000020 [shape=ellipse, fixedsize=true, label="FILTER", xlabel=""];
     KSTREAM_FILTER_0000000029 [shape=ellipse, fixedsize=true, label="FILTER", xlabel=""];
     KSTREAM_PEEK_0000000021 [shape=ellipse, fixedsize=true, label="PEEK", xlabel=""];
-    KSTREAM_REDUCE_0000000023 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="", xlabel="REDUCE
-(REDUCE-STATE-STORE)"];
+    KSTREAM_REDUCE_0000000023 [shape=ellipse, fixedsize=true, label="REDUCE", xlabel=""];
     KTABLE_TOSTREAM_0000000011 [shape=ellipse, fixedsize=true, label="TOSTREAM", xlabel=""];
     KTABLE_TOSTREAM_0000000018 [shape=ellipse, fixedsize=true, label="TOSTREAM", xlabel=""];
     KTABLE_TOSTREAM_0000000027 [shape=ellipse, fixedsize=true, label="TOSTREAM", xlabel=""];
@@ -75,8 +72,14 @@ digraph g_complex_topo {
     KSTREAM_SINK_0000000019 [shape=ellipse, fixedsize=true, label="SINK", xlabel=""];
     KSTREAM_SINK_0000000028 [shape=ellipse, fixedsize=true, label="SINK", xlabel=""];
     KSTREAM_SINK_0000000038 [shape=ellipse, fixedsize=true, label="SINK", xlabel=""];
-    joined_stream_other_join_store [shape=cylinder, fixedsize=false, width=0.5, label="", xlabel="joined-stream-other-join-store"];
-    joined_stream_this_join_store [shape=cylinder, fixedsize=false, width=0.5, label="", xlabel="joined-stream-this-join-store"];
+    KSTREAM_AGGREGATE_STATE_STORE_0000000006 [shape=cylinder, fixedsize=true, width=0.5, label="AGGREGATE-STATE-STORE", xlabel=""];
+    KSTREAM_AGGREGATE_STATE_STORE_0000000013 [shape=cylinder, fixedsize=true, width=0.5, label="AGGREGATE-STATE-STORE", xlabel=""];
+    KSTREAM_REDUCE_STATE_STORE_0000000022 [shape=cylinder, fixedsize=true, width=0.5, label="REDUCE-STATE-STORE", xlabel=""];
+    joined_stream_other_join_store [shape=cylinder, fixedsize=true, width=0.5, label="joined-stream-other-join-store", xlabel=""];
+    joined_stream_this_join_store [shape=cylinder, fixedsize=true, width=0.5, label="joined-stream-this-join-store", xlabel=""];
+    KSTREAM_AGGREGATE_0000000007 -> KSTREAM_AGGREGATE_STATE_STORE_0000000006;
+    KSTREAM_AGGREGATE_0000000014 -> KSTREAM_AGGREGATE_STATE_STORE_0000000013;
+    KSTREAM_REDUCE_0000000023 -> KSTREAM_REDUCE_STATE_STORE_0000000022;
     joined_stream_other_join -> joined_stream_this_join_store;
     joined_stream_other_windowed -> joined_stream_other_join_store;
     joined_stream_this_join -> joined_stream_other_join_store;
