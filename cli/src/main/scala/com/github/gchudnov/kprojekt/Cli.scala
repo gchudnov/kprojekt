@@ -6,7 +6,6 @@ import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.{Bundler, Folder, FolderConfig}
 import com.github.gchudnov.kprojekt.parser.Parser
 import scopt.{OParser, OParserBuilder}
-import zio.logging._
 import zio.logging.slf4j.Slf4jLogger
 import zio.{ExitCode, ZEnv, ZIO}
 
@@ -45,7 +44,6 @@ object Cli extends zio.App {
   }
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
-    //val logEnv = Logging.console(format = (_, logEntry) => logEntry)
     val logEnv = Slf4jLogger.make(logFormat = (_, logEntry) => logEntry)
 
     val env = (Parser.live ++ ((FolderConfig.live >>> Folder.live) >>> Encoder.live) ++ (logEnv >>> Bundler.live)) >>> Projektor.live
