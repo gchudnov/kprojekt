@@ -1,6 +1,5 @@
 # TODO
 
-- remove time from log level output.
 - improve visualization.
 - reduce text overlapping.
 - add legend.
