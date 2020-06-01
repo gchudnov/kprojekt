@@ -3,11 +3,11 @@ package com.github.gchudnov.kprojekt
 import java.io.File
 
 import com.github.gchudnov.kprojekt.encoder.Encoder
-import com.github.gchudnov.kprojekt.formatter.{Bundler, Folder, FolderConfig}
+import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder, FolderConfig }
 import com.github.gchudnov.kprojekt.parser.Parser
-import scopt.{OParser, OParserBuilder}
+import scopt.{ OParser, OParserBuilder }
 import zio.logging.slf4j.Slf4jLogger
-import zio.{ExitCode, ZEnv, ZIO}
+import zio.{ ExitCode, ZEnv, ZIO }
 
 /**
  * Command-Line Application for topology parser

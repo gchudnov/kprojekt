@@ -9,4 +9,4 @@
 - add logo.
 - publish binaries.
 - add dictionary to shorten names ?
-- dot log output is not logged.
+
