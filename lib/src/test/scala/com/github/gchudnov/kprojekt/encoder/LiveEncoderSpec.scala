@@ -109,6 +109,24 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/global-store.dot"))
           actual   <- Encoder.encode("global-store-usage", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
         } yield assert(actual.trim)(equalTo(expected.trim))
+      },
+      testM("names can be collected for a topology") {
+        val builder = new StreamsBuilder
+        val source  = builder.stream[String, String]("streams-plaintext-input")
+        source
+          .flatMapValues(value => value.toLowerCase.split("\\W+").toList.asJava)
+          .groupBy((key, value) => value)
+          .count(Materialized.as[String, java.lang.Long, KeyValueStore[Bytes, Array[Byte]]]("counts-store"))
+          .toStream()
+          .to("streams-wordcount-output")
+
+        val topology = builder.build()
+        val desc     = topology.describe()
+
+        for {
+          expected <- ZIO.fromEither(FileOps.stringFromResource("names/word-count-names.txt")).map(_.trim.split("\n").toSeq)
+          actual = LiveEncoder.collectNames(desc)
+        } yield assert(actual)(equalTo(expected))
       }
     )
 

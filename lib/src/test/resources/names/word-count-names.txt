@@ -1,0 +1,13 @@
+KSTREAM-AGGREGATE-0000000003
+KSTREAM-FLATMAPVALUES-0000000001
+KSTREAM-KEY-SELECT-0000000002
+KSTREAM-SINK-0000000008
+KSTREAM-SOURCE-0000000000
+KTABLE-TOSTREAM-0000000007
+counts-store
+counts-store-repartition
+counts-store-repartition-filter
+counts-store-repartition-sink
+counts-store-repartition-source
+streams-plaintext-input
+streams-wordcount-output

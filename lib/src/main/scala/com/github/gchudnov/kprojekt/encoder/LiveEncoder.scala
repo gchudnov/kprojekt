@@ -23,7 +23,7 @@ final class LiveEncoder(folder: Folder.Service) extends Encoder.Service {
       val topics                 = collectTopics(maybeTopicRelatedNodes)
       val topicEdges             = collectTopicEdges(maybeTopicRelatedNodes)
 
-      val names = collectNames(subtopologies, globalStores)
+      val names = collectNames(desc)
 
       folder
         .topologyStart(name)
@@ -163,7 +163,10 @@ object LiveEncoder {
       .distinct
       .sorted
 
-  private def collectNames(subtopologies: Seq[Subtopology], globalStores: Seq[GlobalStore]): Seq[String] = {
+  private[encoder] def collectNames(desc: TopologyDescription): Seq[String] = {
+    val subtopologies = desc.subtopologies().asScala.toSeq
+    val globalStores  = desc.globalStores().asScala.toSeq
+
     val globalStoreNames = globalStores.foldLeft(Seq.empty[String]) { (acc, gs) =>
       acc ++ collectNames(Seq(gs.source()), Seq(gs.processor()), Seq.empty[Sink])
     }
