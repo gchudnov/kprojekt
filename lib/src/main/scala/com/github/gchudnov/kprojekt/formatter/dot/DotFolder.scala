@@ -42,7 +42,10 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       config = config,
       state = state.copy(
         inner = state.inner |+| (
-          s"""${T_1}}\n"""
+          new StringBuilder()
+            .append(withLegend())
+            .append(s"""${T_1}}\n""")
+            .toString()
         ),
         indent = state.indent - 1
       )
@@ -65,7 +68,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         inner = state.inner |+| (
           new StringBuilder()
             .append(s"${T}subgraph cluster_${toId(name)} {\n")
-            .append(s"${T}${T}style=dotted;\n")
+            .append(s"${T2}style=dotted;\n")
             .toString()
           ),
         indent = state.indent + 1
@@ -190,6 +193,56 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       config = config,
       state = state.copy(legend = ns)
     )
+
+  private def withLegend(): String = {
+    val sb = new StringBuilder()
+    sb.append(s"${T}{ rank = sink;\n")
+    sb.append("Legend [shape=none, margin=0, label=<\n")
+
+    // TODO
+
+    sb.append(">];\n")
+    sb.append(s"${T}}\n")
+
+    /*
+    subgraph legend { rank = sink;
+    Legend [shape=none, margin=0, label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+     <TR>
+      <TD COLSPAN="2"><B>Legend</B></TD>
+     </TR>
+     <TR>
+      <TD>Foo</TD>
+      <TD><FONT COLOR="red">Foo</FONT></TD>
+     </TR>
+     <TR>
+      <TD>Bar</TD>
+      <TD BGCOLOR="RED"></TD>
+     </TR>
+     <TR>
+      <TD>Baz</TD>
+      <TD BGCOLOR="BLUE"></TD>
+     </TR>
+     <TR>
+      <TD>Test</TD>
+      <TD><IMG src="so.png" SCALE="False" /></TD>
+     </TR>
+     <TR>
+      <TD>Test</TD>
+      <TD CELLPADDING="4">
+       <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+        <TR>
+         <TD BGCOLOR="Yellow"></TD>
+        </TR>
+       </TABLE>
+      </TD>
+     </TR>
+    </TABLE>
+   >];
+  }
+     */
+    sb.toString()
+  }
 
   private def ifNotEmbedded(names: String*)(r: => DotFolder): DotFolder =
     if (config.isEmbedStore && names.intersect(state.storesToEmbed.toSeq).nonEmpty)

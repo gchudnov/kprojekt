@@ -173,6 +173,8 @@ object LiveEncoder {
       val (ss, ps, ks) = collectNodeByType(ns)
       acc ++ collectNames(ss, ps, ks)
     }
+      .distinct
+      .sorted
   }
 
   private def collectNames(sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Seq[String] = {
