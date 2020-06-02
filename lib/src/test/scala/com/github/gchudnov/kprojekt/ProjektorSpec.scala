@@ -41,5 +41,5 @@ object ProjektorSpec extends DefaultRunnableSpec {
   def withConfig(c: DotConfig): ZLayer[Any, Nothing, DotConfig] =
     ZLayer.succeedMany(c)
 
-  private val defaultConfig = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false)
+  private val defaultConfig = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false)
 }

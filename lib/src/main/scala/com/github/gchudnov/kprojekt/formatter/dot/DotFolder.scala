@@ -195,14 +195,19 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     )
 
   private def withLegend(): String = {
-    val sb = new StringBuilder()
-    sb.append(s"${T}{ rank = sink;\n")
-    sb.append("Legend [shape=none, margin=0, label=<\n")
+    if(!config.hasLegend) {
+      ""
+    } else {
+      val sb = new StringBuilder()
+      sb.append(s"${T}{ rank = sink;\n")
+      sb.append("Legend [shape=none, margin=0, label=<\n")
 
-    // TODO
+      // TODO
 
-    sb.append(">];\n")
-    sb.append(s"${T}}\n")
+      sb.append(">];\n")
+      sb.append(s"${T}}\n")
+      sb.toString()
+    }
 
     /*
     subgraph legend { rank = sink;
@@ -241,7 +246,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
    >];
   }
      */
-    sb.toString()
+
   }
 
   private def ifNotEmbedded(names: String*)(r: => DotFolder): DotFolder =
