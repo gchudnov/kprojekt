@@ -3,7 +3,12 @@ package com.github.gchudnov.kprojekt.formatter.dot
 import cats.implicits._
 import com.github.gchudnov.kprojekt.formatter.Folder
 
-final case class DotFolderState(inner: String = "", storesToEmbed: Set[String] = Set.empty[String], indent: Int = 0)
+final case class DotFolderState(
+  inner: String = "",
+  legend: Map[String, String] = Map.empty[String, String],
+  storesToEmbed: Set[String] = Set.empty[String],
+  indent: Int = 0
+)
 
 /**
  * Fold Topology for GraphViz (Dot-Format)
@@ -178,6 +183,12 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
               )
         )
       )
+    )
+
+  override def legend(ns: Map[String, String]): DotFolder =
+    new DotFolder(
+      config = config,
+      state = state.copy(legend = ns)
     )
 
   private def ifNotEmbedded(names: String*)(r: => DotFolder): DotFolder =

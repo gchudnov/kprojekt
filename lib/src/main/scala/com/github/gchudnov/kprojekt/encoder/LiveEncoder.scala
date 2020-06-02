@@ -1,6 +1,7 @@
 package com.github.gchudnov.kprojekt.encoder
 
 import com.github.gchudnov.kprojekt.formatter.Folder
+import com.github.gchudnov.kprojekt.legend.Legend
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription._
 import zio.{ UIO, ZIO }
@@ -22,8 +23,11 @@ final class LiveEncoder(folder: Folder.Service) extends Encoder.Service {
       val topics                 = collectTopics(maybeTopicRelatedNodes)
       val topicEdges             = collectTopicEdges(maybeTopicRelatedNodes)
 
+      val names = collectNames(subtopologies, globalStores)
+
       folder
         .topologyStart(name)
+        .legend(Legend.build(names))
         .topics { ra =>
           topics.foldLeft(ra) { (acc, t) =>
             acc.topic(t)
@@ -158,4 +162,23 @@ object LiveEncoder {
       .toSeq
       .distinct
       .sorted
+
+  private def collectNames(subtopologies: Seq[Subtopology], globalStores: Seq[GlobalStore]): Seq[String] = {
+    val globalStoreNames = globalStores.foldLeft(Seq.empty[String]) { (acc, gs) =>
+      acc ++ collectNames(Seq(gs.source()), Seq(gs.processor()), Seq.empty[Sink])
+    }
+
+    subtopologies.foldLeft(globalStoreNames) { (acc, st) =>
+      val ns           = st.nodes().asScala.toSeq
+      val (ss, ps, ks) = collectNodeByType(ns)
+      acc ++ collectNames(ss, ps, ks)
+    }
+  }
+
+  private def collectNames(sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Seq[String] = {
+    val sourceNames = sources.flatMap(s => s.name() +: s.topicSet().asScala.toSeq)
+    val procNames   = processors.flatMap(p => p.name() +: p.stores().asScala.toSeq)
+    val sinkNames   = sinks.flatMap(k => Seq(k.name(), k.topic()))
+    sourceNames ++ procNames ++ sinkNames
+  }
 }

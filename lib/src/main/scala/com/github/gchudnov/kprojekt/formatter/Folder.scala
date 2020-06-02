@@ -36,6 +36,8 @@ object Folder {
     def stores(f: ServiceMapper): Service = f(this)
     def store(name: String): Service
 
+    def legend(ns: Map[String, String]): Service
+
     def rank(name1: String, name2: String): Service
   }
 
