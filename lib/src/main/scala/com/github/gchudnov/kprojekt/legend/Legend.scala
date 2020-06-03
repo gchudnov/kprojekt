@@ -6,5 +6,5 @@ object Legend {
     names.map(name => (name, alias(name))).toMap
 
   def alias(name: String): String =
-    name
+    "A_" + name.toLowerCase()
 }

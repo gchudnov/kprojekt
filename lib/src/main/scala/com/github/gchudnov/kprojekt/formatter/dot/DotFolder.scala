@@ -27,7 +27,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       state = state.copy(
         inner = state.inner |+| (
           new StringBuilder()
-            .append(s"""${T}digraph g_${toId(name)} {\n""")
+            .append(s"""${T1}digraph g_${toId(name)} {\n""")
             .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
@@ -56,7 +56,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       config = config,
       state = state.copy(inner =
         state.inner |+| (
-          s"""${T}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
+          s"""${T1}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
         )
       )
     )
@@ -67,7 +67,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       state = state.copy(
         inner = state.inner |+| (
           new StringBuilder()
-            .append(s"${T}subgraph cluster_${toId(name)} {\n")
+            .append(s"${T1}subgraph cluster_${toId(name)} {\n")
             .append(s"${T2}style=dotted;\n")
             .toString()
           ),
@@ -92,7 +92,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         config = config,
         state = state.copy(inner =
           state.inner |+| (
-            s"${T}${toId(fromName)} -> ${toId(toName)};\n"
+            s"${T1}${toId(fromName)} -> ${toId(toName)};\n"
           )
         )
       )
@@ -105,7 +105,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         state.inner |+|
           (
             new StringBuilder()
-              .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
+              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
               .toString()
             )
       )
@@ -115,9 +115,9 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     val text =
       if (stores.size == 1 && state.storesToEmbed.contains(stores.head) && config.isEmbedStore) {
         val label = s"${toLabel(name)}\n(${toLabel(stores.head)})"
-        s"""${T}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
+        s"""${T1}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
       } else
-        s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
+        s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
 
     new DotFolder(
       config = config,
@@ -139,7 +139,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         state.inner |+|
           (
             new StringBuilder()
-              .append(s"""${T}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
+              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
               .toString()
             )
       )
@@ -166,7 +166,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
           state.inner |+|
             (
               new StringBuilder()
-                .append(s"""${T}${toId(name)} [shape=cylinder, fixedsize=true, width=0.5, label="${toLabel(name)}", xlabel=""];\n""")
+                .append(s"""${T1}${toId(name)} [shape=cylinder, fixedsize=true, width=0.5, label="${toLabel(name)}", xlabel=""];\n""")
                 .toString()
               )
         )
@@ -181,7 +181,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
           state.inner |+|
             (
               new StringBuilder()
-                .append(s"""${T}{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
+                .append(s"""${T1}{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
                 .toString()
               )
         )
@@ -198,53 +198,74 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     if(!config.hasLegend) {
       ""
     } else {
+      val pairs = state.legend.toSeq.map(it => (toId(it._1), toId(it._2)))
+      val keys = pairs.map(_._1)
+      val values = pairs.map(_._2)
+
+      val keyPairs = keys.zip(keys.tail)
+      val valuePairs = values.zip(values.tail)
+
       val sb = new StringBuilder()
-      sb.append(s"${T}{ rank = sink;\n")
-      sb.append("Legend [shape=none, margin=0, label=<\n")
+      sb.append(s"${T1}subgraph legend_0 {\n")
+      sb.append(s"${T2}mindist=0;\n")
+      sb.append(s"${T2}ranksep=0;\n")
+      sb.append(s"${T2}nodesep=0;\n\n")
 
-      // TODO
+      sb.append(s"""${T2}node [shape=box, margin="0, 0", width=1, height=0.5];\n""")
+      sb.append(s"""${T2}edge [style=invis];\n\n""")
 
-      sb.append(">];\n")
-      sb.append(s"${T}}\n")
+      Seq(keyPairs, valuePairs).foreach(xs => {
+        xs.foreach(kk => {
+          sb.append(s"${T2}L_${kk._1} -> L_${kk._2}\n")
+        })
+        sb.append("\n")
+      })
+
+      sb.append(s"${T2}edge [constraint=false];\n")
+
+      pairs.foreach(kk => {
+        sb.append(s"${T2}L_${kk._1} -> L_${kk._2}\n")
+      })
+      sb.append("\n")
+
+//      sb.append(s"${T2}legend_root [shape=none, margin=0, label=<\n")
+//      sb.append(s"""${T3}<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">\n""")
+//
+//      state.legend.foreachEntry((k, v) => {
+//        sb.append(s"""${T4}<TR>\n""")
+//        sb.append(s"""${T5}<TD>Foo</TD>\n""")
+//        sb.append(s"""${T5}<TD><FONT COLOR="red">Foo</FONT></TD>\n""")
+//        sb.append(s"""${T4}</TR>\n""")
+//      })
+//
+//      sb.append(s"""${T3}</TABLE>\n""")
+//      sb.append(s"${T2}>];\n")
+      sb.append(s"${T1}}\n")
       sb.toString()
     }
 
     /*
-    subgraph legend { rank = sink;
-    Legend [shape=none, margin=0, label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-     <TR>
-      <TD COLSPAN="2"><B>Legend</B></TD>
-     </TR>
-     <TR>
-      <TD>Foo</TD>
-      <TD><FONT COLOR="red">Foo</FONT></TD>
-     </TR>
-     <TR>
-      <TD>Bar</TD>
-      <TD BGCOLOR="RED"></TD>
-     </TR>
-     <TR>
-      <TD>Baz</TD>
-      <TD BGCOLOR="BLUE"></TD>
-     </TR>
-     <TR>
-      <TD>Test</TD>
-      <TD><IMG src="so.png" SCALE="False" /></TD>
-     </TR>
-     <TR>
-      <TD>Test</TD>
-      <TD CELLPADDING="4">
-       <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
-        <TR>
-         <TD BGCOLOR="Yellow"></TD>
-        </TR>
-       </TABLE>
-      </TD>
-     </TR>
-    </TABLE>
-   >];
-  }
+digraph  {
+ mindist=0;
+ ranksep=0;
+ nodesep=0;
+
+ node[shape=box,margin="0,0",width=1, height=0.5];
+ edge [style=invis];
+
+ Legend[width=2];
+ Legend -> Foo;
+ Legend -> FooValue;
+ Foo -> Bar;
+ FooValue -> BarValue
+ Bar -> Baz;
+ BarValue -> BazValue;
+
+ edge [constraint=false];
+ Foo -> FooValue;
+ Bar -> BarValue
+ Baz -> BazValue;
+ }
      */
 
   }
@@ -255,8 +276,11 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     else
       r
 
-  private def T: String   = indent(state.indent)
+  private def T1: String   = indent(state.indent)
   private def T2: String  = indent(state.indent + 1)
+  private def T3: String  = indent(state.indent + 2)
+  private def T4: String  = indent(state.indent + 3)
+  private def T5: String  = indent(state.indent + 4)
   private def T_1: String = indent(state.indent - 1)
 
   private def indent(value: Int): String = " " * (value * config.indent)
