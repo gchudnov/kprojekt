@@ -28,6 +28,8 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         inner = state.inner |+| (
           new StringBuilder()
             .append(s"""${T1}digraph g_${toId(name)} {\n""")
+            .append(s"""${T2}pack="true"\n""")
+            .append(s"""${T2}packmode="clust"\n\n""")
             .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
@@ -198,80 +200,25 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     if(!config.hasLegend) {
       ""
     } else {
-      val pairs = state.legend.toSeq.map(it => (toId(it._1), toId(it._2)))
-      val keys = pairs.map(_._1)
-      val values = pairs.map(_._2)
-
-      val keyPairs = keys.zip(keys.tail)
-      val valuePairs = values.zip(values.tail)
-
       val sb = new StringBuilder()
       sb.append(s"${T1}subgraph legend_0 {\n")
-      sb.append(s"${T2}mindist=0;\n")
-      sb.append(s"${T2}ranksep=0;\n")
-      sb.append(s"${T2}nodesep=0;\n\n")
 
-      sb.append(s"""${T2}node [shape=box, margin="0, 0", width=1, height=0.5];\n""")
-      sb.append(s"""${T2}edge [style=invis];\n\n""")
+      sb.append(s"${T2}legend_root [shape=none, margin=0, label=<\n")
+      sb.append(s"""${T3}<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">\n""")
 
-      keys.foreach(k => {
-        sb.append(s"${T2}${k} []\n")
+      state.legend.foreachEntry((k, v) => {
+        sb.append(s"""${T4}<TR>\n""")
+        sb.append(s"""${T5}<TD>${k}</TD>\n""")
+        sb.append(s"""${T5}<TD><FONT COLOR="red">${v}</FONT></TD>\n""")
+        sb.append(s"""${T4}</TR>\n""")
       })
 
-      Seq(keyPairs, valuePairs).foreach(xs => {
-        xs.foreach(kk => {
-          sb.append(s"${T2}L_${kk._1} -> L_${kk._2}\n")
-        })
-        sb.append("\n")
-      })
-
-      sb.append(s"${T2}edge [constraint=false];\n")
-
-      pairs.foreach(kk => {
-        sb.append(s"${T2}L_${kk._1} -> L_${kk._2}\n")
-      })
-      sb.append("\n")
-
-//      sb.append(s"${T2}legend_root [shape=none, margin=0, label=<\n")
-//      sb.append(s"""${T3}<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">\n""")
-//
-//      state.legend.foreachEntry((k, v) => {
-//        sb.append(s"""${T4}<TR>\n""")
-//        sb.append(s"""${T5}<TD>Foo</TD>\n""")
-//        sb.append(s"""${T5}<TD><FONT COLOR="red">Foo</FONT></TD>\n""")
-//        sb.append(s"""${T4}</TR>\n""")
-//      })
-//
-//      sb.append(s"""${T3}</TABLE>\n""")
-//      sb.append(s"${T2}>];\n")
+      sb.append(s"""${T3}</TABLE>\n""")
+      sb.append(s"${T2}>];\n")
       sb.append(s"${T1}}\n")
+
       sb.toString()
     }
-
-    /*
-digraph  {
- mindist=0;
- ranksep=0;
- nodesep=0;
-
- node[shape=box,margin="0,0",width=1, height=0.5];
- edge [style=invis];
-
- Legend[width=2];
- Legend -> Foo;
- Legend -> FooValue;
- Foo -> Bar;
- FooValue -> BarValue
- Bar -> Baz;
- BarValue -> BazValue;
-
- edge [constraint=false];
- Foo -> FooValue;
- Bar -> BarValue
- Baz -> BazValue;
- }
-     */
-
   }
 
   private def ifNotEmbedded(names: String*)(r: => DotFolder): DotFolder =
