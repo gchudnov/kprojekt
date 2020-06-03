@@ -214,6 +214,10 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       sb.append(s"""${T2}node [shape=box, margin="0, 0", width=1, height=0.5];\n""")
       sb.append(s"""${T2}edge [style=invis];\n\n""")
 
+      keys.foreach(k => {
+        sb.append(s"${T2}${k} []\n")
+      })
+
       Seq(keyPairs, valuePairs).foreach(xs => {
         xs.foreach(kk => {
           sb.append(s"${T2}L_${kk._1} -> L_${kk._2}\n")
