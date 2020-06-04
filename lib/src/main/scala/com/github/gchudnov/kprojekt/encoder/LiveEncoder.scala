@@ -171,11 +171,12 @@ object LiveEncoder {
       acc ++ collectNames(Seq(gs.source()), Seq(gs.processor()), Seq.empty[Sink])
     }
 
-    subtopologies.foldLeft(globalStoreNames) { (acc, st) =>
-      val ns           = st.nodes().asScala.toSeq
-      val (ss, ps, ks) = collectNodeByType(ns)
-      acc ++ collectNames(ss, ps, ks)
-    }
+    subtopologies
+      .foldLeft(globalStoreNames) { (acc, st) =>
+        val ns           = st.nodes().asScala.toSeq
+        val (ss, ps, ks) = collectNodeByType(ns)
+        acc ++ collectNames(ss, ps, ks)
+      }
       .distinct
       .sorted
   }

@@ -1,4 +1,6 @@
 digraph g_global_store_usage {
+  pack="true"
+  packmode="clust"
   graph [fontname = "sans-serif", fontsize=10];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];

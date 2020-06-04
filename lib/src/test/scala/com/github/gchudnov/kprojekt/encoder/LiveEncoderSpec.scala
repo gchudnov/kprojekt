@@ -125,7 +125,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("names/word-count-names.txt")).map(_.trim.split("\n").toSeq)
-          actual = LiveEncoder.collectNames(desc)
+          actual    = LiveEncoder.collectNames(desc)
         } yield assert(actual)(equalTo(expected))
       }
     )

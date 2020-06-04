@@ -29,7 +29,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
           new StringBuilder()
             .append(s"""${T1}digraph g_${toId(name)} {\n""")
             .append(s"""${T2}pack="true"\n""")
-            .append(s"""${T2}packmode="clust"\n\n""")
+            .append(s"""${T2}packmode="clust"\n""")
             .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
@@ -48,7 +48,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
             .append(withLegend())
             .append(s"""${T_1}}\n""")
             .toString()
-        ),
+          ),
         indent = state.indent - 1
       )
     )
@@ -196,22 +196,22 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       state = state.copy(legend = ns)
     )
 
-  private def withLegend(): String = {
-    if(!config.hasLegend) {
+  private def withLegend(): String =
+    if (!config.hasLegend)
       ""
-    } else {
+    else {
       val sb = new StringBuilder()
       sb.append(s"${T1}subgraph legend_0 {\n")
 
       sb.append(s"${T2}legend_root [shape=none, margin=0, label=<\n")
       sb.append(s"""${T3}<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">\n""")
 
-      state.legend.foreachEntry((k, v) => {
+      state.legend.foreachEntry { (k, v) =>
         sb.append(s"""${T4}<TR>\n""")
         sb.append(s"""${T5}<TD>${k}</TD>\n""")
         sb.append(s"""${T5}<TD><FONT COLOR="red">${v}</FONT></TD>\n""")
         sb.append(s"""${T4}</TR>\n""")
-      })
+      }
 
       sb.append(s"""${T3}</TABLE>\n""")
       sb.append(s"${T2}>];\n")
@@ -219,7 +219,6 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
 
       sb.toString()
     }
-  }
 
   private def ifNotEmbedded(names: String*)(r: => DotFolder): DotFolder =
     if (config.isEmbedStore && names.intersect(state.storesToEmbed.toSeq).nonEmpty)
@@ -227,7 +226,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     else
       r
 
-  private def T1: String   = indent(state.indent)
+  private def T1: String  = indent(state.indent)
   private def T2: String  = indent(state.indent + 1)
   private def T3: String  = indent(state.indent + 2)
   private def T4: String  = indent(state.indent + 3)
