@@ -6,6 +6,7 @@ import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder, FolderConfig }
 import com.github.gchudnov.kprojekt.naming.{ NameConfig, Namer }
 import com.github.gchudnov.kprojekt.parser.Parser
+import com.github.gchudnov.kprojekt.util.LogOps
 import scopt.{ OParser, OParserBuilder }
 import zio.logging.Logging
 import zio.logging.slf4j.Slf4jLogger
@@ -21,6 +22,8 @@ import zio.{ ExitCode, ZEnv, ZIO }
  *
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
+ * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/toplogogy.log
+ *
  */
 object Cli extends zio.App {
 
@@ -65,6 +68,7 @@ object Cli extends zio.App {
 
     val program = for {
       config <- ZIO.fromOption(oconf)
+      _       = LogOps.setLogVerbosity(config.isVerbose)
       _      <- Projektor.run(config.topologyFile)
     } yield ()
 

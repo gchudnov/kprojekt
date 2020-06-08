@@ -5,4 +5,4 @@
 - add logo.
 - update readme, add new word-count image.
 - publish binaries.
-- add verbosity command line param (-v => debug, -v -v => trace)
+
