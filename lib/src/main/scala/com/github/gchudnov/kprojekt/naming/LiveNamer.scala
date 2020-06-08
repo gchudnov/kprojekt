@@ -26,7 +26,7 @@ final class LiveNamer(config: NameConfig) extends Namer.Service {
       .getOrElse(NodeName(name))
   }
 
-  private[naming] def shortenedAlias(alias: String): String = {
+  private def shortenedAlias(alias: String): String = {
 
     def len(xs: Seq[String]): Int =
       xs.foldLeft(0)((acc, x) => acc + x.length)
@@ -44,7 +44,7 @@ final class LiveNamer(config: NameConfig) extends Namer.Service {
     iterate(List.empty[String], input).mkString(config.separator)
   }
 
-  private[naming] def buildAlias(suffix: String, operator: String, id: Option[Int]): String = {
+  private def buildAlias(suffix: String, operator: String, id: Option[Int]): String = {
     val value = if (suffix.nonEmpty) suffix else operator
     if (id.isDefined)
       shortenedAlias(value)

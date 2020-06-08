@@ -1,6 +1,7 @@
 package com.github.gchudnov.kprojekt.naming
 
-import zio.ZLayer
+import com.github.gchudnov.kprojekt.naming.Namer.Namer
+import zio.{Has, ZLayer}
 import zio.test.Assertion.equalTo
 import zio.test._
 
@@ -18,17 +19,17 @@ object LiveNamerSpec extends DefaultRunnableSpec {
         val expected   = NodeName(id = Some(2), alias = "MAPVALUES", original = input)
 
         for {
-          actual <- Namer.name(input).provideLayer(Namer.live).provideLayer(withConfig(defaultConfig))
+          actual <- Namer.name(input).provideLayer(defaultEnv)
         } yield {
           assert(actual)(equalTo(expected))
         }
       },
       testM("two-word name is parsed should correctly split it in parts") {
         val input       = "KSTREAM-SELECT-KEY-0000000003"
-        val expected   = NodeName(id = Some(3), alias = "SELECT-KEY", original = input)
+        val expected   = NodeName(id = Some(3), alias = "SELECT.KEY", original = input)
 
         for {
-          actual <- Namer.name(input).provideLayer(Namer.live).provideLayer(withConfig(defaultConfig))
+          actual <- Namer.name(input).provideLayer(defaultEnv)
         } yield {
           assert(actual)(equalTo(expected))
         }
@@ -38,7 +39,7 @@ object LiveNamerSpec extends DefaultRunnableSpec {
         val expected   = NodeName(id = Some(7), alias = "repartition", original = input)
 
         for {
-          actual <- Namer.name(input).provideLayer(Namer.live).provideLayer(withConfig(defaultConfig))
+          actual <- Namer.name(input).provideLayer(defaultEnv)
         } yield {
           assert(actual)(equalTo(expected))
         }
@@ -48,16 +49,33 @@ object LiveNamerSpec extends DefaultRunnableSpec {
         val expected   = NodeName(input)
 
         for {
-          actual <- Namer.name(input).provideLayer(Namer.live).provideLayer(withConfig(defaultConfig))
+          actual <- Namer.name(input).provideLayer(defaultEnv)
+        } yield {
+          assert(actual)(equalTo(expected))
+        }
+      },
+      testM("long alias should be shortened") {
+        val input       = "KSTREAM-REDUCE-STATE-STORE-IF-APP-HAS-TOO-MUCH-DATA-0000000007"
+        val expected   = NodeName(id = Some(7), alias = "R.S.S.I.A.H.T.M.DATA", original = input)
+
+        for {
+          actual <- Namer.name(input).provideLayer(defaultEnv)
         } yield {
           assert(actual)(equalTo(expected))
         }
       }
     )
 
-  def withConfig(c: NameConfig): ZLayer[Any, Nothing, NameConfig] =
-    ZLayer.succeedMany(c)
+  private val defaultNameConfig = NameConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultConfig = NameConfig(maxLenWithoutShortening = 12, separator = ".")
+  private val defaultEnv: ZLayer[Any, Nothing, Has[Namer.Service]] =
+    withEnv(defaultNameConfig)
 
+  private def withEnv(nameConfig: NameConfig): ZLayer[Any, Nothing, Namer] = {
+    val nameConfigEnv = ZLayer.succeedMany(nameConfig)
+
+    val nameEnv = (nameConfigEnv >>> Namer.live)
+
+    nameEnv
+  }
 }
