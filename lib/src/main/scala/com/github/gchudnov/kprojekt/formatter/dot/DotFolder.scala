@@ -118,7 +118,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
   override def processor(name: String, stores: Seq[String]): DotFolder = {
     val text =
       if (stores.size == 1 && state.storesToEmbed.contains(stores.head) && config.isEmbedStore) {
-        val label = s"${alias(name)}\n(${alias(stores.head)})"
+        val label = s"""${alias(name)}\\n(${alias(stores.head)})"""
         s"""${T1}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
       } else
         s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n"""
@@ -249,7 +249,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     state.legend
       .nodeName(name)
       .map { nn =>
-        nn.id.map(i => s"${nn.alias}\n${i}").getOrElse(s"${nn.alias}")
+        nn.id.map(i => s"""${nn.alias}\\n${i}""").getOrElse(s"${nn.alias}")
       }
       .getOrElse(DotFolder.UnknownName)
 }
