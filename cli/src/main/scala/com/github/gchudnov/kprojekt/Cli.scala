@@ -7,6 +7,7 @@ import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder, FolderConfig }
 import com.github.gchudnov.kprojekt.naming.{ NameConfig, Namer }
 import com.github.gchudnov.kprojekt.parser.Parser
 import scopt.{ OParser, OParserBuilder }
+import zio.logging.Logging
 import zio.logging.slf4j.Slf4jLogger
 import zio.{ ExitCode, ZEnv, ZIO }
 
@@ -54,7 +55,7 @@ object Cli extends zio.App {
     val bundleEnv = logEnv >>> Bundler.live
     val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> Projektor.live
 
-    val env = projEnv
+    val env = logEnv ++ projEnv
 
     val program = for {
       config <- ZIO.fromOption(OParser.parse(parser, args, AppConfig()))
@@ -62,7 +63,7 @@ object Cli extends zio.App {
     } yield ()
 
     program
-    //      .flatMapError(it => Logging.error(it.toString).map(_ => it))
+      .flatMapError(it => Logging.error(it.toString))
       .provideLayer(env)
       .fold(_ => ExitCode.failure, _ => ExitCode.success)
   }
