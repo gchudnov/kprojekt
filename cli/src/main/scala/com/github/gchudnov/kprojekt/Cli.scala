@@ -47,13 +47,23 @@ object Cli extends zio.App {
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
     val logEnv = Slf4jLogger.make(logFormat = (_, logEntry) => logEntry)
 
-    val env = (Parser.live ++ ((NameConfig.live >>> Namer.live) ++ (FolderConfig.live >>> Folder.live) >>> Encoder.live) ++ (logEnv >>> Bundler.live)) >>> Projektor.live
+    val parseEnv  = Parser.live
+    val nameEnv   = NameConfig.live >>> Namer.live
+    val foldEnv   = FolderConfig.live >>> Folder.live
+    val encEnv    = nameEnv ++ foldEnv >>> Encoder.live
+    val bundleEnv = logEnv >>> Bundler.live
+    val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> Projektor.live
+
+    val env = projEnv
 
     val program = for {
       config <- ZIO.fromOption(OParser.parse(parser, args, AppConfig()))
       _      <- Projektor.run(config.topologyFile)
     } yield ()
 
-    program.provideLayer(env).fold(_ => ExitCode.failure, _ => ExitCode.success)
+    program
+    //      .flatMapError(it => Logging.error(it.toString).map(_ => it))
+      .provideLayer(env)
+      .fold(_ => ExitCode.failure, _ => ExitCode.success)
   }
 }
