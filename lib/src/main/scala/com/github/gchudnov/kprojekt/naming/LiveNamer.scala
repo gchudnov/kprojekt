@@ -10,21 +10,22 @@ import scala.util.matching.Regex
 final class LiveNamer(config: NameConfig) extends Namer.Service {
   import LiveNamer._
 
-  override def name(name: String): UIO[NodeName] = UIO.succeed {
-    pattern
-      .findFirstMatchIn(name)
-      .map { m =>
-        val operator = Option(m.group(Parts.Operator)).getOrElse("")
-        val uid = Option(m.group(Parts.Uid)).getOrElse("")
-        val suffix = Option(m.group(Parts.Suffix)).getOrElse("")
+  override def name(name: String): UIO[NodeName] =
+    UIO.succeed {
+      pattern
+        .findFirstMatchIn(name)
+        .map { m =>
+          val operator = Option(m.group(Parts.Operator)).getOrElse("")
+          val uid      = Option(m.group(Parts.Uid)).getOrElse("")
+          val suffix   = Option(m.group(Parts.Suffix)).getOrElse("")
 
-        val id = buildId(uid)
-        val alias = buildAlias(suffix, operator, id)
+          val id    = buildId(uid)
+          val alias = buildAlias(suffix, operator, id)
 
-        NodeName(id = id, alias = alias, original = name)
-      }
-      .getOrElse(NodeName(name))
-  }
+          NodeName(id = id, alias = alias, original = name)
+        }
+        .getOrElse(NodeName(name))
+    }
 
   private def shortenedAlias(alias: String): String = {
 
