@@ -23,5 +23,24 @@ object DotConfig {
         .fold(t => Left(CannotConvert("space", "space", t.getMessage)), value => Right(value))
     )
 
-  def load(): DotConfig = ConfigSource.default.at("formatters.dot").loadOrThrow[DotConfig]
+  def load(space: String = ""): DotConfig = {
+    val str = makeStringSource(space)
+
+    val userSource    = ConfigSource.string(str)
+    val defaultSource = ConfigSource.default
+
+    userSource.withFallback(defaultSource).at("formatters.dot").loadOrThrow[DotConfig]
+  }
+
+  private def makeStringSource(space: String): String =
+    if (space.nonEmpty)
+      s"""
+         |formatters {
+         |  dot {
+         |    space: "${space}"
+         |  }
+         |}
+         |""".stripMargin
+    else
+      ""
 }

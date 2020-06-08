@@ -24,7 +24,7 @@ import zio.{ ExitCode, ZEnv, ZIO }
  */
 object Cli extends zio.App {
 
-  final case class AppConfig(topologyFile: File = new File("."), space: String = "", isVerbose: Boolean = false)
+  final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
 
   val builder: OParserBuilder[AppConfig] = OParser.builder[AppConfig]
 
@@ -37,9 +37,9 @@ object Cli extends zio.App {
       opt[Unit]("verbose")
         .action((_, c) => c.copy(isVerbose = true))
         .text("verbose mode"),
-      arg[String]("<space>")
+      opt[String]("space")
         .action((x, c) => c.copy(space = x))
-        .text("space between nodes: [small, medium, large]"),
+        .text("space between nodes: [small,s; medium,m; large,l]"),
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(topologyFile = x))
@@ -49,11 +49,14 @@ object Cli extends zio.App {
   }
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
+    val oconf    = OParser.parse(parser, args, AppConfig())
+    val spaceArg = oconf.map(_.space).getOrElse("")
+
     val logEnv = Slf4jLogger.make(logFormat = (_, logEntry) => logEntry)
 
     val parseEnv  = Parser.live
     val nameEnv   = NameConfig.live >>> Namer.live
-    val foldEnv   = FolderConfig.live >>> Folder.live
+    val foldEnv   = FolderConfig.make(spaceArg) >>> Folder.live
     val encEnv    = nameEnv ++ foldEnv >>> Encoder.live
     val bundleEnv = logEnv >>> Bundler.live
     val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> Projektor.live
@@ -61,7 +64,7 @@ object Cli extends zio.App {
     val env = logEnv ++ projEnv
 
     val program = for {
-      config <- ZIO.fromOption(OParser.parse(parser, args, AppConfig()))
+      config <- ZIO.fromOption(oconf)
       _      <- Projektor.run(config.topologyFile)
     } yield ()
 

@@ -6,4 +6,7 @@ import zio.ZLayer
 object FolderConfig {
   val live: ZLayer[Any, Nothing, DotConfig] =
     ZLayer.succeedMany(DotConfig.load())
+
+  def make(space: String): ZLayer[Any, Nothing, DotConfig] =
+    ZLayer.succeedMany(DotConfig.load(space))
 }
