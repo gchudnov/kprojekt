@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt.encoder
 
 import com.github.gchudnov.kprojekt.formatter.Folder
-import com.github.gchudnov.kprojekt.legend.Legend
+import com.github.gchudnov.kprojekt.naming.{ Legend, Namer }
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription._
 import zio.{ UIO, ZIO }
@@ -11,51 +11,50 @@ import scala.jdk.CollectionConverters._
 /**
  * Encodes TopologyDescription to a string.
  */
-final class LiveEncoder(folder: Folder.Service) extends Encoder.Service {
+final class LiveEncoder(folder: Folder.Service, namer: Namer.Service) extends Encoder.Service {
   import LiveEncoder._
 
-  override def encode(name: String, desc: TopologyDescription): UIO[String] =
-    ZIO.succeed {
-      val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
-      val globalStores  = desc.globalStores().asScala.toSeq.sortBy(_.id())
+  override def encode(name: String, desc: TopologyDescription): UIO[String] = {
+    val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
+    val globalStores  = desc.globalStores().asScala.toSeq.sortBy(_.id())
 
-      val maybeTopicRelatedNodes = subtopologies.flatMap(_.nodes().asScala) ++ globalStores.map(_.source())
-      val topics                 = collectTopics(maybeTopicRelatedNodes)
-      val topicEdges             = collectTopicEdges(maybeTopicRelatedNodes)
+    val maybeTopicRelatedNodes = subtopologies.flatMap(_.nodes().asScala) ++ globalStores.map(_.source())
+    val topics                 = collectTopics(maybeTopicRelatedNodes)
+    val topicEdges             = collectTopicEdges(maybeTopicRelatedNodes)
 
-      val names = collectNames(desc)
-
-      folder
-        .topologyStart(name)
-        .legend(Legend.build(names))
-        .topics { ra =>
-          topics.foldLeft(ra) { (acc, t) =>
-            acc.topic(t)
-          }
+    for {
+      nodeNames <- ZIO.foreach(collectNames(desc))(namer.name)
+    } yield folder
+      .topologyStart(name)
+      .legend(Legend(nodeNames))
+      .topics { ra =>
+        topics.foldLeft(ra) { (acc, t) =>
+          acc.topic(t)
         }
-        .edges { ra =>
-          topicEdges.foldLeft(ra) { (acc, e) =>
-            acc.edge(e._1, e._2)
-          }
+      }
+      .edges { ra =>
+        topicEdges.foldLeft(ra) { (acc, e) =>
+          acc.edge(e._1, e._2)
         }
-        .subtopologies { ra =>
-          subtopologies.foldLeft(ra) { (acc, st) =>
-            val nodes                        = collectNodes(st)
-            val (sources, processors, sinks) = collectNodeByType(nodes)
-            collectSubtopology(acc)(st.id().toString, sources, processors, sinks)
-          }
+      }
+      .subtopologies { ra =>
+        subtopologies.foldLeft(ra) { (acc, st) =>
+          val nodes                        = collectNodes(st)
+          val (sources, processors, sinks) = collectNodeByType(nodes)
+          collectSubtopology(acc)(st.id().toString, sources, processors, sinks)
         }
-        .subtopologies { ra =>
-          globalStores.foldLeft(ra) { (acc, gs) =>
-            val sources    = Seq(gs.source())
-            val processors = Seq(gs.processor())
-            val sinks      = Seq.empty[Sink]
-            collectSubtopology(acc)(gs.id().toString, sources, processors, sinks)
-          }
+      }
+      .subtopologies { ra =>
+        globalStores.foldLeft(ra) { (acc, gs) =>
+          val sources    = Seq(gs.source())
+          val processors = Seq(gs.processor())
+          val sinks      = Seq.empty[Sink]
+          collectSubtopology(acc)(gs.id().toString, sources, processors, sinks)
         }
-        .topologyEnd()
-        .toString
-    }
+      }
+      .topologyEnd()
+      .toString
+  }
 
 }
 
@@ -185,6 +184,6 @@ object LiveEncoder {
     val sourceNames = sources.flatMap(s => s.name() +: s.topicSet().asScala.toSeq)
     val procNames   = processors.flatMap(p => p.name() +: p.stores().asScala.toSeq)
     val sinkNames   = sinks.flatMap(k => Seq(k.name(), k.topic()))
-    sourceNames ++ procNames ++ sinkNames
+    (sourceNames ++ procNames ++ sinkNames)
   }
 }

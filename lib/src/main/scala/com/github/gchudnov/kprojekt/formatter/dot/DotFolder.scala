@@ -2,10 +2,11 @@ package com.github.gchudnov.kprojekt.formatter.dot
 
 import cats.implicits._
 import com.github.gchudnov.kprojekt.formatter.Folder
+import com.github.gchudnov.kprojekt.naming.{ Legend, LegendEntry, NodeName }
 
 final case class DotFolderState(
   inner: String = "",
-  legend: Map[String, String] = Map.empty[String, String],
+  legend: Legend = Legend.empty,
   storesToEmbed: Set[String] = Set.empty[String],
   indent: Int = 0
 )
@@ -18,6 +19,7 @@ final case class DotFolderState(
  */
 final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState()) extends Folder.Service {
   import DotFolder._
+  import DotColors._
 
   override def toString: String = state.inner
 
@@ -58,7 +60,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       config = config,
       state = state.copy(inner =
         state.inner |+| (
-          s"""${T1}${toId(name)} [shape=box, fixedsize=true, label="${name}", xlabel=""];\n"""
+          s"""${T1}${toId(name)} [shape=box, fixedsize=true, label="${alias(name)}", xlabel="", style=filled, fillcolor="${FillColorTopic}"];\n"""
         )
       )
     )
@@ -107,7 +109,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         state.inner |+|
           (
             new StringBuilder()
-              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
+              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n""")
               .toString()
             )
       )
@@ -116,10 +118,10 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
   override def processor(name: String, stores: Seq[String]): DotFolder = {
     val text =
       if (stores.size == 1 && state.storesToEmbed.contains(stores.head) && config.isEmbedStore) {
-        val label = s"${toLabel(name)}\n(${toLabel(stores.head)})"
+        val label = s"${alias(name)}\n(${alias(stores.head)})"
         s"""${T1}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
       } else
-        s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n"""
+        s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n"""
 
     new DotFolder(
       config = config,
@@ -141,7 +143,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         state.inner |+|
           (
             new StringBuilder()
-              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${toLabel(name)}", xlabel=""];\n""")
+              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n""")
               .toString()
             )
       )
@@ -168,7 +170,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
           state.inner |+|
             (
               new StringBuilder()
-                .append(s"""${T1}${toId(name)} [shape=cylinder, fixedsize=true, width=0.5, label="${toLabel(name)}", xlabel=""];\n""")
+                .append(s"""${T1}${toId(name)} [shape=cylinder, fixedsize=true, width=0.5, label="${alias(name)}", xlabel="", style=filled, fillcolor="${FillColorStore}"];\n""")
                 .toString()
               )
         )
@@ -190,10 +192,10 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       )
     )
 
-  override def legend(ns: Map[String, String]): DotFolder =
+  override def legend(l: Legend): DotFolder =
     new DotFolder(
       config = config,
-      state = state.copy(legend = ns)
+      state = state.copy(legend = l)
     )
 
   private def withLegend(): String =
@@ -206,11 +208,19 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       sb.append(s"${T2}legend_root [shape=none, margin=0, label=<\n")
       sb.append(s"""${T3}<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">\n""")
 
-      state.legend.foreachEntry { (k, v) =>
-        sb.append(s"""${T4}<TR>\n""")
-        sb.append(s"""${T5}<TD>${k}</TD>\n""")
-        sb.append(s"""${T5}<TD><FONT COLOR="red">${v}</FONT></TD>\n""")
-        sb.append(s"""${T4}</TR>\n""")
+      sb.append(s"""${T4}<TR>\n""")
+      sb.append(s"""${T5}<TD bgcolor="${FillColorTableHeader}">#</TD>\n""")
+      sb.append(s"""${T5}<TD bgcolor="${FillColorTableHeader}" align="left">Alias</TD>\n""")
+      sb.append(s"""${T5}<TD bgcolor="${FillColorTableHeader}" align="left">Name</TD>\n""")
+      sb.append(s"""${T4}</TR>\n""")
+
+      state.legend.table.foreach {
+        case LegendEntry(id, k, v) =>
+          sb.append(s"""${T4}<TR>\n""")
+          sb.append(s"""${T5}<TD>${id.getOrElse("")}</TD>\n""")
+          sb.append(s"""${T5}<TD align="left">${k}</TD>\n""")
+          sb.append(s"""${T5}<TD align="left">${v}</TD>\n""")
+          sb.append(s"""${T4}</TR>\n""")
       }
 
       sb.append(s"""${T3}</TABLE>\n""")
@@ -234,15 +244,22 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
   private def T_1: String = indent(state.indent - 1)
 
   private def indent(value: Int): String = " " * (value * config.indent)
+
+  private def alias(name: String): String =
+    state.legend
+      .nodeName(name)
+      .map { nn =>
+        nn.id.map(i => s"${nn.alias}\n${i}").getOrElse(s"${nn.alias}")
+      }
+      .getOrElse(DotFolder.UnknownName)
 }
 
 object DotFolder {
 
+  val UnknownName = "?"
+
   def toId(name: String): String =
     name.replaceAll("""[-.]""", "_")
-
-  def toLabel(name: String): String =
-    DotNodeName.parse(name).label
 
   def findStoresToEmbed(storeEdges: Seq[(String, String)]): Set[String] = {
     val (stores, adjList) = storeEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]])) { (acc, e) =>

@@ -20,7 +20,7 @@ object ParserSpec extends DefaultRunnableSpec {
       testM("parse fan-out topology description should return the parsed structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/fan-out.log"))
-          desc  <- Parser.run(input).provideLayer(Parser.live)
+          desc  <- Parser.run(input).provideLayer(defaultEnv)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSeq
           val subtopology   = subtopologies.head
@@ -60,7 +60,7 @@ object ParserSpec extends DefaultRunnableSpec {
       testM("parse global-store topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/global-store.log"))
-          desc  <- Parser.run(input).provideLayer(Parser.live)
+          desc  <- Parser.run(input).provideLayer(defaultEnv)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSeq
           val subtopology   = subtopologies.head
@@ -84,7 +84,7 @@ object ParserSpec extends DefaultRunnableSpec {
       testM("parse complex topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-1.log"))
-          desc  <- Parser.run(input).provideLayer(Parser.live)
+          desc  <- Parser.run(input).provideLayer(defaultEnv)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSet
           val subtopology0  = subtopologies.find(_.id() == 0).get
@@ -102,11 +102,13 @@ object ParserSpec extends DefaultRunnableSpec {
       testM("parse an invalid input should return an error") {
         val res = for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/invalid-structure.log"))
-          desc  <- Parser.run(input).provideLayer(Parser.live)
+          desc  <- Parser.run(input).provideLayer(defaultEnv)
         } yield desc
 
         assertM(res.run)(fails(isSubtype[ParseException](anything)))
       }
     )
 
+  private val defaultEnv =
+    Parser.live
 }

@@ -2,6 +2,7 @@ package com.github.gchudnov.kprojekt.encoder
 
 import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.formatter.dot.DotConfig
+import com.github.gchudnov.kprojekt.naming.{ NameConfig, Namer }
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
@@ -11,7 +12,7 @@ import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
 import org.apache.kafka.streams.{ StreamsBuilder, Topology }
 import zio.test.Assertion._
 import zio.test._
-import zio.{ ZIO, ZLayer }
+import zio.{ Has, ZIO, ZLayer }
 
 import scala.jdk.CollectionConverters._
 
@@ -36,7 +37,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/fan-out.dot"))
-          actual   <- Encoder.encode("fan-out", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
+          actual   <- Encoder.encode("fan-out", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
       testM("encoding the word-count topology should produce the expected graphviz output") {
@@ -54,7 +55,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/word-count.dot"))
-          actual   <- Encoder.encode("word-count", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
+          actual   <- Encoder.encode("word-count", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
       testM("encoding the word-count topology should produce the expected graphviz output (embed stores)") {
@@ -72,7 +73,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/word-count-embed.dot"))
-          actual   <- Encoder.encode("word-count", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(embedConfig))
+          actual   <- Encoder.encode("word-count", desc).provideLayer(embeddedEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
       testM("encoding a topology with global store should produce the expected graphviz output") {
@@ -107,32 +108,29 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
 
         for {
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/global-store.dot"))
-          actual   <- Encoder.encode("global-store-usage", desc).provideLayer(Encoder.live).provideLayer(Folder.live).provideLayer(withConfig(defaultConfig))
+          actual   <- Encoder.encode("global-store-usage", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
-      },
-      testM("names can be collected for a topology") {
-        val builder = new StreamsBuilder
-        val source  = builder.stream[String, String]("streams-plaintext-input")
-        source
-          .flatMapValues(value => value.toLowerCase.split("\\W+").toList.asJava)
-          .groupBy((key, value) => value)
-          .count(Materialized.as[String, java.lang.Long, KeyValueStore[Bytes, Array[Byte]]]("counts-store"))
-          .toStream()
-          .to("streams-wordcount-output")
-
-        val topology = builder.build()
-        val desc     = topology.describe()
-
-        for {
-          expected <- ZIO.fromEither(FileOps.stringFromResource("names/word-count-names.txt")).map(_.trim.split("\n").toSeq)
-          actual    = LiveEncoder.collectNames(desc)
-        } yield assert(actual)(equalTo(expected))
       }
     )
 
-  def withConfig(c: DotConfig): ZLayer[Any, Nothing, DotConfig] =
-    ZLayer.succeedMany(c)
+  private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false)
+  private val embeddedDotConfig = defaultDotConfig.copy(isEmbedStore = true)
+  private val defaultNameConfig = NameConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultConfig = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false)
-  private val embedConfig   = defaultConfig.copy(isEmbedStore = true)
+  private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder.Service]] =
+    withEnv(defaultDotConfig, defaultNameConfig)
+
+  private val embeddedEnv: ZLayer[Any, Nothing, Has[Encoder.Service]] =
+    withEnv(embeddedDotConfig, defaultNameConfig)
+
+  private def withEnv(dotConfig: DotConfig, nameConfig: NameConfig): ZLayer[Any, Nothing, Has[Encoder.Service]] = {
+    val dotConfigEnv  = ZLayer.succeedMany(dotConfig)
+    val nameConfigEnv = ZLayer.succeedMany(nameConfig)
+
+    val nameEnv = (nameConfigEnv >>> Namer.live)
+    val foldEnv = (dotConfigEnv >>> Folder.live)
+
+    val encoderEnv = (nameEnv ++ foldEnv) >>> Encoder.live
+    encoderEnv
+  }
 }
