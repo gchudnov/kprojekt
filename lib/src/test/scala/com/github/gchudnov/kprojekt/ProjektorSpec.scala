@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.Folder
-import com.github.gchudnov.kprojekt.formatter.dot.DotConfig
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotSpace }
 import com.github.gchudnov.kprojekt.naming.{ NameConfig, Namer }
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
@@ -39,7 +39,7 @@ object ProjektorSpec extends DefaultRunnableSpec {
       }
     )
 
-  private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false)
+  private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false, space = DotSpace.Small)
   private val defaultNameConfig = NameConfig(maxLenWithoutShortening = 12, separator = ".")
 
   private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder.Service]] =

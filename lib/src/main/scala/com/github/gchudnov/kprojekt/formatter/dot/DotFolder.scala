@@ -2,6 +2,7 @@ package com.github.gchudnov.kprojekt.formatter.dot
 
 import cats.implicits._
 import com.github.gchudnov.kprojekt.formatter.Folder
+import com.github.gchudnov.kprojekt.formatter.dot.DotSpace._
 import com.github.gchudnov.kprojekt.naming.{ Legend, LegendEntry, NodeName }
 
 final case class DotFolderState(
@@ -32,7 +33,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
             .append(s"""${T1}digraph g_${toId(name)} {\n""")
             .append(s"""${T2}pack="true"\n""")
             .append(s"""${T2}packmode="clust"\n""")
-            .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
+            .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}, pad="${gpad}", nodesep="${nodesep}", ranksep="${ranksep}"];\n""")
             .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .toString()
@@ -252,6 +253,20 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
         nn.id.map(i => s"""${nn.alias}\\n${i}""").getOrElse(s"${nn.alias}")
       }
       .getOrElse(DotFolder.UnknownName)
+
+  private val gpad: String = "0.5"
+
+  private val nodesep: String = config.space match {
+    case Small  => "0.25"
+    case Medium => "0.5"
+    case Large  => "1.0"
+  }
+
+  private val ranksep: String = config.space match {
+    case Small  => "0.5"
+    case Medium => "0.75"
+    case Large  => "1.0"
+  }
 }
 
 object DotFolder {

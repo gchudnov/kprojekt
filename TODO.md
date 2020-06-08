@@ -1,6 +1,5 @@
 # TODO
 
-- reduce text overlapping.
 - migrate to github actions.
 - build executables with graal vm.
 - add logo.

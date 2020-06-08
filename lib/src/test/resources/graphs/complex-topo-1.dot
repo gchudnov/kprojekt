@@ -1,7 +1,7 @@
 digraph g_complex_topo_1 {
   pack="true"
   packmode="clust"
-  graph [fontname = "sans-serif", fontsize=10];
+  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
   count_stream_repartition [shape=box, fixedsize=true, label="count-stream-repartition", xlabel="", style=filled, fillcolor="#e8e8e8"];
