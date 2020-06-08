@@ -24,7 +24,7 @@ import zio.{ ExitCode, ZEnv, ZIO }
  */
 object Cli extends zio.App {
 
-  final case class AppConfig(topologyFile: File = new File("."), isVerbose: Boolean = false)
+  final case class AppConfig(topologyFile: File = new File("."), space: String = "", isVerbose: Boolean = false)
 
   val builder: OParserBuilder[AppConfig] = OParser.builder[AppConfig]
 
@@ -37,6 +37,9 @@ object Cli extends zio.App {
       opt[Unit]("verbose")
         .action((_, c) => c.copy(isVerbose = true))
         .text("verbose mode"),
+      arg[String]("<space>")
+        .action((x, c) => c.copy(space = x))
+        .text("space between nodes: [small, medium, large]"),
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(topologyFile = x))
