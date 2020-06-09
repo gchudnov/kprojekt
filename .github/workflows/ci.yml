@@ -16,8 +16,10 @@ jobs:
       image: eed3si9n/sbt:jdk11-alpine
     steps:
       - uses: actions/checkout@v2
-      - name: sbt assembly
-        run: sbt 'set assemblyOutputPath in assembly := new File("./target/kprojekt-cli.jar")' assembly
+      - name: Run tests
+        run: sbt test
+      - name: Assembly JAR
+        run: sbt cli/assembly
       - uses: actions/upload-artifact@v2
         with:
           path: target/kprojekt-cli.jar

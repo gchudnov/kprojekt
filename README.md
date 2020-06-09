@@ -1,6 +1,6 @@
-# KProjekt -- Kafka Topology Visualization
+# KProjekt - Kafka Topology Visualization
 
-![](https://github.com/gchudnov/kproject/workflows/Build/badge.svg)
+![](https://github.com/gchudnov/kprojekt/workflows/Build/badge.svg)
 
 Visualizes kafka topology.
 
