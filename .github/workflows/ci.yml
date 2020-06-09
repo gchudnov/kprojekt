@@ -10,7 +10,7 @@ on:
       - master
 jobs:
   build:
-    name: sbt assembly
+    name: Test and Assembly
     runs-on: ubuntu-latest
     container:
       image: eed3si9n/sbt:jdk11-alpine
@@ -22,4 +22,20 @@ jobs:
         run: sbt cli/assembly
       - uses: actions/upload-artifact@v2
         with:
+          name: kprojekt-cli.jar
           path: target/kprojekt-cli.jar
+
+  release_jar:
+    name: jar-image
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: ./
+      - name: Release Jar
+        uses: softprops/action-gh-release@v1
+        with:
+          files: 'artifact/kprojekt-cli.jar'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
