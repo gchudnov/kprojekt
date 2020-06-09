@@ -16,24 +16,39 @@ jobs:
       image: eed3si9n/sbt:jdk11-alpine
     steps:
       - uses: actions/checkout@v2
+
+      - name: Cache SBT
+        uses: actions/cache@v1
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-cache-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*') }}
+      - name: Cache SBT Coursier
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/coursier/v1
+          key: ${{ runner.os }}-sbt-coursier-cache-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*') }}
+
       - name: Run tests
         run: sbt test
+
       - name: Assembly JAR
         run: sbt cli/assembly
+
       - uses: actions/upload-artifact@v2
         with:
           name: kprojekt-cli.jar
           path: target/kprojekt-cli.jar
 
   release_jar:
-    name: jar-image
+    name: Release Jar
+    if: startsWith(github.ref, 'refs/tags/')
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v2
         with:
           path: ./
-      - name: Release Jar
+      - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: 'artifact/kprojekt-cli.jar'
