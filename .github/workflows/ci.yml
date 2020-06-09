@@ -36,7 +36,6 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: kprojekt-cli.jar
           path: target/kprojekt-cli.jar
 
   release_jar:
