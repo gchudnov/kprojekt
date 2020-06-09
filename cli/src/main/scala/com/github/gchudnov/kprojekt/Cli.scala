@@ -16,8 +16,6 @@ import zio.{ ExitCode, ZEnv, ZIO }
  * Command-Line Application for topology parser
  *
  * building an image:
- * sbt 'show graalvm-native-image:packageBin'
- * OR
  * sbt cli/assembly
  *
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli

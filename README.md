@@ -1,8 +1,8 @@
 # KProjekt -- Kafka Topology Visualization
 
-[![Build Status](https://travis-ci.org/gchudnov/kprojekt.svg?branch=master)](https://travis-ci.org//gchudnov/kprojekt)
+![](https://github.com/gchudnov/kproject/workflows/Build/badge.svg)
 
-Represents Kafka topology as an image.
+Visualizes kafka topology.
 
 ## Building
 

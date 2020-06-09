@@ -1,0 +1,23 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - master
+jobs:
+  build:
+    name: sbt assembly
+    runs-on: ubuntu-latest
+    container:
+      image: eed3si9n/sbt:jdk11-alpine
+    steps:
+      - uses: actions/checkout@v2
+      - name: sbt assembly
+        run: sbt 'set assemblyOutputPath in assembly := new File("./target/kprojekt-cli.jar")' assembly
+      - uses: actions/upload-artifact@v2
+        with:
+          path: target/kprojekt-cli.jar
