@@ -13,10 +13,9 @@ jobs:
     name: Test and Assembly
     runs-on: ubuntu-latest
     container:
-      image: eed3si9n/sbt:jdk11-alpine
+      image: hseeberger/scala-sbt:11.0.7_1.3.12_2.13.2
     steps:
       - uses: actions/checkout@v2
-
       - name: Cache SBT
         uses: actions/cache@v1
         with:
@@ -27,13 +26,10 @@ jobs:
         with:
           path: ~/.cache/coursier/v1
           key: ${{ runner.os }}-sbt-coursier-cache-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*') }}
-
       - name: Run tests
         run: sbt test
-
       - name: Assembly JAR
         run: sbt cli/assembly
-
       - uses: actions/upload-artifact@v2
         with:
           path: target/kprojekt-cli.jar
@@ -47,9 +43,42 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: ./
-      - name: Release
+      - name: GitHub release
         uses: softprops/action-gh-release@v1
         with:
           files: 'artifact/kprojekt-cli.jar'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release_nix:
+    name: Build native images
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, macos-10.15]
+    steps:
+      - uses: DeLaGuardo/setup-graalvm@3
+        with:
+          graalvm-version: '20.1.0.java11'
+
+      - name: Install GraalVM's native-image extension
+        run: gu install native-image
+
+      - uses: actions/download-artifact@v2
+        with:
+          path: ./
+
+      - name: Create native image
+        run: native-image --verbose -jar ./artifact/kprojekt-cli.jar kprojekt-cli
+
+      - name: Create tarball
+        run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" kprojekt-cli
+
+      - name: GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: 'kprojekt-cli-${{ matrix.os }}.tar.gz'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
