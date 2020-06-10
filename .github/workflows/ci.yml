@@ -43,7 +43,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: ./
-      - name: GitHub release
+      - name: Release artifact
         uses: softprops/action-gh-release@v1
         with:
           files: 'artifact/kprojekt-cli.jar'
@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: DeLaGuardo/setup-graalvm@3
         with:
-          graalvm-version: '20.1.0.java11'
+          graalvm-version: '20.0.0.java11'
 
       - name: Install GraalVM's native-image extension
         run: gu install native-image
@@ -76,7 +76,7 @@ jobs:
       - name: Create tarball
         run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" kprojekt-cli
 
-      - name: GitHub release
+      - name: Release artifact
         uses: softprops/action-gh-release@v1
         with:
           files: 'kprojekt-cli-${{ matrix.os }}.tar.gz'
