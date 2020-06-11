@@ -11,15 +11,15 @@ Visualizes kafka topology.
 ## Usage
 
 - Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
-- Download [kproject-cli executable](https://github.com/gchudnov/kprojekt/releases).
-- Prepare a file with Kafka-topology (an [example](res/example/word-count.log)).
-- Run _kproject-cli_ from the command line:
+- Download and extract [kproject-cli executable](https://github.com/gchudnov/kprojekt/releases).
+- Prepare a file with Kafka-topology ([word-count example](res/example/word-count.log)).
+- Run downloaded application from the command line:
 
   ```bash
   ./kprojekt-cli ./word-count.log
   ```
 
-- An output png-image with the same name as the topology file will be created.
+- An output png-image with the same name as the topology file will be created: `word-count.png`.
 
 ![word-count-png](res/example/word-count.png)
 
