@@ -33,6 +33,9 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path: target/kprojekt-cli.jar
+      - uses: actions/upload-artifact@v2
+        with:
+          path: res/graalvm/
 
   release_jar:
     name: Release Jar
@@ -71,7 +74,16 @@ jobs:
           path: ./
 
       - name: Create native image
-        run: native-image --verbose -jar ./artifact/kprojekt-cli.jar kprojekt-cli
+        run: |
+          native-image \
+            --verbose \
+            --initialize-at-build-time \
+            --no-fallback \
+            --allow-incomplete-classpath \
+            -H:+ReportUnsupportedElementsAtRuntime \
+            -H:+ReportExceptionStackTraces \
+            -H:ResourceConfigurationFiles=./artifact/resources.json \
+            -jar ./artifact/kprojekt-cli.jar kprojekt-cli
 
       - name: Create tarball
         run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" kprojekt-cli
