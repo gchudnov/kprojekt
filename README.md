@@ -44,4 +44,4 @@ Visualizes kafka topology.
 
 ## License
 
-Distributed under the [The MIT License (MIT)](https://github.com/gchudnov/w3c-css/blob/master/LICENSE).
+Distributed under the [The MIT License (MIT)](LICENSE).
