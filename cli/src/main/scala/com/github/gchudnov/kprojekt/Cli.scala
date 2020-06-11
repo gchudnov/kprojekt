@@ -40,7 +40,7 @@ object Cli extends zio.App {
         .text("verbose mode"),
       opt[String]("space")
         .action((x, c) => c.copy(space = x))
-        .text("space between nodes: [small,s; medium,m; large,l]"),
+        .text("space between nodes: [small,s; medium,m; large,l] (default: m)"),
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(topologyFile = x))

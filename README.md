@@ -1,92 +1,42 @@
 # KProjekt - Kafka Topology Visualization
 
-![](https://github.com/gchudnov/kprojekt/workflows/Build/badge.svg)
+<img src="res/images/projektor-192.png" width="192px" height="192px" align="right" />
 
 Visualizes kafka topology.
 
-## Building
+![](https://github.com/gchudnov/kprojekt/workflows/Build/badge.svg)
 
-To build `kprojekt-cli` executable binary:
-
-```bash
-sbt cli/assembly
-```
+<br clear="right" /><!-- Turn off the wrapping for the logo image. -->
 
 ## Usage
 
 - Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
-- Build an executable binary `kprojekt-cli`.
-- Prepare a file with Kafka-topology (an [example](example/word-count.log)).
-- Run from the command line:
+- Download [kproject-cli executable](https://github.com/gchudnov/kprojekt/releases).
+- Prepare a file with Kafka-topology (an [example](res/example/word-count.log)).
+- Run _kproject-cli_ from the command line:
 
   ```bash
-  ./kprojekt-cli /path/to/topology.log
+  ./kprojekt-cli ./word-count.log
   ```
 
-- An output png-image will be created in the directory with the provided topology.
+- An output png-image with the same name as the topology file will be created.
 
-## Example
+![word-count-png](res/example/word-count.png)
 
-Topology that we want to represent as a graph
-
-```scala
-val builder = new StreamsBuilder
-val source = builder.stream[String, String]("streams-plaintext-input")
-source
-  .flatMapValues(value => value.toLowerCase.split("\\W+").toList.asJava)
-  .groupBy((key, value) => value)
-  .count(Materialized.as[String, java.lang.Long, KeyValueStore[Bytes, Array[Byte]]]("counts-store"))
-  .toStream()
-  .to("streams-wordcount-output")
-
-val topology = builder.build()
-val desc = topology.describe()
-
-println(desc)
-```
-
-Topology
+## Command-line parameters
 
 ```text
-Topologies:
-   Sub-topology: 0
-    Source: KSTREAM-SOURCE-0000000000 (topics: [streams-plaintext-input])
-      --> KSTREAM-FLATMAPVALUES-0000000001
-    Processor: KSTREAM-FLATMAPVALUES-0000000001 (stores: [])
-      --> KSTREAM-KEY-SELECT-0000000002
-      <-- KSTREAM-SOURCE-0000000000
-    Processor: KSTREAM-KEY-SELECT-0000000002 (stores: [])
-      --> KSTREAM-FILTER-0000000005
-      <-- KSTREAM-FLATMAPVALUES-0000000001
-    Processor: KSTREAM-FILTER-0000000005 (stores: [])
-      --> KSTREAM-SINK-0000000004
-      <-- KSTREAM-KEY-SELECT-0000000002
-    Sink: KSTREAM-SINK-0000000004 (topic: counts-store-repartition)
-      <-- KSTREAM-FILTER-0000000005
+  ./kprojekt-cli --help
 
-  Sub-topology: 1
-    Source: KSTREAM-SOURCE-0000000006 (topics: [counts-store-repartition])
-      --> KSTREAM-AGGREGATE-0000000003
-    Processor: KSTREAM-AGGREGATE-0000000003 (stores: [counts-store])
-      --> KTABLE-TOSTREAM-0000000007
-      <-- KSTREAM-SOURCE-0000000006
-    Processor: KTABLE-TOSTREAM-0000000007 (stores: [])
-      --> KSTREAM-SINK-0000000008
-      <-- KSTREAM-AGGREGATE-0000000003
-    Sink: KSTREAM-SINK-0000000008 (topic: streams-wordcount-output)
-      <-- KTABLE-TOSTREAM-0000000007
+  kprojekt-cli 1.0.0
+  Usage: kprojekt-cli [options] <file>
+
+  --help           prints this usage text
+  --verbose        verbose mode
+  --space <value>  space between nodes: [small,s; medium,m; large,l] (default: m)
+  <file>           path to topology description
+  --version
 ```
-
-Graph
-
-![word-count-png](example/word-count.png)
-
-## Command-Line Parameters
-
-- `--help` displays help information.
-- `--verbose` provides detailed output of the application.
-- `--version` displayes version of the application.
-
 
 ## Contact
 
