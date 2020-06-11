@@ -1,0 +1,16 @@
+{
+  "resources": [
+    {
+      "pattern": "reference.conf"
+    },
+    {
+      "pattern": "application.conf"
+    },
+    {
+      "pattern": "logback.xml"
+    },
+    {
+      "pattern": "images/cylinder.png"
+    }
+  ]
+}

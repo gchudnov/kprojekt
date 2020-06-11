@@ -10,8 +10,10 @@ object LogOps {
     val logLevel =
       if (isVerbose)
         Level.TRACE
-      else
-        Level.INFO
+      else {
+        val value = sys.env.getOrElse("LOG_LEVEL", "INFO")
+        Level.valueOf(value)
+      }
 
     rootLogger.setLevel(logLevel)
   }

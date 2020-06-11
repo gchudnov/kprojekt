@@ -65,7 +65,7 @@ object Cli extends zio.App {
     val env = logEnv ++ projEnv
 
     val program = for {
-      config <- ZIO.fromOption(oconf)
+      config <- ZIO.fromOption(oconf).mapError(_ => "")
       _       = LogOps.setLogVerbosity(config.isVerbose)
       _      <- Projektor.run(config.topologyFile)
     } yield ()
