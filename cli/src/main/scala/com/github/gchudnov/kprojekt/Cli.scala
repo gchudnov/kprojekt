@@ -21,7 +21,6 @@ import zio.{ ExitCode, ZEnv, ZIO }
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/toplogogy.log
- *
  */
 object Cli extends zio.App {
 

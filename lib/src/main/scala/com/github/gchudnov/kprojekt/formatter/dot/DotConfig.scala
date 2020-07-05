@@ -4,6 +4,8 @@ import pureconfig.{ ConfigSource, _ }
 import pureconfig.error.CannotConvert
 import pureconfig.generic.auto._
 
+import scala.annotation.nowarn
+
 final case class DotConfig(
   indent: Int,
   fontName: String,
@@ -16,6 +18,7 @@ final case class DotConfig(
 object DotConfig {
   val cylinderFileName: String = "cylinder.png"
 
+  @nowarn
   private implicit val spaceReader: ConfigReader[DotSpace] = ConfigReader[String]
     .emap(it =>
       DotSpace
@@ -29,7 +32,10 @@ object DotConfig {
     val userSource    = ConfigSource.string(str)
     val defaultSource = ConfigSource.default
 
-    userSource.withFallback(defaultSource).at("formatters.dot").loadOrThrow[DotConfig]
+    @nowarn
+    val res = userSource.withFallback(defaultSource).at("formatters.dot").loadOrThrow[DotConfig]
+
+    res
   }
 
   private def makeStringSource(space: String): String =

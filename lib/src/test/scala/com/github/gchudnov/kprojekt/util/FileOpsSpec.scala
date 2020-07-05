@@ -10,7 +10,6 @@ import zio.test._
  *
  * example:
  *   bloop test lib --only com.github.gchudnov.kprojekt.util.FileOpsSpec
- *
  */
 object FileOpsSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =

@@ -4,7 +4,7 @@ import sbtassembly.AssemblyKeys._
 import sbtassembly.MergeStrategy
 
 object Settings {
-  private val scalaV = "2.13.2"
+  private val scalaV = "2.13.3"
 
   private val sharedScalacOptions = Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.

@@ -3,7 +3,7 @@ package com.github.gchudnov.kprojekt.formatter.dot
 import cats.implicits._
 import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.formatter.dot.DotSpace._
-import com.github.gchudnov.kprojekt.naming.{ Legend, LegendEntry, NodeName }
+import com.github.gchudnov.kprojekt.naming.{ Legend, LegendEntry }
 
 final case class DotFolderState(
   inner: String = "",

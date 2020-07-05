@@ -18,14 +18,14 @@ object FileOps {
   def stringFromFile(file: File): Either[Throwable, String] =
     Either.catchNonFatal {
       Using.resource(Source.fromFile(file)) { file =>
-        file.getLines.mkString("\n").trim()
+        file.getLines().mkString("\n").trim()
       }
     }
 
   def stringFromResource(resourcePath: String): Either[Throwable, String] =
     Either.catchNonFatal {
       Using.resource(Source.fromResource(resourcePath)) { source =>
-        source.getLines.mkString("\n").trim()
+        source.getLines().mkString("\n").trim()
       }
     }
 
