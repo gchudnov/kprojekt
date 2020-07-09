@@ -3,7 +3,6 @@ import sbt._
 object Dependencies {
 
   object versions {
-    val cats          = "2.1.1"
     val fastparse     = "2.3.0"
     val kafka         = "2.5.0"
     val kindProjector = "0.10.3"
@@ -18,7 +17,6 @@ object Dependencies {
     compilerPlugin("org.typelevel" %% "kind-projector" % versions.kindProjector)
   )
 
-  private val cats            = "org.typelevel"         %% "cats-core"         % versions.cats
   private val fastparse       = "com.lihaoyi"           %% "fastparse"         % versions.fastparse
   private val kafka           = "org.apache.kafka"       % "kafka-streams"     % versions.kafka
   private val kafkaClients    = "org.apache.kafka"       % "kafka-clients"     % versions.kafka
@@ -35,7 +33,6 @@ object Dependencies {
 
   val All: Seq[ModuleID] = {
     val compile = Seq(
-      cats,
       fastparse,
       kafka,
       logback,

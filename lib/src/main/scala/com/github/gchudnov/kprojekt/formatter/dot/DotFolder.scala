@@ -1,6 +1,5 @@
 package com.github.gchudnov.kprojekt.formatter.dot
 
-import cats.implicits._
 import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.formatter.dot.DotSpace._
 import com.github.gchudnov.kprojekt.naming.{ Legend, LegendEntry }
@@ -28,7 +27,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(
-        inner = state.inner |+| (
+        inner = state.inner + (
           new StringBuilder()
             .append(s"""${T1}digraph g_${toId(name)} {\n""")
             .append(s"""${T2}pack="true"\n""")
@@ -46,7 +45,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(
-        inner = state.inner |+| (
+        inner = state.inner + (
           new StringBuilder()
             .append(withLegend())
             .append(s"""${T_1}}\n""")
@@ -60,7 +59,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(inner =
-        state.inner |+| (
+        state.inner + (
           s"""${T1}${toId(name)} [shape=box, fixedsize=true, label="${alias(name)}", xlabel="", style=filled, fillcolor="${FillColorTopic}"];\n"""
         )
       )
@@ -70,7 +69,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(
-        inner = state.inner |+| (
+        inner = state.inner + (
           new StringBuilder()
             .append(s"${T1}subgraph cluster_${toId(name)} {\n")
             .append(s"${T2}style=dotted;\n")
@@ -84,7 +83,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(
-        inner = state.inner |+| (
+        inner = state.inner + (
           s"""${T_1}}\n"""
         ),
         indent = state.indent - 1
@@ -96,7 +95,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       new DotFolder(
         config = config,
         state = state.copy(inner =
-          state.inner |+| (
+          state.inner + (
             s"${T1}${toId(fromName)} -> ${toId(toName)};\n"
           )
         )
@@ -107,7 +106,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(inner =
-        state.inner |+|
+        state.inner +
           (
             new StringBuilder()
               .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n""")
@@ -127,7 +126,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(inner =
-        state.inner |+|
+        state.inner +
           (
             new StringBuilder()
               .append(text)
@@ -141,7 +140,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     new DotFolder(
       config = config,
       state = state.copy(inner =
-        state.inner |+|
+        state.inner +
           (
             new StringBuilder()
               .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n""")
@@ -168,7 +167,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       new DotFolder(
         config = config,
         state = state.copy(inner =
-          state.inner |+|
+          state.inner +
             (
               new StringBuilder()
                 .append(s"""${T1}${toId(name)} [shape=cylinder, fixedsize=true, width=0.5, label="${alias(name)}", xlabel="", style=filled, fillcolor="${FillColorStore}"];\n""")
@@ -183,7 +182,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       new DotFolder(
         config = config,
         state = state.copy(inner =
-          state.inner |+|
+          state.inner +
             (
               new StringBuilder()
                 .append(s"""${T1}{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
@@ -270,6 +269,7 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
 }
 
 object DotFolder {
+  import com.github.gchudnov.kprojekt.util.MapOps._
 
   val UnknownName = "?"
 

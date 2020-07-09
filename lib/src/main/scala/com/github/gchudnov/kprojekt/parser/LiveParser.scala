@@ -62,7 +62,7 @@ object LiveParser {
   }
 
   private def buildSubtopology(st: SubtopologyRef): Subtopology = {
-    import cats.implicits._
+    import com.github.gchudnov.kprojekt.util.MapOps._
 
     val subtopology = new SubtopologyBlock(st.name.toInt)
     val (nodes, succ, pred) = st.nodes.foldLeft((Map.empty[String, NodeBlock], Map.empty[String, List[String]], Map.empty[String, List[String]])) { (acc, n) =>
@@ -76,12 +76,10 @@ object LiveParser {
 
     subtopology.addNodes(nodes.values.toSeq)
 
-    def extractNodes: (String, Map[String, List[String]]) => List[Node] = (nodeName, m) => m.get(nodeName).flatMap(_.traverse(n => nodes.get(n))).getOrElse(List.empty[Node])
-
     nodes.foreach {
       case (nodeName, node) =>
-        val ps = extractNodes(nodeName, pred)
-        val ss = extractNodes(nodeName, succ)
+        val ps = extractNodes(nodeName, pred, nodes)
+        val ss = extractNodes(nodeName, succ, nodes)
 
         node.addPredecessors(ps)
         node.addSuccessors(ss)
@@ -89,4 +87,14 @@ object LiveParser {
 
     subtopology
   }
+
+  private def extractNodes(nodeName: String, m: Map[String, List[String]], nodes: Map[String, NodeBlock]): List[Node] =
+    m.getOrElse(nodeName, List.empty[String])
+      .foldLeft(List.empty[Node]) { (acc, name) =>
+        nodes.get(name) match {
+          case Some(node) =>
+            acc :+ node
+          case None => acc
+        }
+      }
 }
