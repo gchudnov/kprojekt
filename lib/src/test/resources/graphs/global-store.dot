@@ -4,14 +4,14 @@ digraph g_global_store_usage {
   graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
-  test_topic [shape=box, fixedsize=true, label="test-topic", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  test_topic -> test_source;
+  t_test_topic [shape=box, fixedsize=true, label="test-topic", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_test_topic -> s_test_source;
   subgraph cluster_0 {
     style=dotted;
-    test_source -> test_processor;
-    test_source [shape=ellipse, fixedsize=true, label="test-source", xlabel=""];
-    test_processor [shape=ellipse, fixedsize=true, label="test-processor", xlabel=""];
-    test_store [shape=cylinder, fixedsize=true, width=0.5, label="test-store", xlabel="", style=filled, fillcolor="#eeecae"];
-    test_processor -> test_store;
+    s_test_source -> p_test_processor;
+    s_test_source [shape=ellipse, fixedsize=true, label="test-source", xlabel=""];
+    p_test_processor [shape=ellipse, fixedsize=true, label="test-processor", xlabel=""];
+    r_test_store [shape=cylinder, fixedsize=true, width=0.5, label="test-store", xlabel="", style=filled, fillcolor="#eeecae"];
+    p_test_processor -> r_test_store;
   }
 }

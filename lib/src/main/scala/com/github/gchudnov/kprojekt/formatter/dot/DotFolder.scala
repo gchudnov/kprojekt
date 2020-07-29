@@ -2,12 +2,14 @@ package com.github.gchudnov.kprojekt.formatter.dot
 
 import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.formatter.dot.DotSpace._
-import com.github.gchudnov.kprojekt.naming.{ Legend, LegendEntry }
+import com.github.gchudnov.kprojekt.formatter.dot.legend.Legend
+import com.github.gchudnov.kprojekt.ids.NodeId
+import com.github.gchudnov.kprojekt.naming.{ Namer, NodeName }
 
 final case class DotFolderState(
   inner: String = "",
   legend: Legend = Legend.empty,
-  storesToEmbed: Set[String] = Set.empty[String],
+  storesToEmbed: Set[NodeId] = Set.empty[NodeId],
   indent: Int = 0
 )
 
@@ -17,19 +19,18 @@ final case class DotFolderState(
  *
  * cat graph.dot | dot -Tpng > graph.png
  */
-final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState()) extends Folder.Service {
-  import DotFolder._
+final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderState) extends Folder.Service {
   import DotColors._
+  import DotFolder._
 
   override def toString: String = state.inner
 
   override def topologyStart(name: String): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(
+    withNewState(
+      state.copy(
         inner = state.inner + (
           new StringBuilder()
-            .append(s"""${T1}digraph g_${toId(name)} {\n""")
+            .append(s"""${T1}digraph g_${sanitize(name)} {\n""")
             .append(s"""${T2}pack="true"\n""")
             .append(s"""${T2}packmode="clust"\n""")
             .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}, pad="${gpad}", nodesep="${nodesep}", ranksep="${ranksep}"];\n""")
@@ -42,9 +43,8 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     )
 
   override def topologyEnd(): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(
+    withNewState(
+      state.copy(
         inner = state.inner + (
           new StringBuilder()
             .append(withLegend())
@@ -55,23 +55,21 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       )
     )
 
-  override def topic(name: String): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(inner =
+  override def topic(id: NodeId): DotFolder =
+    withNewState(
+      state.copy(inner =
         state.inner + (
-          s"""${T1}${toId(name)} [shape=box, fixedsize=true, label="${alias(name)}", xlabel="", style=filled, fillcolor="${FillColorTopic}"];\n"""
+          s"""${T1}${toDotId(id)} [shape=box, fixedsize=true, label="${alias(id)}", xlabel="", style=filled, fillcolor="${FillColorTopic}"];\n"""
         )
       )
     )
 
   override def subtopologyStart(name: String): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(
+    withNewState(
+      state.copy(
         inner = state.inner + (
           new StringBuilder()
-            .append(s"${T1}subgraph cluster_${toId(name)} {\n")
+            .append(s"${T1}subgraph cluster_${sanitize(name)} {\n")
             .append(s"${T2}style=dotted;\n")
             .toString()
           ),
@@ -80,9 +78,8 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     )
 
   override def subtopologyEnd(): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(
+    withNewState(
+      state.copy(
         inner = state.inner + (
           s"""${T_1}}\n"""
         ),
@@ -90,42 +87,39 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       )
     )
 
-  override def edge(fromName: String, toName: String): DotFolder =
-    ifNotEmbedded(fromName, toName)(
-      new DotFolder(
-        config = config,
-        state = state.copy(inner =
+  override def edge(from: NodeId, to: NodeId): DotFolder =
+    ifNotEmbedded(from, to)(
+      withNewState(
+        state.copy(inner =
           state.inner + (
-            s"${T1}${toId(fromName)} -> ${toId(toName)};\n"
+            s"${T1}${toDotId(from)} -> ${toDotId(to)};\n"
           )
         )
       )
     )
 
-  override def source(name: String, topics: Seq[String]): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(inner =
+  override def source(id: NodeId, topics: Seq[NodeId]): DotFolder =
+    withNewState(
+      state.copy(inner =
         state.inner +
           (
             new StringBuilder()
-              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n""")
+              .append(s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
               .toString()
             )
       )
     )
 
-  override def processor(name: String, stores: Seq[String]): DotFolder = {
+  override def processor(id: NodeId, stores: Seq[NodeId]): DotFolder = {
     val text =
       if (stores.size == 1 && state.storesToEmbed.contains(stores.head) && config.isEmbedStore) {
-        val label = s"""${alias(name)}\\n(${alias(stores.head)})"""
-        s"""${T1}${toId(name)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
+        val label = s"""${alias(id)}\\n(${alias(stores.head)})"""
+        s"""${T1}${toDotId(id)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
       } else
-        s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n"""
+        s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n"""
 
-    new DotFolder(
-      config = config,
-      state = state.copy(inner =
+    withNewState(
+      state.copy(inner =
         state.inner +
           (
             new StringBuilder()
@@ -136,14 +130,13 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     )
   }
 
-  override def sink(name: String, topic: String): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(inner =
+  override def sink(id: NodeId, topic: NodeId): DotFolder =
+    withNewState(
+      state.copy(inner =
         state.inner +
           (
             new StringBuilder()
-              .append(s"""${T1}${toId(name)} [shape=ellipse, fixedsize=true, label="${alias(name)}", xlabel=""];\n""")
+              .append(s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
               .toString()
             )
       )
@@ -156,47 +149,39 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
    * - there are no other references to this store
    * That means dfs(s) = 1
    */
-  override def storeEdges(edges: Seq[(String, String)]): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(storesToEmbed = DotFolder.findStoresToEmbed(edges))
-    )
+  override def storeEdges(edges: Seq[(NodeId, NodeId)]): DotFolder =
+    withNewState(state.copy(storesToEmbed = DotFolder.findStoresToEmbed(edges)))
 
-  override def store(name: String): DotFolder =
-    ifNotEmbedded(name)(
-      new DotFolder(
-        config = config,
-        state = state.copy(inner =
+  override def store(id: NodeId): DotFolder =
+    ifNotEmbedded(id)(
+      withNewState(
+        state.copy(inner =
           state.inner +
             (
               new StringBuilder()
-                .append(s"""${T1}${toId(name)} [shape=cylinder, fixedsize=true, width=0.5, label="${alias(name)}", xlabel="", style=filled, fillcolor="${FillColorStore}"];\n""")
+                .append(s"""${T1}${toDotId(id)} [shape=cylinder, fixedsize=true, width=0.5, label="${alias(id)}", xlabel="", style=filled, fillcolor="${FillColorStore}"];\n""")
                 .toString()
               )
         )
       )
     )
 
-  override def rank(name1: String, name2: String): DotFolder =
-    ifNotEmbedded(name1, name2)(
-      new DotFolder(
-        config = config,
-        state = state.copy(inner =
+  override def rank(a: NodeId, b: NodeId): DotFolder =
+    ifNotEmbedded(a, b)(
+      withNewState(
+        state.copy(inner =
           state.inner +
             (
               new StringBuilder()
-                .append(s"""${T1}{ rank=same; ${toId(name1)}; ${toId(name2)}; };\n""")
+                .append(s"""${T1}{ rank=same; ${toDotId(a)}; ${toDotId(b)}; };\n""")
                 .toString()
               )
         )
       )
     )
 
-  override def legend(l: Legend): DotFolder =
-    new DotFolder(
-      config = config,
-      state = state.copy(legend = l)
-    )
+  override def repository(ns: Seq[NodeId]): DotFolder =
+    withNewState(state.copy(legend = Legend(namer, ns)))
 
   private def withLegend(): String =
     if (!config.hasLegend)
@@ -215,11 +200,11 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       sb.append(s"""${T4}</TR>\n""")
 
       state.legend.table.foreach {
-        case LegendEntry(id, k, v) =>
+        case NodeName(id, alias, originalName) =>
           sb.append(s"""${T4}<TR>\n""")
           sb.append(s"""${T5}<TD>${id.getOrElse("")}</TD>\n""")
-          sb.append(s"""${T5}<TD align="left">${k}</TD>\n""")
-          sb.append(s"""${T5}<TD align="left">${v}</TD>\n""")
+          sb.append(s"""${T5}<TD align="left">${alias}</TD>\n""")
+          sb.append(s"""${T5}<TD align="left">${originalName}</TD>\n""")
           sb.append(s"""${T4}</TR>\n""")
       }
 
@@ -230,8 +215,8 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
       sb.toString()
     }
 
-  private def ifNotEmbedded(names: String*)(r: => DotFolder): DotFolder =
-    if (config.isEmbedStore && names.intersect(state.storesToEmbed.toSeq).nonEmpty)
+  private def ifNotEmbedded(ids: NodeId*)(r: => DotFolder): DotFolder =
+    if (config.isEmbedStore && ids.intersect(state.storesToEmbed.toSeq).nonEmpty)
       this
     else
       r
@@ -245,9 +230,9 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
 
   private def indent(value: Int): String = " " * (value * config.indent)
 
-  private def alias(name: String): String =
+  private def alias(id: NodeId): String =
     state.legend
-      .nodeName(name)
+      .entry(id.tId)
       .map { nn =>
         nn.id.map(i => s"""${nn.alias}\\n${i}""").getOrElse(s"${nn.alias}")
       }
@@ -266,6 +251,13 @@ final class DotFolder(config: DotConfig, state: DotFolderState = DotFolderState(
     case Medium => "0.75"
     case Large  => "1.0"
   }
+
+  private def withNewState(state: DotFolderState): DotFolder =
+    new DotFolder(
+      config = config,
+      namer = namer,
+      state = state
+    )
 }
 
 object DotFolder {
@@ -273,17 +265,20 @@ object DotFolder {
 
   val UnknownName = "?"
 
-  def toId(name: String): String =
-    name.replaceAll("""[-.]""", "_")
+  def sanitize(value: String): String =
+    value.replaceAll("""[-.:]""", "_")
 
-  def findStoresToEmbed(storeEdges: Seq[(String, String)]): Set[String] = {
-    val (stores, adjList) = storeEdges.foldLeft((Set.empty[String], Map.empty[String, List[String]])) { (acc, e) =>
+  def toDotId(id: NodeId): String =
+    sanitize(id.tId)
+
+  def findStoresToEmbed(storeEdges: Seq[(NodeId, NodeId)]): Set[NodeId] = {
+    val (stores, adjList) = storeEdges.foldLeft((Set.empty[NodeId], Map.empty[NodeId, List[NodeId]])) { (acc, e) =>
       val (stores, adjList) = acc
       (stores + e._2, adjList |+| Map(e._1 -> List(e._2)) |+| Map(e._2 -> List(e._1)))
     }
 
-    stores.foldLeft(Set.empty[String]) { (acc, s) =>
-      val as = adjList.getOrElse(s, List.empty[String])
+    stores.foldLeft(Set.empty[NodeId]) { (acc, s) =>
+      val as = adjList.getOrElse(s, List.empty[NodeId])
       if (as.size > 1)
         acc
       else

@@ -1,0 +1,39 @@
+digraph g_same_name {
+  pack="true"
+  packmode="clust"
+  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
+  node [fontname = "sans-serif", fontsize=10];
+  edge [fontname = "sans-serif", fontsize=10];
+  t_countries [shape=box, fixedsize=true, label="countries", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_documents [shape=box, fixedsize=true, label="documents", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_output [shape=box, fixedsize=true, label="output", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_requests [shape=box, fixedsize=true, label="requests", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  k_KSTREAM_SINK_0000000007 -> t_output;
+  t_countries -> s_KSTREAM_SOURCE_0000000001;
+  t_documents -> s_KSTREAM_SOURCE_0000000003;
+  t_requests -> s_KSTREAM_SOURCE_0000000000;
+  subgraph cluster_0 {
+    style=dotted;
+    p_KSTREAM_LEFTJOIN_0000000005 -> p_KSTREAM_LEFTJOIN_0000000006;
+    p_KSTREAM_LEFTJOIN_0000000006 -> k_KSTREAM_SINK_0000000007;
+    s_KSTREAM_SOURCE_0000000000 -> p_KSTREAM_LEFTJOIN_0000000005;
+    s_KSTREAM_SOURCE_0000000003 -> p_KTABLE_SOURCE_0000000004;
+    s_KSTREAM_SOURCE_0000000000 [shape=ellipse, fixedsize=true, label="SOURCE\n0", xlabel=""];
+    s_KSTREAM_SOURCE_0000000003 [shape=ellipse, fixedsize=true, label="SOURCE\n3", xlabel=""];
+    p_KSTREAM_LEFTJOIN_0000000005 [shape=ellipse, fixedsize=true, label="LEFTJOIN\n5", xlabel=""];
+    p_KSTREAM_LEFTJOIN_0000000006 [shape=ellipse, fixedsize=true, label="LEFTJOIN\n6", xlabel=""];
+    p_KTABLE_SOURCE_0000000004 [shape=ellipse, fixedsize=true, label="SOURCE\n4", xlabel=""];
+    k_KSTREAM_SINK_0000000007 [shape=ellipse, fixedsize=true, label="SINK\n7", xlabel=""];
+    r_documents [shape=cylinder, fixedsize=true, width=0.5, label="documents", xlabel="", style=filled, fillcolor="#eeecae"];
+    p_KSTREAM_LEFTJOIN_0000000006 -> r_documents;
+    p_KTABLE_SOURCE_0000000004 -> r_documents;
+  }
+  subgraph cluster_1 {
+    style=dotted;
+    s_KSTREAM_SOURCE_0000000001 -> p_KTABLE_SOURCE_0000000002;
+    s_KSTREAM_SOURCE_0000000001 [shape=ellipse, fixedsize=true, label="SOURCE\n1", xlabel=""];
+    p_KTABLE_SOURCE_0000000002 [shape=ellipse, fixedsize=true, label="SOURCE\n2", xlabel=""];
+    r_countries [shape=cylinder, fixedsize=true, width=0.5, label="countries", xlabel="", style=filled, fillcolor="#eeecae"];
+    p_KTABLE_SOURCE_0000000002 -> r_countries;
+  }
+}

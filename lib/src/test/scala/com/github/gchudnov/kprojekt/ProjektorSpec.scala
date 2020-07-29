@@ -3,7 +3,7 @@ package com.github.gchudnov.kprojekt
 import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotSpace }
-import com.github.gchudnov.kprojekt.naming.{ NameConfig, Namer }
+import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig }
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
 import zio.test.Assertion._
@@ -40,19 +40,19 @@ object ProjektorSpec extends DefaultRunnableSpec {
     )
 
   private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false, space = DotSpace.Small)
-  private val defaultNameConfig = NameConfig(maxLenWithoutShortening = 12, separator = ".")
+  private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
   private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder.Service]] =
     withEnv(defaultDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NameConfig): ZLayer[Any, Nothing, Has[Encoder.Service]] = {
-    val dotConfigEnv  = ZLayer.succeedMany(dotConfig)
-    val nameConfigEnv = ZLayer.succeedMany(nameConfig)
+  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Encoder.Service]] = {
+    val dotConfigEnv  = ZLayer.succeed(dotConfig)
+    val nameConfigEnv = ZLayer.succeed(nameConfig)
 
     val nameEnv = (nameConfigEnv >>> Namer.live)
-    val foldEnv = (dotConfigEnv >>> Folder.live)
+    val foldEnv = ((dotConfigEnv ++ nameEnv) >>> Folder.live)
 
-    val encoderEnv = (nameEnv ++ foldEnv) >>> Encoder.live
+    val encoderEnv = foldEnv >>> Encoder.live
     encoderEnv
   }
 }

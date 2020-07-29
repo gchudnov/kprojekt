@@ -4,7 +4,7 @@ import java.io.File
 
 import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder, FolderConfig }
-import com.github.gchudnov.kprojekt.naming.{ NameConfig, Namer }
+import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig }
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.LogOps
 import scopt.{ OParser, OParserBuilder }
@@ -55,8 +55,8 @@ object Cli extends zio.App {
     val logEnv = Slf4jLogger.make(logFormat = (_, logEntry) => logEntry)
 
     val parseEnv  = Parser.live
-    val nameEnv   = NameConfig.live >>> Namer.live
-    val foldEnv   = FolderConfig.make(spaceArg) >>> Folder.live
+    val nameEnv   = NamerConfig.live >>> Namer.live
+    val foldEnv   = (FolderConfig.make(spaceArg) ++ nameEnv) >>> Folder.live
     val encEnv    = nameEnv ++ foldEnv >>> Encoder.live
     val bundleEnv = logEnv >>> Bundler.live
     val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> Projektor.live

@@ -7,25 +7,26 @@ import scala.util.matching.Regex
 /**
  * Node naming
  */
-final class LiveNamer(config: NameConfig) extends Namer.Service {
+final class LiveNamer(config: NamerConfig) extends Namer.Service {
   import LiveNamer._
 
-  override def name(name: String): UIO[NodeName] =
-    UIO.succeed {
-      pattern
-        .findFirstMatchIn(name)
-        .map { m =>
-          val operator = Option(m.group(Parts.Operator)).getOrElse("")
-          val uid      = Option(m.group(Parts.Uid)).getOrElse("")
-          val suffix   = Option(m.group(Parts.Suffix)).getOrElse("")
+  override def name(input: String): UIO[NodeName] =
+    UIO.succeed(get(input))
 
-          val id    = buildId(uid)
-          val alias = buildAlias(suffix, operator, id)
+  def get(input: String): NodeName =
+    pattern
+      .findFirstMatchIn(input)
+      .map { m =>
+        val operator = Option(m.group(RxGroups.Operator)).getOrElse("")
+        val uid      = Option(m.group(RxGroups.Uid)).getOrElse("")
+        val suffix   = Option(m.group(RxGroups.Suffix)).getOrElse("")
 
-          NodeName(id = id, alias = alias, original = name)
-        }
-        .getOrElse(NodeName(name))
-    }
+        val id    = makeId(uid)
+        val alias = makeAlias(suffix, operator, id)
+
+        NodeName(id = id, alias = alias, originalName = input)
+      }
+      .getOrElse(NodeName(id = None, alias = input, originalName = input))
 
   private def shortenedAlias(alias: String): String = {
 
@@ -45,7 +46,7 @@ final class LiveNamer(config: NameConfig) extends Namer.Service {
     iterate(List.empty[String], input).mkString(config.separator)
   }
 
-  private def buildAlias(suffix: String, operator: String, id: Option[Int]): String = {
+  private def makeAlias(suffix: String, operator: String, id: Option[Int]): String = {
     val value = if (suffix.nonEmpty) suffix else operator
     if (id.isDefined)
       shortenedAlias(value)
@@ -55,18 +56,18 @@ final class LiveNamer(config: NameConfig) extends Namer.Service {
 }
 
 object LiveNamer {
-  object Parts {
+
+  object RxGroups {
     val Kind     = "kind"
     val Operator = "operator"
     val Uid      = "uid"
     val Suffix   = "suffix"
   }
 
-  private val parts = Seq(Parts.Kind, Parts.Operator, Parts.Uid, Parts.Suffix)
+  private val groupNames = Seq(RxGroups.Kind, RxGroups.Operator, RxGroups.Uid, RxGroups.Suffix)
+  private val pattern    = new Regex("""^(?<kind>\w+)-(?<operator>[\w-]+)-(?<uid>\d+)-?(?<suffix>\w+)?$""", groupNames: _*)
 
-  private val pattern = new Regex("""^(?<kind>\w+)-(?<operator>[\w-]+)-(?<uid>\d+)-?(?<suffix>\w+)?$""", parts: _*)
-
-  private[naming] def buildId(uid: String): Option[Int] =
+  private[naming] def makeId(uid: String): Option[Int] =
     if (uid.nonEmpty)
       Some(Integer.parseInt(uid))
     else

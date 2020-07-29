@@ -4,33 +4,35 @@ digraph g_word_count {
   graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
-  counts_store_repartition [shape=box, fixedsize=true, label="counts-store-repartition", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  streams_plaintext_input [shape=box, fixedsize=true, label="streams-plaintext-input", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  streams_wordcount_output [shape=box, fixedsize=true, label="streams-wordcount-output", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  KSTREAM_SINK_0000000008 -> streams_wordcount_output;
-  counts_store_repartition -> counts_store_repartition_source;
-  counts_store_repartition_sink -> counts_store_repartition;
-  streams_plaintext_input -> KSTREAM_SOURCE_0000000000;
+  t_counts_store_repartition [shape=box, fixedsize=true, label="counts-store-repartition", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_streams_plaintext_input [shape=box, fixedsize=true, label="streams-plaintext-input", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_streams_wordcount_output [shape=box, fixedsize=true, label="streams-wordcount-output", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  k_KSTREAM_SINK_0000000010 -> t_streams_wordcount_output;
+  t_counts_store_repartition -> s_counts_store_repartition_source;
+  k_counts_store_repartition_sink -> t_counts_store_repartition;
+  t_streams_plaintext_input -> s_KSTREAM_SOURCE_0000000000;
   subgraph cluster_0 {
     style=dotted;
-    KSTREAM_FLATMAPVALUES_0000000001 -> KSTREAM_KEY_SELECT_0000000002;
-    KSTREAM_KEY_SELECT_0000000002 -> counts_store_repartition_filter;
-    KSTREAM_SOURCE_0000000000 -> KSTREAM_FLATMAPVALUES_0000000001;
-    counts_store_repartition_filter -> counts_store_repartition_sink;
-    KSTREAM_SOURCE_0000000000 [shape=ellipse, fixedsize=true, label="SOURCE\n0", xlabel=""];
-    KSTREAM_FLATMAPVALUES_0000000001 [shape=ellipse, fixedsize=true, label="F\n1", xlabel=""];
-    KSTREAM_KEY_SELECT_0000000002 [shape=ellipse, fixedsize=true, label="KEY.SELECT\n2", xlabel=""];
-    counts_store_repartition_filter [shape=ellipse, fixedsize=true, label="counts-store-repartition-filter", xlabel=""];
-    counts_store_repartition_sink [shape=ellipse, fixedsize=true, label="counts-store-repartition-sink", xlabel=""];
+    p_KSTREAM_FLATMAPVALUES_0000000001 -> p_KSTREAM_KEY_SELECT_0000000002;
+    p_KSTREAM_KEY_SELECT_0000000002 -> p_counts_store_repartition_filter;
+    s_KSTREAM_SOURCE_0000000000 -> p_KSTREAM_FLATMAPVALUES_0000000001;
+    p_counts_store_repartition_filter -> k_counts_store_repartition_sink;
+    s_KSTREAM_SOURCE_0000000000 [shape=ellipse, fixedsize=true, label="SOURCE\n0", xlabel=""];
+    p_KSTREAM_FLATMAPVALUES_0000000001 [shape=ellipse, fixedsize=true, label="F\n1", xlabel=""];
+    p_KSTREAM_KEY_SELECT_0000000002 [shape=ellipse, fixedsize=true, label="KEY.SELECT\n2", xlabel=""];
+    p_counts_store_repartition_filter [shape=ellipse, fixedsize=true, label="counts-store-repartition-filter", xlabel=""];
+    k_counts_store_repartition_sink [shape=ellipse, fixedsize=true, label="counts-store-repartition-sink", xlabel=""];
   }
   subgraph cluster_1 {
     style=dotted;
-    KSTREAM_AGGREGATE_0000000003 -> KTABLE_TOSTREAM_0000000007;
-    KTABLE_TOSTREAM_0000000007 -> KSTREAM_SINK_0000000008;
-    counts_store_repartition_source -> KSTREAM_AGGREGATE_0000000003;
-    counts_store_repartition_source [shape=ellipse, fixedsize=true, label="counts-store-repartition-source", xlabel=""];
-    KSTREAM_AGGREGATE_0000000003 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="AGGREGATE\n3\n(counts-store)", xlabel=""];
-    KTABLE_TOSTREAM_0000000007 [shape=ellipse, fixedsize=true, label="TOSTREAM\n7", xlabel=""];
-    KSTREAM_SINK_0000000008 [shape=ellipse, fixedsize=true, label="SINK\n8", xlabel=""];
+    p_KSTREAM_AGGREGATE_0000000003 -> p_KTABLE_MAPVALUES_0000000008;
+    p_KTABLE_MAPVALUES_0000000008 -> p_KTABLE_TOSTREAM_0000000009;
+    p_KTABLE_TOSTREAM_0000000009 -> k_KSTREAM_SINK_0000000010;
+    s_counts_store_repartition_source -> p_KSTREAM_AGGREGATE_0000000003;
+    s_counts_store_repartition_source [shape=ellipse, fixedsize=true, label="counts-store-repartition-source", xlabel=""];
+    p_KSTREAM_AGGREGATE_0000000003 [shape=ellipse, image="cylinder.png", imagescale=true, fixedsize=true, label="AGGREGATE\n3\n(counts-store)", xlabel=""];
+    p_KTABLE_MAPVALUES_0000000008 [shape=ellipse, fixedsize=true, label="MAPVALUES\n8", xlabel=""];
+    p_KTABLE_TOSTREAM_0000000009 [shape=ellipse, fixedsize=true, label="TOSTREAM\n9", xlabel=""];
+    k_KSTREAM_SINK_0000000010 [shape=ellipse, fixedsize=true, label="SINK\n10", xlabel=""];
   }
 }

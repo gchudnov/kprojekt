@@ -1,60 +1,62 @@
 package com.github.gchudnov.kprojekt.encoder
 
 import com.github.gchudnov.kprojekt.formatter.Folder
-import com.github.gchudnov.kprojekt.naming.{ Legend, Namer }
+import com.github.gchudnov.kprojekt.ids.NodeIdOrdering._
+import com.github.gchudnov.kprojekt.ids._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription._
-import zio.{ UIO, ZIO }
+import zio.UIO
 
 import scala.jdk.CollectionConverters._
 
 /**
  * Encodes TopologyDescription to a string.
  */
-final class LiveEncoder(folder: Folder.Service, namer: Namer.Service) extends Encoder.Service {
+final class LiveEncoder(folder: Folder.Service) extends Encoder.Service {
   import LiveEncoder._
 
-  override def encode(name: String, desc: TopologyDescription): UIO[String] = {
-    val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
-    val globalStores  = desc.globalStores().asScala.toSeq.sortBy(_.id())
+  override def encode(name: String, desc: TopologyDescription): UIO[String] =
+    UIO {
+      val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
+      val globalStores  = desc.globalStores().asScala.toSeq.sortBy(_.id())
 
-    val maybeTopicRelatedNodes = subtopologies.flatMap(_.nodes().asScala) ++ globalStores.map(_.source())
-    val topics                 = collectTopics(maybeTopicRelatedNodes)
-    val topicEdges             = collectTopicEdges(maybeTopicRelatedNodes)
+      val maybeTopicRelatedNodes = subtopologies.flatMap(_.nodes().asScala) ++ globalStores.map(_.source())
+      val topics                 = collectTopics(maybeTopicRelatedNodes)
+      val topicEdges             = collectTopicEdges(maybeTopicRelatedNodes)
 
-    for {
-      nodeNames <- ZIO.foreach(collectNames(desc))(namer.name)
-    } yield folder
-      .topologyStart(name)
-      .legend(Legend(nodeNames))
-      .topics { ra =>
-        topics.foldLeft(ra) { (acc, t) =>
-          acc.topic(t)
+      val allNodes = collectTopologyNodes(desc)
+
+      folder
+        .topologyStart(name)
+        .repository(allNodes)
+        .topics { ra =>
+          topics.foldLeft(ra) { (acc, t) =>
+            acc.topic(t)
+          }
         }
-      }
-      .edges { ra =>
-        topicEdges.foldLeft(ra) { (acc, e) =>
-          acc.edge(e._1, e._2)
+        .edges { ra =>
+          topicEdges.foldLeft(ra) { (acc, e) =>
+            acc.edge(e._1, e._2)
+          }
         }
-      }
-      .subtopologies { ra =>
-        subtopologies.foldLeft(ra) { (acc, st) =>
-          val nodes                        = collectNodes(st)
-          val (sources, processors, sinks) = collectNodeByType(nodes)
-          collectSubtopology(acc)(st.id().toString, sources, processors, sinks)
+        .subtopologies { ra =>
+          subtopologies.foldLeft(ra) { (acc, st) =>
+            val nodes                        = collectNodes(st)
+            val (sources, processors, sinks) = collectNodeByType(nodes)
+            collectSubtopology(acc)(st.id().toString, sources, processors, sinks)
+          }
         }
-      }
-      .subtopologies { ra =>
-        globalStores.foldLeft(ra) { (acc, gs) =>
-          val sources    = Seq(gs.source())
-          val processors = Seq(gs.processor())
-          val sinks      = Seq.empty[Sink]
-          collectSubtopology(acc)(gs.id().toString, sources, processors, sinks)
+        .subtopologies { ra =>
+          globalStores.foldLeft(ra) { (acc, gs) =>
+            val sources    = Seq(gs.source())
+            val processors = Seq(gs.processor())
+            val sinks      = Seq.empty[Sink]
+            collectSubtopology(acc)(gs.id().toString, sources, processors, sinks)
+          }
         }
-      }
-      .topologyEnd()
-      .toString
-  }
+        .topologyEnd()
+        .toString
+    }
 
 }
 
@@ -77,22 +79,26 @@ object LiveEncoder {
       }
       .sources { ra =>
         sources.foldLeft(ra) { (acc, s) =>
-          acc.source(s.name, s.topicSet().asScala.toSeq.sorted)
+          val sid = toNodeId(s)
+          val ts  = s.topicSet().asScala.toSeq.map(TopicId).sorted
+          acc.source(sid, ts)
         }
       }
       .processors { ra =>
         processors.foldLeft(ra) { (acc, p) =>
-          acc.processor(p.name(), p.stores().asScala.toSeq.sorted)
+          val pn = toNodeId(p)
+          val ss = p.stores().asScala.toSeq.map(StoreId).sorted
+          acc.processor(pn, ss)
         }
       }
       .sinks { ra =>
         sinks.foldLeft(ra) { (acc, k) =>
-          acc.sink(k.name(), k.topic())
+          acc.sink(toNodeId(k), TopicId(k.topic()))
         }
       }
       .stores { ra =>
-        stores.foldLeft(ra) { (acc, storeName) =>
-          acc.store(storeName)
+        stores.foldLeft(ra) { (acc, r) =>
+          acc.store(r)
         }
       }
       .edges { ra =>
@@ -104,21 +110,22 @@ object LiveEncoder {
       .subtopologyEnd()
   }
 
-  private def collectTopics(nodes: Seq[Node]): Seq[String] =
+  private def collectTopics(nodes: Seq[Node]): Seq[NodeId] =
     nodes
       .collect({
         case s: Source => s.topicSet().asScala.toSet
         case k: Sink   => Set(k.topic())
       })
       .flatten
+      .map(TopicId)
       .distinct
       .sorted
 
-  private def collectTopicEdges(nodes: Seq[Node]): Seq[(String, String)] =
+  private def collectTopicEdges(nodes: Seq[Node]): Seq[(NodeId, NodeId)] =
     nodes
       .collect({
-        case s: Source => s.topicSet().asScala.toSet.map((t: String) => (t, s.name()))
-        case k: Sink   => Set(k.topic()).map(t => (k.name(), t))
+        case s: Source => s.topicSet().asScala.toSet.map((t: String) => (TopicId(t), toNodeId(s)))
+        case k: Sink   => Set(k.topic()).map(t => (toNodeId(k), TopicId(t)))
       })
       .flatten
       .distinct
@@ -127,8 +134,8 @@ object LiveEncoder {
   private def collectNodes(subtopology: Subtopology): Seq[Node] =
     subtopology.nodes().asScala.toSeq.distinctBy(_.name()).sortBy(_.name())
 
-  private def collectNodeEdges(nodes: Seq[Node]): Seq[(String, String)] =
-    nodes.flatMap(from => from.successors().asScala.map(to => (from.name(), to.name()))).distinct.sorted
+  private def collectNodeEdges(nodes: Seq[Node]): Seq[(NodeId, NodeId)] =
+    nodes.flatMap(from => from.successors().asScala.map(to => (toNodeId(from), toNodeId(to)))).distinct.sorted
 
   private def collectNodeByType(nodes: Seq[Node]): (Seq[Source], Seq[Processor], Seq[Sink]) = {
     val m = nodes.groupBy({
@@ -144,46 +151,56 @@ object LiveEncoder {
     (sources.toSeq.distinctBy(_.name()).sortBy(_.name()), processors.toSeq.distinctBy(_.name()).sortBy(_.name()), sinks.toSeq.distinctBy(_.name()).sortBy(_.name()))
   }
 
-  private def collectStores(processors: Seq[Processor]): Seq[String] =
+  private def collectStores(processors: Seq[Processor]): Seq[NodeId] =
     processors
-      .foldLeft(Set.empty[String]) { (acc, p) =>
-        acc ++ p.stores().asScala
+      .foldLeft(Set.empty[NodeId]) { (acc, p) =>
+        acc ++ p.stores().asScala.map(StoreId)
       }
       .toSeq
       .distinct
       .sorted
 
-  private def collectStoreEdges(processors: Seq[Processor]): Seq[(String, String)] =
+  private def collectStoreEdges(processors: Seq[Processor]): Seq[(NodeId, NodeId)] =
     processors
-      .foldLeft(Set.empty[(String, String)]) { (acc, p) =>
-        acc ++ p.stores().asScala.map(storeName => (p.name(), storeName))
+      .foldLeft(Set.empty[(NodeId, NodeId)]) { (acc, p) =>
+        acc ++ p.stores().asScala.map(storeName => (toNodeId(p), StoreId(storeName)))
       }
       .toSeq
       .distinct
       .sorted
 
-  private[encoder] def collectNames(desc: TopologyDescription): Seq[String] = {
+  private[encoder] def collectTopologyNodes(desc: TopologyDescription): Seq[NodeId] = {
     val subtopologies = desc.subtopologies().asScala.toSeq
     val globalStores  = desc.globalStores().asScala.toSeq
 
-    val globalStoreNames = globalStores.foldLeft(Seq.empty[String]) { (acc, gs) =>
-      acc ++ collectNames(Seq(gs.source()), Seq(gs.processor()), Seq.empty[Sink])
+    val globalStoreNames = globalStores.foldLeft(Seq.empty[NodeId]) { (acc, gs) =>
+      acc ++ collectNodes(Seq(gs.source()), Seq(gs.processor()), Seq.empty[Sink])
     }
 
     subtopologies
       .foldLeft(globalStoreNames) { (acc, st) =>
         val ns           = st.nodes().asScala.toSeq
         val (ss, ps, ks) = collectNodeByType(ns)
-        acc ++ collectNames(ss, ps, ks)
+        acc ++ collectNodes(ss, ps, ks)
       }
       .distinct
       .sorted
   }
 
-  private def collectNames(sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Seq[String] = {
-    val sourceNames = sources.flatMap(s => s.name() +: s.topicSet().asScala.toSeq)
-    val procNames   = processors.flatMap(p => p.name() +: p.stores().asScala.toSeq)
-    val sinkNames   = sinks.flatMap(k => Seq(k.name(), k.topic()))
-    (sourceNames ++ procNames ++ sinkNames)
+  private def collectNodes(sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Seq[NodeId] = {
+    val sourceNodes = sources.flatMap(s => toNodeId(s) +: s.topicSet().asScala.toSeq.map(TopicId))
+    val procNodes   = processors.flatMap(p => toNodeId(p) +: p.stores().asScala.toSeq.map(StoreId))
+    val sinkNodes   = sinks.flatMap(k => Seq(toNodeId(k), TopicId(k.topic())))
+    (sourceNodes ++ procNodes ++ sinkNodes)
   }
+
+  private def toNodeId(node: Node): NodeId =
+    node match {
+      case s: Source =>
+        SourceId(s.name())
+      case p: Processor =>
+        ProcessorId(p.name())
+      case k: Sink =>
+        SinkId(k.name())
+    }
 }

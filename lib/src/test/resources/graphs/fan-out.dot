@@ -4,22 +4,22 @@ digraph g_fan_out {
   graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
-  output_1 [shape=box, fixedsize=true, label="output-1", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  output_2 [shape=box, fixedsize=true, label="output-2", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  topic_a [shape=box, fixedsize=true, label="topic-a", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  KSTREAM_SINK_0000000003 -> output_1;
-  KSTREAM_SINK_0000000004 -> output_2;
-  topic_a -> KSTREAM_SOURCE_0000000000;
+  t_output_1 [shape=box, fixedsize=true, label="output-1", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_output_2 [shape=box, fixedsize=true, label="output-2", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  t_topic_a [shape=box, fixedsize=true, label="topic-a", xlabel="", style=filled, fillcolor="#e8e8e8"];
+  k_KSTREAM_SINK_0000000003 -> t_output_1;
+  k_KSTREAM_SINK_0000000004 -> t_output_2;
+  t_topic_a -> s_KSTREAM_SOURCE_0000000000;
   subgraph cluster_0 {
     style=dotted;
-    KSTREAM_MAPVALUES_0000000001 -> KSTREAM_SINK_0000000003;
-    KSTREAM_MAPVALUES_0000000002 -> KSTREAM_SINK_0000000004;
-    KSTREAM_SOURCE_0000000000 -> KSTREAM_MAPVALUES_0000000001;
-    KSTREAM_SOURCE_0000000000 -> KSTREAM_MAPVALUES_0000000002;
-    KSTREAM_SOURCE_0000000000 [shape=ellipse, fixedsize=true, label="SOURCE\n0", xlabel=""];
-    KSTREAM_MAPVALUES_0000000001 [shape=ellipse, fixedsize=true, label="MAPVALUES\n1", xlabel=""];
-    KSTREAM_MAPVALUES_0000000002 [shape=ellipse, fixedsize=true, label="MAPVALUES\n2", xlabel=""];
-    KSTREAM_SINK_0000000003 [shape=ellipse, fixedsize=true, label="SINK\n3", xlabel=""];
-    KSTREAM_SINK_0000000004 [shape=ellipse, fixedsize=true, label="SINK\n4", xlabel=""];
+    p_KSTREAM_MAPVALUES_0000000001 -> k_KSTREAM_SINK_0000000003;
+    p_KSTREAM_MAPVALUES_0000000002 -> k_KSTREAM_SINK_0000000004;
+    s_KSTREAM_SOURCE_0000000000 -> p_KSTREAM_MAPVALUES_0000000001;
+    s_KSTREAM_SOURCE_0000000000 -> p_KSTREAM_MAPVALUES_0000000002;
+    s_KSTREAM_SOURCE_0000000000 [shape=ellipse, fixedsize=true, label="SOURCE\n0", xlabel=""];
+    p_KSTREAM_MAPVALUES_0000000001 [shape=ellipse, fixedsize=true, label="MAPVALUES\n1", xlabel=""];
+    p_KSTREAM_MAPVALUES_0000000002 [shape=ellipse, fixedsize=true, label="MAPVALUES\n2", xlabel=""];
+    k_KSTREAM_SINK_0000000003 [shape=ellipse, fixedsize=true, label="SINK\n3", xlabel=""];
+    k_KSTREAM_SINK_0000000004 [shape=ellipse, fixedsize=true, label="SINK\n4", xlabel=""];
   }
 }

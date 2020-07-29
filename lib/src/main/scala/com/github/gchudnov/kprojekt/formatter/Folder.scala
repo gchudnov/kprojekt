@@ -1,7 +1,8 @@
 package com.github.gchudnov.kprojekt.formatter
 
-import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder }
-import com.github.gchudnov.kprojekt.naming.Legend
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotFolderState }
+import com.github.gchudnov.kprojekt.ids.NodeId
+import com.github.gchudnov.kprojekt.naming.Namer
 import zio.{ Has, ZLayer }
 
 object Folder {
@@ -15,36 +16,38 @@ object Folder {
     def topologyEnd(): Service
 
     def topics(f: ServiceMapper): Service = f(this)
-    def topic(name: String): Service
+    def topic(id: NodeId): Service
 
     def subtopologies(f: ServiceMapper): Service = f(this)
     def subtopologyStart(name: String): Service
     def subtopologyEnd(): Service
 
     def edges(f: ServiceMapper): Service = f(this)
-    def edge(fromName: String, toName: String): Service
+    def edge(from: NodeId, to: NodeId): Service
 
     def sources(f: ServiceMapper): Service = f(this)
-    def source(name: String, topics: Seq[String]): Service
+    def source(id: NodeId, topics: Seq[NodeId]): Service
 
     def processors(f: ServiceMapper): Service = f(this)
-    def processor(name: String, stores: Seq[String]): Service
+    def processor(id: NodeId, stores: Seq[NodeId]): Service
 
     def sinks(f: ServiceMapper): Service = f(this)
-    def sink(name: String, topic: String): Service
+    def sink(id: NodeId, topic: NodeId): Service
 
-    def storeEdges(edges: Seq[(String, String)]): Service
+    def storeEdges(edges: Seq[(NodeId, NodeId)]): Service
     def stores(f: ServiceMapper): Service = f(this)
-    def store(name: String): Service
+    def store(id: NodeId): Service
 
-    def legend(l: Legend): Service
+    def repository(ns: Seq[NodeId]): Service
 
-    def rank(name1: String, name2: String): Service
+    def rank(a: NodeId, b: NodeId): Service
   }
 
   val any: ZLayer[Folder, Nothing, Folder] =
     ZLayer.requires[Folder]
 
-  val live: ZLayer[DotConfig, Nothing, Folder] =
-    ZLayer.fromFunction(config => new DotFolder(config))
+  val live: ZLayer[Has[DotConfig] with Has[Namer.Service], Nothing, Folder] =
+    ZLayer.fromServices[DotConfig, Namer.Service, Folder.Service]((config: DotConfig, namer: Namer.Service) =>
+      new DotFolder(config = config, namer = namer, state = DotFolderState())
+    )
 }

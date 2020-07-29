@@ -2,11 +2,11 @@ package com.github.gchudnov.kprojekt.util
 
 object MapOps {
 
-  private def combine(a: Map[String, List[String]], b: Map[String, List[String]]): Map[String, List[String]] =
-    a ++ b.map { case (k, v) => k -> (v ++ a.getOrElse(k, List.empty[String])) }
+  private def combine[T](a: Map[T, List[T]], b: Map[T, List[T]]): Map[T, List[T]] =
+    a ++ b.map { case (k, v) => k -> (v ++ a.getOrElse(k, List.empty[T])) }
 
-  implicit class RichMap(val a: Map[String, List[String]]) extends AnyVal {
-    def |+|(b: Map[String, List[String]]): Map[String, List[String]] =
+  implicit class RichMap[T](val a: Map[T, List[T]]) extends AnyVal {
+    def |+|(b: Map[T, List[T]]): Map[T, List[T]] =
       combine(a, b)
   }
 

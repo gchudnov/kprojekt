@@ -16,7 +16,7 @@ object LiveNamerSpec extends DefaultRunnableSpec {
     suite("NodeNameSpec")(
       testM("one-word name is parsed should correctly split it in parts") {
         val input    = "KSTREAM-MAPVALUES-0000000002"
-        val expected = NodeName(id = Some(2), alias = "MAPVALUES", original = input)
+        val expected = NodeName(id = Some(2), alias = "MAPVALUES", originalName = input)
 
         for {
           actual <- Namer.name(input).provideLayer(defaultEnv)
@@ -24,7 +24,7 @@ object LiveNamerSpec extends DefaultRunnableSpec {
       },
       testM("two-word name is parsed should correctly split it in parts") {
         val input    = "KSTREAM-SELECT-KEY-0000000003"
-        val expected = NodeName(id = Some(3), alias = "SELECT.KEY", original = input)
+        val expected = NodeName(id = Some(3), alias = "SELECT.KEY", originalName = input)
 
         for {
           actual <- Namer.name(input).provideLayer(defaultEnv)
@@ -32,7 +32,7 @@ object LiveNamerSpec extends DefaultRunnableSpec {
       },
       testM("name with wuffix is parsed should correctly split it in parts") {
         val input    = "KSTREAM-REDUCE-STATE-STORE-0000000007-repartition"
-        val expected = NodeName(id = Some(7), alias = "repartition", original = input)
+        val expected = NodeName(id = Some(7), alias = "repartition", originalName = input)
 
         for {
           actual <- Namer.name(input).provideLayer(defaultEnv)
@@ -40,7 +40,7 @@ object LiveNamerSpec extends DefaultRunnableSpec {
       },
       testM("custom name is parsed should return the original name") {
         val input    = "some-custom-name"
-        val expected = NodeName(input)
+        val expected = NodeName(None, input, input)
 
         for {
           actual <- Namer.name(input).provideLayer(defaultEnv)
@@ -48,7 +48,7 @@ object LiveNamerSpec extends DefaultRunnableSpec {
       },
       testM("long alias should be shortened") {
         val input    = "KSTREAM-REDUCE-STATE-STORE-IF-APP-HAS-TOO-MUCH-DATA-0000000007"
-        val expected = NodeName(id = Some(7), alias = "R.S.S.I.A.H.T.M.DATA", original = input)
+        val expected = NodeName(id = Some(7), alias = "R.S.S.I.A.H.T.M.DATA", originalName = input)
 
         for {
           actual <- Namer.name(input).provideLayer(defaultEnv)
@@ -56,16 +56,16 @@ object LiveNamerSpec extends DefaultRunnableSpec {
       }
     )
 
-  private val defaultNameConfig = NameConfig(maxLenWithoutShortening = 12, separator = ".")
+  private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
   private val defaultEnv: ZLayer[Any, Nothing, Has[Namer.Service]] =
     withEnv(defaultNameConfig)
 
-  private def withEnv(nameConfig: NameConfig): ZLayer[Any, Nothing, Namer] = {
-    val nameConfigEnv = ZLayer.succeedMany(nameConfig)
+  private def withEnv(nameConfig: NamerConfig): ZLayer[Any, Nothing, Namer] = {
+    val nameConfigEnv = ZLayer.succeed(nameConfig)
+    val nameEnv       = (nameConfigEnv >>> Namer.live)
 
-    val nameEnv = (nameConfigEnv >>> Namer.live)
-
-    nameEnv
+    val env = nameEnv
+    env
   }
 }

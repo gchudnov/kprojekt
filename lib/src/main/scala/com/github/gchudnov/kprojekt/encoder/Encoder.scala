@@ -1,7 +1,6 @@
 package com.github.gchudnov.kprojekt.encoder
 
 import com.github.gchudnov.kprojekt.formatter.Folder
-import com.github.gchudnov.kprojekt.naming.Namer
 import org.apache.kafka.streams.TopologyDescription
 import zio._
 
@@ -15,9 +14,8 @@ object Encoder {
   val any: ZLayer[Encoder, Nothing, Encoder] =
     ZLayer.requires[Encoder]
 
-  val live: ZLayer[Has[Folder.Service] with Has[Namer.Service], Nothing, Has[Service]] = ZLayer.fromServices[Folder.Service, Namer.Service, Encoder.Service] {
-    (folder: Folder.Service, namer: Namer.Service) =>
-      new LiveEncoder(folder, namer)
+  val live: ZLayer[Has[Folder.Service], Nothing, Has[Service]] = ZLayer.fromService[Folder.Service, Encoder.Service] { (folder: Folder.Service) =>
+    new LiveEncoder(folder)
   }
 
   def encode(name: String, desc: TopologyDescription): URIO[Encoder, String] = ZIO.accessM(_.get.encode(name, desc))
