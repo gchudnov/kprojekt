@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 sbt "test; cli/assembly"
-sbt "cli/assembly"
 
 native-image \
   --verbose \
