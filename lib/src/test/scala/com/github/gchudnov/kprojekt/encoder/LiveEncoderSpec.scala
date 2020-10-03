@@ -81,14 +81,14 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
       testM("encoding a topology with global store should produce the expected graphviz output") {
         val stateStoreName = "test-store"
 
-        val processor: Processor[String, String] = new Processor[String, String] {
+        val processor: Processor[String, Long] = new Processor[String, Long] {
           var keyValueStore: KeyValueStore[String, Long] = _
 
           override def init(context: ProcessorContext): Unit =
             keyValueStore = context.getStateStore(stateStoreName).asInstanceOf[KeyValueStore[String, Long]]
 
-          override def process(key: String, value: String): Unit =
-            keyValueStore.put(key, value.length.toLong)
+          override def process(key: String, value: Long): Unit =
+            keyValueStore.put(key, value)
 
           override def close(): Unit = {}
         }
@@ -97,8 +97,8 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
           .keyValueStoreBuilder(Stores.persistentKeyValueStore(stateStoreName), Serdes.String, Serdes.Long)
           .withLoggingDisabled()
 
-        val processorSupplier = new ProcessorSupplier[String, String] {
-          override def get(): Processor[String, String] = processor
+        val processorSupplier = new ProcessorSupplier[String, Long] {
+          override def get(): Processor[String, Long] = processor
         }
 
         val topology = new Topology()
