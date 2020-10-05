@@ -16,9 +16,8 @@ object DotSpaceSpec extends DefaultRunnableSpec {
           "large"  -> Right(DotSpace.Large)
         )
 
-        val actual = cases.foldLeft(true) {
-          case (acc, (value, expected)) =>
-            acc && (DotSpace.parse(value) == expected)
+        val actual = cases.foldLeft(true) { case (acc, (value, expected)) =>
+          acc && (DotSpace.parse(value) == expected)
         }
 
         assert(actual)(isTrue)

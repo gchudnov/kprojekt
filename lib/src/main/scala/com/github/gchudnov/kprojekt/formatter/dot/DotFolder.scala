@@ -199,13 +199,12 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
       sb.append(s"""${T5}<TD bgcolor="${FillColorTableHeader}" align="left">Name</TD>\n""")
       sb.append(s"""${T4}</TR>\n""")
 
-      state.legend.table.foreach {
-        case NodeName(id, alias, originalName) =>
-          sb.append(s"""${T4}<TR>\n""")
-          sb.append(s"""${T5}<TD>${id.getOrElse("")}</TD>\n""")
-          sb.append(s"""${T5}<TD align="left">${alias}</TD>\n""")
-          sb.append(s"""${T5}<TD align="left">${originalName}</TD>\n""")
-          sb.append(s"""${T4}</TR>\n""")
+      state.legend.table.foreach { case NodeName(id, alias, originalName) =>
+        sb.append(s"""${T4}<TR>\n""")
+        sb.append(s"""${T5}<TD>${id.getOrElse("")}</TD>\n""")
+        sb.append(s"""${T5}<TD align="left">${alias}</TD>\n""")
+        sb.append(s"""${T5}<TD align="left">${originalName}</TD>\n""")
+        sb.append(s"""${T4}</TR>\n""")
       }
 
       sb.append(s"""${T3}</TABLE>\n""")

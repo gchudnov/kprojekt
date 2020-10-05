@@ -76,13 +76,12 @@ object LiveParser {
 
     subtopology.addNodes(nodes.values.toSeq)
 
-    nodes.foreach {
-      case (nodeName, node) =>
-        val ps = extractNodes(nodeName, pred, nodes)
-        val ss = extractNodes(nodeName, succ, nodes)
+    nodes.foreach { case (nodeName, node) =>
+      val ps = extractNodes(nodeName, pred, nodes)
+      val ss = extractNodes(nodeName, succ, nodes)
 
-        node.addPredecessors(ps)
-        node.addSuccessors(ss)
+      node.addPredecessors(ps)
+      node.addSuccessors(ss)
     }
 
     subtopology
