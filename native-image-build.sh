@@ -2,6 +2,8 @@
 
 sbt "test; cli/assembly"
 
+# 20.1.0.r11
+
 native-image \
   --verbose \
   --initialize-at-build-time \
@@ -10,4 +12,5 @@ native-image \
   -H:+ReportUnsupportedElementsAtRuntime \
   -H:+ReportExceptionStackTraces \
   -H:ResourceConfigurationFiles=./res/graalvm/resources.json \
+  -H:ReflectionConfigurationFiles=/res/graalvm/reflection.json \
   -jar ./target/kprojekt-cli.jar kprojekt-cli
