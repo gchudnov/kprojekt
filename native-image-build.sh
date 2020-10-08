@@ -12,5 +12,4 @@ native-image \
   -H:+ReportUnsupportedElementsAtRuntime \
   -H:+ReportExceptionStackTraces \
   -H:ResourceConfigurationFiles=./res/graalvm/resources.json \
-  -H:ReflectionConfigurationFiles=/res/graalvm/reflection.json \
   -jar ./target/kprojekt-cli.jar kprojekt-cli
