@@ -37,7 +37,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
             .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .toString()
-          ),
+        ),
         indent = state.indent + 1
       )
     )
@@ -50,7 +50,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
             .append(withLegend())
             .append(s"""${T_1}}\n""")
             .toString()
-          ),
+        ),
         indent = state.indent - 1
       )
     )
@@ -72,7 +72,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
             .append(s"${T1}subgraph cluster_${sanitize(name)} {\n")
             .append(s"${T2}style=dotted;\n")
             .toString()
-          ),
+        ),
         indent = state.indent + 1
       )
     )
@@ -106,7 +106,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
             new StringBuilder()
               .append(s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
               .toString()
-            )
+          )
       )
     )
 
@@ -125,7 +125,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
             new StringBuilder()
               .append(text)
               .toString()
-            )
+          )
       )
     )
   }
@@ -138,7 +138,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
             new StringBuilder()
               .append(s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
               .toString()
-            )
+          )
       )
     )
 
@@ -161,7 +161,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
               new StringBuilder()
                 .append(s"""${T1}${toDotId(id)} [shape=cylinder, fixedsize=true, width=0.5, label="${alias(id)}", xlabel="", style=filled, fillcolor="${FillColorStore}"];\n""")
                 .toString()
-              )
+            )
         )
       )
     )
@@ -175,7 +175,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
               new StringBuilder()
                 .append(s"""${T1}{ rank=same; ${toDotId(a)}; ${toDotId(b)}; };\n""")
                 .toString()
-              )
+            )
         )
       )
     )
