@@ -9,8 +9,8 @@ object Dependencies {
     val logback       = "1.2.3"
     val pureConfig    = "0.14.0"
     val scopt         = "4.0.0-RC2"
-    val zio           = "1.0.1"
-    val zioLogging    = "0.5.2"
+    val zio           = "1.0.3"
+    val zioLogging    = "0.5.3"
   }
 
   private val compiler = Seq(
