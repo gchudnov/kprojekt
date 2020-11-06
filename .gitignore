@@ -1,7 +1,8 @@
-.metals
-.bloop
-.idea
 *.class
-target
 *.snap
+.bloop
+.bsp
+.idea
+.metals
 __pycache__
+target
