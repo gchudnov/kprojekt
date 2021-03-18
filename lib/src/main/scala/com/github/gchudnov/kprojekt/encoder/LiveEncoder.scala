@@ -142,6 +142,7 @@ object LiveEncoder {
       case _: Source    => KeySource
       case _: Processor => KeyProcessor
       case _: Sink      => KeySink
+      case n            => sys.error(s"invalid node type: ${n}")
     })
 
     val sources    = m.getOrElse(KeySource, Set.empty[Node]).map(_.asInstanceOf[Source])
@@ -202,5 +203,6 @@ object LiveEncoder {
         ProcessorId(p.name())
       case k: Sink =>
         SinkId(k.name())
+      case _ => sys.error(s"invalid node type: ${node}")
     }
 }

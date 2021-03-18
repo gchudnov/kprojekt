@@ -243,12 +243,14 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
     case Small  => "0.25"
     case Medium => "0.5"
     case Large  => "1.0"
+    case x      => sys.error(s"invalid space type: ${x}")
   }
 
   private val ranksep: String = config.space match {
     case Small  => "0.5"
     case Medium => "0.75"
     case Large  => "1.0"
+    case x      => sys.error(s"invalid space size: ${x}")
   }
 
   private def withNewState(state: DotFolderState): DotFolder =

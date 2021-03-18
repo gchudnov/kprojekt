@@ -4,7 +4,7 @@ import sbtassembly.AssemblyKeys._
 import sbtassembly.MergeStrategy
 
 object Settings {
-  private val scalaV = "2.13.3"
+  private val scalaV = "2.13.5"
 
   private val sharedScalacOptions = Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -24,6 +24,8 @@ object Settings {
     "-Xcheckinit"
   )
 
+  val globalScalaVersion: String = scalaV
+
   type MergeStrategySelector = String => MergeStrategy
 
   def defaultMergeStrategy(fallbackStrategy: MergeStrategySelector): MergeStrategySelector = {
@@ -32,9 +34,9 @@ object Settings {
   }
 
   val assemblySettings: Seq[Setting[_]] = Seq(
-    test in assembly := {},
-    assemblyOutputPath in assembly := new File("./target") / (assemblyJarName in assembly).value,
-    assemblyMergeStrategy in assembly := defaultMergeStrategy((assemblyMergeStrategy in assembly).value)
+    assembly / test := {},
+    assembly / assemblyOutputPath := new File("./target") / (assembly / assemblyJarName).value,
+    assembly / assemblyMergeStrategy := defaultMergeStrategy((assembly / assemblyMergeStrategy).value)
   )
 
   val sharedResolvers: Vector[MavenRepository] = Seq(
@@ -56,7 +58,7 @@ object Settings {
   def testFilter(name: String): Boolean = (name endsWith "Spec")
 
   val testSettings: Seq[Setting[_]] = Seq(
-    testOptions in Test ++= Seq(Tests.Filter(testFilter)),
+    Test / testOptions ++= Seq(Tests.Filter(testFilter)),
     testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
   )
 }

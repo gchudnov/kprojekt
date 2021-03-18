@@ -2,7 +2,7 @@
 
 sbt "test; cli/assembly"
 
-# 20.1.0.r11
+# 21.0.0.2.r11-grl
 
 native-image \
   --verbose \

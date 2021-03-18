@@ -6,11 +6,11 @@ import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig }
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.GlobalKTable
-import org.apache.kafka.streams.processor.{ Processor, ProcessorContext, ProcessorSupplier }
+import org.apache.kafka.streams.processor.api.{ Processor, ProcessorContext, ProcessorSupplier, Record }
 import org.apache.kafka.streams.scala.ImplicitConversions._
-import org.apache.kafka.streams.scala.Serdes._
+import org.apache.kafka.streams.scala.serialization.Serdes._
 import org.apache.kafka.streams.scala.kstream.{ KStream, KTable, Materialized }
-import org.apache.kafka.streams.scala.{ ByteArrayKeyValueStore, Serdes, StreamsBuilder }
+import org.apache.kafka.streams.scala.{ ByteArrayKeyValueStore, StreamsBuilder }
 import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
 import zio.test.Assertion._
 import zio.test._
@@ -81,28 +81,26 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
       testM("encoding a topology with global store should produce the expected graphviz output") {
         val stateStoreName = "test-store"
 
-        val processor: Processor[String, Long] = new Processor[String, Long] {
+        val processor: Processor[String, Long, Void, Void] = new Processor[String, Long, Void, Void] {
           var keyValueStore: KeyValueStore[String, Long] = _
 
-          override def init(context: ProcessorContext): Unit =
+          override def init(context: ProcessorContext[Void, Void]): Unit =
             keyValueStore = context.getStateStore(stateStoreName).asInstanceOf[KeyValueStore[String, Long]]
 
-          override def process(key: String, value: Long): Unit =
-            keyValueStore.put(key, value)
+          override def process(record: Record[String, Long]): Unit =
+            keyValueStore.put(record.key(), record.value())
 
           override def close(): Unit = {}
         }
 
         val storeSupplier: StoreBuilder[KeyValueStore[String, Long]] = Stores
-          .keyValueStoreBuilder(Stores.persistentKeyValueStore(stateStoreName), Serdes.String, Serdes.Long)
+          .keyValueStoreBuilder(Stores.persistentKeyValueStore(stateStoreName), stringSerde, longSerde)
           .withLoggingDisabled()
 
-        val processorSupplier = new ProcessorSupplier[String, Long] {
-          override def get(): Processor[String, Long] = processor
-        }
+        val processorSupplier: ProcessorSupplier[String, Long, Void, Void] = () => processor
 
         val topology = new Topology()
-        topology.addGlobalStore(storeSupplier, "test-source", Serdes.String.deserializer(), Serdes.Long.deserializer(), "test-topic", "test-processor", processorSupplier)
+        topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
         val desc = topology.describe()
 
         for {

@@ -2,6 +2,9 @@ import sbt.Keys._
 import sbt._
 import sbtassembly.AssemblyPlugin.defaultUniversalScript
 
+Global / cancelable := true
+Global / scalaVersion := Settings.globalScalaVersion
+
 lazy val allSettings = Settings.sharedSettings ++ Settings.testSettings
 
 lazy val lib = (project in file("lib"))
@@ -21,10 +24,10 @@ lazy val cli = (project in file("cli"))
     libraryDependencies ++= Dependencies.All,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.github.gchudnov.kprojekt",
-    mainClass in assembly := Some("com.github.gchudnov.kprojekt.Cli"),
-    assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultUniversalScript(shebang = false))),
-    assemblyOutputPath in assembly := new File(s"./target/${name.value}.jar"),
-    assemblyJarName in assembly := s"${name.value}"
+    assembly / mainClass := Some("com.github.gchudnov.kprojekt.Cli"),
+    assembly / assemblyOption := (assembly / assemblyOption).value.copy(prependShellScript = Some(defaultUniversalScript(shebang = false))),
+    assembly / assemblyOutputPath := new File(s"./target/${name.value}.jar"),
+    assembly / assemblyJarName := s"${name.value}"
   )
 
 lazy val root = (project in file("."))
@@ -36,3 +39,8 @@ lazy val root = (project in file("."))
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
+addCommandAlias("plgV", "; reload plugins ; libraryDependencies ; reload return")
+addCommandAlias(
+  "upd",
+  ";dependencyUpdates; reload plugins; dependencyUpdates; reload return"
+)
