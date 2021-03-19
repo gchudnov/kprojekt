@@ -83,7 +83,6 @@ jobs:
             --allow-incomplete-classpath \
             -H:+ReportUnsupportedElementsAtRuntime \
             -H:+ReportExceptionStackTraces \
-            -H:ResourceConfigurationFiles=./artifact/resources.json \
             -jar ./artifact/kprojekt-cli.jar kprojekt-cli
 
       - name: Create tarball
