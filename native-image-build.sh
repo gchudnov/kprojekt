@@ -4,6 +4,9 @@ sbt "test; cli/assembly"
 
 # 21.0.0.2.r11-grl
 
+BUILD_INIT_LIST="$(cat ./res/graalvm/init-build-time.txt | tr '\n' ',')"
+RUNTIME_INIT_LIST="$(cat ./res/graalvm/init-run-time.txt | tr '\n' ',')"
+
 native-image \
   --verbose \
   --initialize-at-build-time \
@@ -11,5 +14,18 @@ native-image \
   --allow-incomplete-classpath \
   -H:+ReportUnsupportedElementsAtRuntime \
   -H:+ReportExceptionStackTraces \
-  -H:ResourceConfigurationFiles=./res/graalvm/resources.json \
   -jar ./target/kprojekt-cli.jar kprojekt-cli
+
+
+#native-image \
+#  --verbose \
+#  --initialize-at-build-time \
+#  --initialize-at-build-time="${BUILD_INIT_LIST}" \
+#  --initialize-at-run-time="${RUNTIME_INIT_LIST}" \
+#  --no-fallback \
+#  --allow-incomplete-classpath \
+#  -H:+ReportUnsupportedElementsAtRuntime \
+#  -H:+ReportExceptionStackTraces \
+#  -H:ResourceConfigurationFiles=./res/graalvm/resources.json \
+#  -H:ReflectionConfigurationFiles=./res/graalvm/reflection.json \
+#  -jar ./target/kprojekt-cli.jar kprojekt-cli
