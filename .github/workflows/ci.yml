@@ -62,7 +62,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04, macos-10.15]
     steps:
-      - uses: DeLaGuardo/setup-graalvm@4
+      - uses: DeLaGuardo/setup-graalvm@4.0
         with:
           graalvm: '21.0.0.2'
           java: 'java11'
