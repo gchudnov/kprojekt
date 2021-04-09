@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   object versions {
-    val fastparse     = "2.3.1"
+    val fastparse     = "2.3.2"
     val kafka         = "2.7.0"
     val kindProjector = "0.10.3"
     val logback       = "1.2.3"
