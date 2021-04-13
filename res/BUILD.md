@@ -45,7 +45,7 @@ After building with `native-image`, the files:
 
 will be picked up automatically.
 
-7. Verify that the native app works:
+6. Verify that the native app works:
 
 ```bash
 # should print help
