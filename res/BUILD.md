@@ -2,17 +2,17 @@
 
 1. Go to the root directory of the project.
 
-2. Create the directory `META-INF/native-image` to track execution of `native-image-agent` .
+2. Create the directory `META-INF/native-image` to track execution of `native-image-agent`:
 
 ```bash
 mkdir -p ./cli/src/main/resources/META-INF/native-image
 ```
 
-3. Having `java` pointing to `GraalVM`, run the app to trace execution.
+3. Having `java` pointing to `GraalVM`, run the app with `native-image-agent` to trace execution.
 
 ```bash
 sdk use java 21.0.0.2.r11-grl
-java -agentlib:native-image-agent=config-output-dir=./cli/src/main/resources/META-INF/native-image -jar ./target/kprojekt-cli.jar
+java -agentlib:native-image-agent=config-output-dir=./cli/src/main/resources/META-INF/native-image -jar ./target/kprojekt-cli.jar ./res/example/word-count.log
 ```
 
 After execution, `META-INF/native-image` directory will have a set of files for `native-image`.
@@ -20,30 +20,20 @@ After execution, `META-INF/native-image` directory will have a set of files for 
 4. Open `reflect-config.json` and remove lines with `Lambda` text inside.
    These entries could be different from compilation to compilation, generate warnings during native image building and are likely not required.
 
-5. Open `resource-config.json` and replace patterns with:
+```bash
+# jq >= 1.6
 
-```json
-    {
-      "pattern": "reference.conf"
-    },
-    {
-      "pattern": "application.conf"
-    },
-    {
-      "pattern": "logback.xml"
-    },
-    {
-      "pattern": "images/cylinder.png"
-    }
+export REFLECT_CONFIG_FILE=./cli/src/main/resources/META-INF/native-image/reflect-config.json
+jq 'del( .[] | select(.name | contains("Lambda")))' < "${REFLECT_CONFIG_FILE}" > "${REFLECT_CONFIG_FILE}" 
 ```
 
-6. Execute build:
+5. Execute build:
 
 ```bash
 ./native-image-build.sh
 ```
 
-After building via `native-image`, the files:
+After building with `native-image`, the files:
 
 ```
 -H:JNIConfigurationResources=META-INF/native-image/jni-config.json \
@@ -55,14 +45,12 @@ After building via `native-image`, the files:
 
 will be picked up automatically.
 
-7. After building, verify that the app works:
+7. Verify that the native app works:
 
 ```bash
-# verify that the app works
-./kprojekt-cli
+# should print help
+./kprojekt-cli --help
 
-# try to generate image from the topology
+# generate an image from the topology (./res/example/word-count.png)
 ./kprojekt-cli ./res/example/word-count.log
 ```
-
-After execution the image for the given topology should be generated (NOTE: the image is generated in the same directory where topology is located).
