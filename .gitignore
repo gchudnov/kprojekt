@@ -8,3 +8,5 @@ __pycache__
 target
 kprojekt-cli
 
+**/metals.sbt
+

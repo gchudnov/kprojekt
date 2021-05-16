@@ -81,7 +81,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
       testM("encoding a topology with global store should produce the expected graphviz output") {
         val stateStoreName = "test-store"
 
-        val processor: Processor[String, Long, Void, Void] = new Processor[String, Long, Void, Void] {
+        def processor: Processor[String, Long, Void, Void] = new Processor[String, Long, Void, Void] {
           var keyValueStore: KeyValueStore[String, Long] = _
 
           override def init(context: ProcessorContext[Void, Void]): Unit =

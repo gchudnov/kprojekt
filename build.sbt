@@ -40,7 +40,4 @@ lazy val root = (project in file("."))
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
 addCommandAlias("plgV", "; reload plugins ; libraryDependencies ; reload return")
-addCommandAlias(
-  "upd",
-  ";dependencyUpdates; reload plugins; dependencyUpdates; reload return"
-)
+addCommandAlias("upd", ";dependencyUpdates; reload plugins; dependencyUpdates; reload return")
