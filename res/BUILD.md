@@ -24,7 +24,8 @@ After execution, `META-INF/native-image` directory will have a set of files for 
 # jq >= 1.6
 
 export REFLECT_CONFIG_FILE=./cli/src/main/resources/META-INF/native-image/reflect-config.json
-jq 'del( .[] | select(.name | contains("Lambda")))' < "${REFLECT_CONFIG_FILE}" > "${REFLECT_CONFIG_FILE}" 
+jq 'del( .[] | select(.name | contains("Lambda")))' < "${REFLECT_CONFIG_FILE}" > "${REFLECT_CONFIG_FILE}.bak"
+mv "${REFLECT_CONFIG_FILE}.bak" "${REFLECT_CONFIG_FILE}"
 ```
 
 5. Execute build:

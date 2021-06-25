@@ -25,7 +25,7 @@ lazy val cli = (project in file("cli"))
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.github.gchudnov.kprojekt",
     assembly / mainClass := Some("com.github.gchudnov.kprojekt.Cli"),
-    assembly / assemblyOption := (assembly / assemblyOption).value.copy(prependShellScript = Some(defaultUniversalScript(shebang = false))),
+    assembly / assemblyOption := (assembly / assemblyOption).value.withPrependShellScript(Some(defaultUniversalScript(shebang = false))),
     assembly / assemblyOutputPath := new File(s"./target/${name.value}.jar"),
     assembly / assemblyJarName := s"${name.value}"
   )

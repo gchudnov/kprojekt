@@ -71,7 +71,6 @@ object Cli extends zio.App {
 
     program
       .flatMapError(it => Logging.error(it.toString))
-      .provideLayer(env)
-      .fold(_ => ExitCode.failure, _ => ExitCode.success)
+      .provideLayer(env).exitCode
   }
 }

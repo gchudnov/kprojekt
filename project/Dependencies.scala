@@ -7,10 +7,10 @@ object Dependencies {
     val kafka         = "2.8.0"
     val kindProjector = "0.10.3"
     val logback       = "1.2.3"
-    val pureConfig    = "0.15.0"
+    val pureConfig    = "0.16.0"
     val scopt         = "4.0.1"
-    val zio           = "1.0.5"
-    val zioLogging    = "0.5.8"
+    val zio           = "1.0.9"
+    val zioLogging    = "0.5.11"
   }
 
   private val compiler = Seq(
