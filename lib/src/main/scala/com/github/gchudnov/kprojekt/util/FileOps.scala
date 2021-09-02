@@ -41,7 +41,7 @@ object FileOps {
       Using.resources(classLoader.getResourceAsStream(resourcePath), new FileOutputStream(file)) { (inStream, outStream) =>
         inStream.transferTo(outStream)
       }
-    }.left.map(t => new RuntimeException(s"Cannot save the resource '${resourcePath}' to '${file.getAbsolutePath}'", t))
+    }.left.map(t => new RuntimeException(s"Cannot save the resource '$resourcePath' to '${file.getAbsolutePath}'", t))
 
   def changeExtension(file: File, extension: String): File = {
     val filename = {

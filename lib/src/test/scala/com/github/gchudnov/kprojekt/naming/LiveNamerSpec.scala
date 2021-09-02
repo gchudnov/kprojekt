@@ -8,8 +8,10 @@ import zio.test._
 /**
  * NodeNameSpec
  *
+ * {{{
  * example:
  *   bloop test lib --only com.github.gchudnov.name.NodeNameSpec
+ * }}}
  */
 object LiveNamerSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =

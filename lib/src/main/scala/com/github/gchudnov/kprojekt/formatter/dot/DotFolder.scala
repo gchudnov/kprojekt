@@ -15,6 +15,7 @@ final case class DotFolderState(
 
 /**
  * Fold Topology for GraphViz (Dot-Format)
+ *
  * http://www.graphviz.org/
  *
  * cat graph.dot | dot -Tpng > graph.png
@@ -33,7 +34,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
             .append(s"""${T1}digraph g_${sanitize(name)} {\n""")
             .append(s"""${T2}pack="true"\n""")
             .append(s"""${T2}packmode="clust"\n""")
-            .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}, pad="${gpad}", nodesep="${nodesep}", ranksep="${ranksep}"];\n""")
+            .append(s"""${T2}graph [fontname = "${config.fontName}", fontsize=${config.fontSize}, pad="$gpad", nodesep="$nodesep", ranksep="$ranksep"];\n""")
             .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
             .toString()
@@ -48,7 +49,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
         inner = state.inner + (
           new StringBuilder()
             .append(withLegend())
-            .append(s"""${T_1}}\n""")
+            .append(s"""$T_1}\n""")
             .toString()
         ),
         indent = state.indent - 1
@@ -59,7 +60,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
     withNewState(
       state.copy(inner =
         state.inner + (
-          s"""${T1}${toDotId(id)} [shape=box, fixedsize=true, label="${alias(id)}", xlabel="", style=filled, fillcolor="${FillColorTopic}"];\n"""
+          s"""$T1${toDotId(id)} [shape=box, fixedsize=true, label="${alias(id)}", xlabel="", style=filled, fillcolor="$FillColorTopic"];\n"""
         )
       )
     )
@@ -81,7 +82,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
     withNewState(
       state.copy(
         inner = state.inner + (
-          s"""${T_1}}\n"""
+          s"""$T_1}\n"""
         ),
         indent = state.indent - 1
       )
@@ -92,7 +93,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
       withNewState(
         state.copy(inner =
           state.inner + (
-            s"${T1}${toDotId(from)} -> ${toDotId(to)};\n"
+            s"$T1${toDotId(from)} -> ${toDotId(to)};\n"
           )
         )
       )
@@ -104,7 +105,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
         state.inner +
           (
             new StringBuilder()
-              .append(s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
+              .append(s"""$T1${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
               .toString()
           )
       )
@@ -114,9 +115,9 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
     val text =
       if (stores.size == 1 && state.storesToEmbed.contains(stores.head) && config.isEmbedStore) {
         val label = s"""${alias(id)}\\n(${alias(stores.head)})"""
-        s"""${T1}${toDotId(id)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="${label}", xlabel=""];\n"""
+        s"""$T1${toDotId(id)} [shape=ellipse, image="${DotConfig.cylinderFileName}", imagescale=true, fixedsize=true, label="$label", xlabel=""];\n"""
       } else
-        s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n"""
+        s"""$T1${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n"""
 
     withNewState(
       state.copy(inner =
@@ -136,7 +137,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
         state.inner +
           (
             new StringBuilder()
-              .append(s"""${T1}${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
+              .append(s"""$T1${toDotId(id)} [shape=ellipse, fixedsize=true, label="${alias(id)}", xlabel=""];\n""")
               .toString()
           )
       )
@@ -144,10 +145,12 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
 
   /**
    * used to plan the embedding of stores into the graph node.
+   * {{{
    * A store `s` can be embedded if:
    * - processor references only 1 store
    * - there are no other references to this store
    * That means dfs(s) = 1
+   * }}}
    */
   override def storeEdges(edges: Seq[(NodeId, NodeId)]): DotFolder =
     withNewState(state.copy(storesToEmbed = DotFolder.findStoresToEmbed(edges)))
@@ -159,7 +162,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
           state.inner +
             (
               new StringBuilder()
-                .append(s"""${T1}${toDotId(id)} [shape=cylinder, fixedsize=true, width=0.5, label="${alias(id)}", xlabel="", style=filled, fillcolor="${FillColorStore}"];\n""")
+                .append(s"""$T1${toDotId(id)} [shape=cylinder, fixedsize=true, width=0.5, label="${alias(id)}", xlabel="", style=filled, fillcolor="$FillColorStore"];\n""")
                 .toString()
             )
         )
@@ -173,7 +176,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
           state.inner +
             (
               new StringBuilder()
-                .append(s"""${T1}{ rank=same; ${toDotId(a)}; ${toDotId(b)}; };\n""")
+                .append(s"""$T1{ rank=same; ${toDotId(a)}; ${toDotId(b)}; };\n""")
                 .toString()
             )
         )
@@ -191,25 +194,25 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
       sb.append(s"${T1}subgraph legend_0 {\n")
 
       sb.append(s"${T2}legend_root [shape=none, margin=0, label=<\n")
-      sb.append(s"""${T3}<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">\n""")
+      sb.append(s"""$T3<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">\n""")
 
-      sb.append(s"""${T4}<TR>\n""")
-      sb.append(s"""${T5}<TD bgcolor="${FillColorTableHeader}">#</TD>\n""")
-      sb.append(s"""${T5}<TD bgcolor="${FillColorTableHeader}" align="left">Alias</TD>\n""")
-      sb.append(s"""${T5}<TD bgcolor="${FillColorTableHeader}" align="left">Name</TD>\n""")
-      sb.append(s"""${T4}</TR>\n""")
+      sb.append(s"""$T4<TR>\n""")
+      sb.append(s"""$T5<TD bgcolor="$FillColorTableHeader">#</TD>\n""")
+      sb.append(s"""$T5<TD bgcolor="$FillColorTableHeader" align="left">Alias</TD>\n""")
+      sb.append(s"""$T5<TD bgcolor="$FillColorTableHeader" align="left">Name</TD>\n""")
+      sb.append(s"""$T4</TR>\n""")
 
       state.legend.table.foreach { case NodeName(id, alias, originalName) =>
-        sb.append(s"""${T4}<TR>\n""")
-        sb.append(s"""${T5}<TD>${id.getOrElse("")}</TD>\n""")
-        sb.append(s"""${T5}<TD align="left">${alias}</TD>\n""")
-        sb.append(s"""${T5}<TD align="left">${originalName}</TD>\n""")
-        sb.append(s"""${T4}</TR>\n""")
+        sb.append(s"""$T4<TR>\n""")
+        sb.append(s"""$T5<TD>${id.getOrElse("")}</TD>\n""")
+        sb.append(s"""$T5<TD align="left">$alias</TD>\n""")
+        sb.append(s"""$T5<TD align="left">$originalName</TD>\n""")
+        sb.append(s"""$T4</TR>\n""")
       }
 
-      sb.append(s"""${T3}</TABLE>\n""")
-      sb.append(s"${T2}>];\n")
-      sb.append(s"${T1}}\n")
+      sb.append(s"""$T3</TABLE>\n""")
+      sb.append(s"$T2>];\n")
+      sb.append(s"$T1}\n")
 
       sb.toString()
     }
@@ -233,7 +236,7 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
     state.legend
       .entry(id.tId)
       .map { nn =>
-        nn.id.map(i => s"""${nn.alias}\\n${i}""").getOrElse(s"${nn.alias}")
+        nn.id.map(i => s"""${nn.alias}\\n$i""").getOrElse(s"${nn.alias}")
       }
       .getOrElse(DotFolder.UnknownName)
 
@@ -243,14 +246,14 @@ final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderS
     case Small  => "0.25"
     case Medium => "0.5"
     case Large  => "1.0"
-    case x      => sys.error(s"invalid space type: ${x}")
+    case x      => sys.error(s"invalid space type: $x")
   }
 
   private val ranksep: String = config.space match {
     case Small  => "0.5"
     case Medium => "0.75"
     case Large  => "1.0"
-    case x      => sys.error(s"invalid space size: ${x}")
+    case x      => sys.error(s"invalid space size: $x")
   }
 
   private def withNewState(state: DotFolderState): DotFolder =

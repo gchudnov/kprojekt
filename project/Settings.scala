@@ -34,8 +34,8 @@ object Settings {
   }
 
   val assemblySettings: Seq[Setting[_]] = Seq(
-    assembly / test := {},
-    assembly / assemblyOutputPath := new File("./target") / (assembly / assemblyJarName).value,
+    assembly / test                  := {},
+    assembly / assemblyOutputPath    := new File("./target") / (assembly / assemblyJarName).value,
     assembly / assemblyMergeStrategy := defaultMergeStrategy((assembly / assemblyMergeStrategy).value)
   )
 
@@ -46,13 +46,13 @@ object Settings {
 
   val sharedSettings: Seq[Setting[_]] = Seq(
     scalacOptions ++= sharedScalacOptions,
-    scalaVersion := scalaV,
-    ThisBuild / turbo := true,
+    scalaVersion         := scalaV,
+    ThisBuild / turbo    := true,
     cancelable in Global := true,
-    fork in Global := true,
-    resolvers := Resolver.combineDefaultResolvers(sharedResolvers),
-    compileOrder := CompileOrder.JavaThenScala,
-    organization := "com.github.gchudnov"
+    fork in Global       := true,
+    resolvers            := Resolver.combineDefaultResolvers(sharedResolvers),
+    compileOrder         := CompileOrder.JavaThenScala,
+    organization         := "com.github.gchudnov"
   )
 
   def testFilter(name: String): Boolean = (name endsWith "Spec")

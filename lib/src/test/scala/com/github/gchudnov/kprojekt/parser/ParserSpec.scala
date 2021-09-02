@@ -11,8 +11,10 @@ import scala.jdk.CollectionConverters._
 /**
  * ParserSpec
  *
+ * {{{
  * example:
  *   bloop test lib --only com.github.gchudnov.parser.ParserSpec
+ * }}}
  */
 object ParserSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =

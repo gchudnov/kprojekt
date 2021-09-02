@@ -43,7 +43,7 @@ object DotConfig {
       s"""
          |formatters {
          |  dot {
-         |    space: "${space}"
+         |    space: "$space"
          |  }
          |}
          |""".stripMargin

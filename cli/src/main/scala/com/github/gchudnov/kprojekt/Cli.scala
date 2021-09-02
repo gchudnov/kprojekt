@@ -15,12 +15,14 @@ import zio.{ ExitCode, ZEnv, ZIO }
 /**
  * Command-Line Application for topology parser
  *
+ * {{{
  * building an image:
  * sbt cli/assembly
  *
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/toplogogy.log
+ * }}}
  */
 object Cli extends zio.App {
 
@@ -71,6 +73,7 @@ object Cli extends zio.App {
 
     program
       .flatMapError(it => Logging.error(it.toString))
-      .provideLayer(env).exitCode
+      .provideLayer(env)
+      .exitCode
   }
 }

@@ -13,10 +13,12 @@ import zio.{ Has, ZIO, ZLayer }
 /**
  * ProjektorSpec
  *
+ * {{{
  * example:
  *   bloop test lib --only com.github.gchudnov.kprojekt.ProjektorSpec
  *
  *   cat graph.dot | dot -Tpng > graph.png
+ * }}}
  */
 object ProjektorSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =

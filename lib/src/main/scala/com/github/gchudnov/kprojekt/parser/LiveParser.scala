@@ -16,7 +16,7 @@ final class LiveParser() extends Parser.Service {
   override def run(input: String): Task[TopologyDescription] =
     ZIO.fromEither {
       parse(input, topology(_)).fold(
-        (msg, pos, _) => Left[ParseException, TopologyDescription](new ParseException(s"Cannot parse input: ${msg} at ${pos}")),
+        (msg, pos, _) => Left[ParseException, TopologyDescription](new ParseException(s"Cannot parse input: $msg at $pos")),
         (t, _) => Right[ParseException, TopologyDescription](toTopologyDescription(t))
       )
     }

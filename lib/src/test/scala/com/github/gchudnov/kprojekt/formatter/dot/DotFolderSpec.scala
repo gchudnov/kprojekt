@@ -7,8 +7,10 @@ import zio.test._
 /**
  * DotFormatSpec
  *
+ * {{{
  * example:
  *   bloop test lib --only com.github.gchudnov.kprojekt.format.DotFormatSpec
+ * }}}
  */
 object DotFolderSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =
@@ -30,9 +32,7 @@ object DotFolderSpec extends DefaultRunnableSpec {
       test("searching stores to embed should not embed the store if 2 processors are connected to it") {
 
         /**
-         *    p1
-         *    /
-         *  s1 - p2
+         * p1 / s1 - p2
          */
         val edges          = Seq[(NodeId, NodeId)](ProcessorId("p1") -> StoreId("s1"), ProcessorId("p2") -> StoreId("s1"))
         val expectedStores = Set.empty[NodeId]
@@ -43,11 +43,7 @@ object DotFolderSpec extends DefaultRunnableSpec {
       test("searching stores to embed should return only the stores if there is one connection to it") {
 
         /**
-         *    s3    s2
-         *    /      \
-         *  p3       p1
-         *           /
-         *         s1 - p2
+         * s3 s2 / \ p3 p1 / s1 - p2
          */
         val edges =
           Seq[(NodeId, NodeId)](ProcessorId("p1") -> StoreId("s1"), ProcessorId("p1") -> StoreId("s2"), ProcessorId("p2") -> StoreId("s1"), ProcessorId("p3") -> StoreId("s3"))
@@ -59,11 +55,7 @@ object DotFolderSpec extends DefaultRunnableSpec {
       test("searching stores to embed should return an empty set if no stores match") {
 
         /**
-         *   s2
-         *  /  \
-         * p1   p2
-         *  \  /
-         *   s1
+         * s2 / \ p1 p2 \ / s1
          */
         val edges          = Seq(ProcessorId("p1") -> StoreId("s1"), ProcessorId("p1") -> StoreId("s2"), ProcessorId("p2") -> StoreId("s1"), ProcessorId("p2") -> StoreId("s2"))
         val expectedStores = Set.empty[NodeId]

@@ -6,10 +6,10 @@ object Dependencies {
     val fastparse     = "2.3.2"
     val kafka         = "2.8.0"
     val kindProjector = "0.10.3"
-    val logback       = "1.2.3"
+    val logback       = "1.2.5"
     val pureConfig    = "0.16.0"
     val scopt         = "4.0.1"
-    val zio           = "1.0.9"
+    val zio           = "1.0.11"
     val zioLogging    = "0.5.11"
   }
 

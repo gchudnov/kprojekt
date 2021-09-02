@@ -2,7 +2,7 @@ import sbt.Keys._
 import sbt._
 import sbtassembly.AssemblyPlugin.defaultUniversalScript
 
-Global / cancelable := true
+Global / cancelable   := true
 Global / scalaVersion := Settings.globalScalaVersion
 
 lazy val allSettings = Settings.sharedSettings ++ Settings.testSettings
@@ -22,12 +22,12 @@ lazy val cli = (project in file("cli"))
   .settings(
     name := "kprojekt-cli",
     libraryDependencies ++= Dependencies.All,
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "com.github.gchudnov.kprojekt",
-    assembly / mainClass := Some("com.github.gchudnov.kprojekt.Cli"),
-    assembly / assemblyOption := (assembly / assemblyOption).value.withPrependShellScript(Some(defaultUniversalScript(shebang = false))),
+    buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage              := "com.github.gchudnov.kprojekt",
+    assembly / mainClass          := Some("com.github.gchudnov.kprojekt.Cli"),
+    assembly / assemblyOption     := (assembly / assemblyOption).value.withPrependShellScript(Some(defaultUniversalScript(shebang = false))),
     assembly / assemblyOutputPath := new File(s"./target/${name.value}.jar"),
-    assembly / assemblyJarName := s"${name.value}"
+    assembly / assemblyJarName    := s"${name.value}"
   )
 
 lazy val root = (project in file("."))

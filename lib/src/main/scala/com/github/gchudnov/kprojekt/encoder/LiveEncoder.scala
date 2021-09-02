@@ -111,25 +111,19 @@ object LiveEncoder {
   }
 
   private def collectTopics(nodes: Seq[Node]): Seq[NodeId] =
-    nodes
-      .collect({
-        case s: Source => s.topicSet().asScala.toSet
-        case k: Sink   => Set(k.topic())
-      })
-      .flatten
+    nodes.collect {
+      case s: Source => s.topicSet().asScala.toSet
+      case k: Sink   => Set(k.topic())
+    }.flatten
       .map(TopicId)
       .distinct
       .sorted
 
   private def collectTopicEdges(nodes: Seq[Node]): Seq[(NodeId, NodeId)] =
-    nodes
-      .collect({
-        case s: Source => s.topicSet().asScala.toSet.map((t: String) => (TopicId(t), toNodeId(s)))
-        case k: Sink   => Set(k.topic()).map(t => (toNodeId(k), TopicId(t)))
-      })
-      .flatten
-      .distinct
-      .sorted
+    nodes.collect {
+      case s: Source => s.topicSet().asScala.toSet.map((t: String) => (TopicId(t), toNodeId(s)))
+      case k: Sink   => Set(k.topic()).map(t => (toNodeId(k), TopicId(t)))
+    }.flatten.distinct.sorted
 
   private def collectNodes(subtopology: Subtopology): Seq[Node] =
     subtopology.nodes().asScala.toSeq.distinctBy(_.name()).sortBy(_.name())
@@ -138,12 +132,12 @@ object LiveEncoder {
     nodes.flatMap(from => from.successors().asScala.map(to => (toNodeId(from), toNodeId(to)))).distinct.sorted
 
   private def collectNodeByType(nodes: Seq[Node]): (Seq[Source], Seq[Processor], Seq[Sink]) = {
-    val m = nodes.groupBy({
+    val m = nodes.groupBy {
       case _: Source    => KeySource
       case _: Processor => KeyProcessor
       case _: Sink      => KeySink
-      case n            => sys.error(s"invalid node type: ${n}")
-    })
+      case n            => sys.error(s"invalid node type: $n")
+    }
 
     val sources    = m.getOrElse(KeySource, Set.empty[Node]).map(_.asInstanceOf[Source])
     val processors = m.getOrElse(KeyProcessor, Set.empty[Node]).map(_.asInstanceOf[Processor])
@@ -203,6 +197,6 @@ object LiveEncoder {
         ProcessorId(p.name())
       case k: Sink =>
         SinkId(k.name())
-      case _ => sys.error(s"invalid node type: ${node}")
+      case _ => sys.error(s"invalid node type: $node")
     }
 }
