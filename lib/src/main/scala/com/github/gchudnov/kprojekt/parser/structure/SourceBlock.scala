@@ -8,7 +8,6 @@ import org.apache.kafka.streams.TopologyDescription.Source
 import scala.jdk.CollectionConverters._
 
 final class SourceBlock(sourceName: String, sourceTopics: Seq[String]) extends NodeBlock(sourceName) with Source {
-  override def topics(): String         = sourceTopics.mkString(",")
   override def topicSet(): JSet[String] = sourceTopics.toSet.asJava
   override def topicPattern(): Pattern  = null
 }

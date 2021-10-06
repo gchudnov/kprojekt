@@ -30,7 +30,7 @@ final class DotBundler(logger: Logger[String]) extends Bundler.Service {
       _               <- logger.debug(s"Producing PNG: '${pngFile.toString}'.")
       _                = s"dot -Tpng ${dotFile.getAbsolutePath} -o${pngFile.getAbsolutePath}" ! procLogger
       logs             = qs.toList
-      _               <- ZIO.foreach(logs)(identity)
+      _               <- ZIO.foreach_(logs)(identity)
     } yield pngFile
 
   private def buildProcessLogger(): (ProcessLogger, ListBuffer[UIO[Unit]]) = {

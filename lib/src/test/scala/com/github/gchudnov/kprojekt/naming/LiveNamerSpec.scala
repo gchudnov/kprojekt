@@ -32,7 +32,7 @@ object LiveNamerSpec extends DefaultRunnableSpec {
           actual <- Namer.name(input).provideLayer(defaultEnv)
         } yield assert(actual)(equalTo(expected))
       },
-      testM("name with wuffix is parsed should correctly split it in parts") {
+      testM("name with suffix is parsed should correctly split it in parts") {
         val input    = "KSTREAM-REDUCE-STATE-STORE-0000000007-repartition"
         val expected = NodeName(id = Some(7), alias = "repartition", originalName = input)
 

@@ -4,7 +4,7 @@ object Dependencies {
 
   object versions {
     val fastparse     = "2.3.3"
-    val kafka         = "2.8.0"
+    val kafka         = "3.0.0"
     val kindProjector = "0.10.3"
     val logback       = "1.2.6"
     val pureConfig    = "0.17.0"

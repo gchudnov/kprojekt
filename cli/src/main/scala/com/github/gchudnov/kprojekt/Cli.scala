@@ -20,8 +20,8 @@ import zio.{ ExitCode, ZEnv, ZIO }
  * sbt cli/assembly
  *
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/toplogogy.log
+ * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/topology.log
+ * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/topology.log
  * }}}
  */
 object Cli extends zio.App {
@@ -66,7 +66,7 @@ object Cli extends zio.App {
     val env = logEnv ++ projEnv
 
     val program = for {
-      config <- ZIO.fromOption(oconf).mapError(_ => "")
+      config <- ZIO.fromOption(oconf).orElseFail("")
       _       = LogOps.setLogVerbosity(config.isVerbose)
       _      <- Projektor.run(config.topologyFile)
     } yield ()
