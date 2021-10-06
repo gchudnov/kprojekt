@@ -7,6 +7,8 @@ import com.github.gchudnov.kprojekt.formatter.Bundler
 import com.github.gchudnov.kprojekt.parser.Parser
 import zio.{ Has, Task, ZIO, ZLayer }
 
+// TODO: extract trait
+
 object Projektor {
   type Projektor = Has[Projektor.Service]
 

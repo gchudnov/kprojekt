@@ -1,13 +1,13 @@
 package com.github.gchudnov.kprojekt.naming
 
-import zio.UIO
+import zio.{ Has, UIO, ZIO, ZLayer }
 
 import scala.util.matching.Regex
 
 /**
  * Node naming
  */
-final class LiveNamer(config: NamerConfig) extends Namer.Service {
+final class LiveNamer(config: NamerConfig) extends Namer {
   import LiveNamer._
 
   override def name(input: String): UIO[NodeName] =
@@ -63,6 +63,12 @@ object LiveNamer {
     val Uid      = "uid"
     val Suffix   = "suffix"
   }
+
+  def layer: ZLayer[Has[NamerConfig], Nothing, Has[Namer]] =
+    (for {
+      config <- ZIO.service[NamerConfig]
+      service = new LiveNamer(config)
+    } yield service).toLayer
 
   private val groupNames = Seq(RxGroups.Kind, RxGroups.Operator, RxGroups.Uid, RxGroups.Suffix)
   private val pattern    = new Regex("""^(?<kind>\w+)-(?<operator>[\w-]+)-(?<uid>\d+)-?(?<suffix>\w+)?$""", groupNames: _*)

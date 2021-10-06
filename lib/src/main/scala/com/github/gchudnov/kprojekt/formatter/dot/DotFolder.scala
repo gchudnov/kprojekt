@@ -4,7 +4,8 @@ import com.github.gchudnov.kprojekt.formatter.Folder
 import com.github.gchudnov.kprojekt.formatter.dot.DotSpace._
 import com.github.gchudnov.kprojekt.formatter.dot.legend.Legend
 import com.github.gchudnov.kprojekt.ids.NodeId
-import com.github.gchudnov.kprojekt.naming.{ Namer, NodeName }
+import com.github.gchudnov.kprojekt.naming.{Namer, NodeName}
+import zio.{Has, ZIO, ZLayer}
 
 final case class DotFolderState(
   inner: String = "",
@@ -20,7 +21,7 @@ final case class DotFolderState(
  *
  * cat graph.dot | dot -Tpng > graph.png
  */
-final class DotFolder(config: DotConfig, namer: Namer.Service, state: DotFolderState) extends Folder.Service {
+final class DotFolder(config: DotConfig, namer: Namer, state: DotFolderState) extends Folder {
   import DotColors._
   import DotFolder._
 
@@ -268,6 +269,14 @@ object DotFolder {
   import com.github.gchudnov.kprojekt.util.MapOps._
 
   val UnknownName = "?"
+
+  def layer: ZLayer[Has[DotConfig] with Has[Namer], Nothing, Has[Folder]] = {
+    (for {
+      config <- ZIO.service[DotConfig]
+      namer <- ZIO.service[Namer]
+      service = new DotFolder(config = config, namer = namer, state = DotFolderState())
+    } yield service).toLayer
+  }
 
   def sanitize(value: String): String =
     value.replaceAll("""[-.:]""", "_")

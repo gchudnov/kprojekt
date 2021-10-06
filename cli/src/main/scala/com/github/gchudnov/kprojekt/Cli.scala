@@ -1,16 +1,14 @@
 package com.github.gchudnov.kprojekt
 
 import java.io.File
-
-import com.github.gchudnov.kprojekt.encoder.Encoder
-import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder, FolderConfig }
-import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig }
+import com.github.gchudnov.kprojekt.encoder.{Encoder, LiveEncoder}
+import com.github.gchudnov.kprojekt.formatter.dot.DotBundler
+import com.github.gchudnov.kprojekt.formatter.{Bundler, Folder, FolderConfig}
+import com.github.gchudnov.kprojekt.naming.{Namer, NamerConfig}
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.LogOps
-import scopt.{ OParser, OParserBuilder }
-import zio.logging.Logging
-import zio.logging.slf4j.Slf4jLogger
-import zio.{ ExitCode, ZEnv, ZIO }
+import scopt.{OParser, OParserBuilder}
+import zio.{ExitCode, ZEnv, ZIO, ZIOAppDefault}
 
 /**
  * Command-Line Application for topology parser
@@ -24,7 +22,7 @@ import zio.{ ExitCode, ZEnv, ZIO }
  * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/topology.log
  * }}}
  */
-object Cli extends zio.App {
+object Cli extends ZIOAppDefault {
 
   final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
 
@@ -54,16 +52,14 @@ object Cli extends zio.App {
     val oconf    = OParser.parse(parser, args, AppConfig())
     val spaceArg = oconf.map(_.space).getOrElse("")
 
-    val logEnv = Slf4jLogger.make(logFormat = (_, logEntry) => logEntry)
-
     val parseEnv  = Parser.live
     val nameEnv   = NamerConfig.live >>> Namer.live
     val foldEnv   = (FolderConfig.make(spaceArg) ++ nameEnv) >>> Folder.live
-    val encEnv    = nameEnv ++ foldEnv >>> Encoder.live
-    val bundleEnv = logEnv >>> Bundler.live
+    val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
+    val bundleEnv = DotBundler.layer
     val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> Projektor.live
 
-    val env = logEnv ++ projEnv
+    val env = projEnv
 
     val program = for {
       config <- ZIO.fromOption(oconf).orElseFail("")
@@ -72,7 +68,7 @@ object Cli extends zio.App {
     } yield ()
 
     program
-      .flatMapError(it => Logging.error(it.toString))
+      .flatMapError(it => ZIO.logError(it.toString))
       .provideLayer(env)
       .exitCode
   }

@@ -8,7 +8,7 @@ trait Legend {
   def table: Seq[NodeName]
 }
 
-final class BasicLegend(namer: Namer.Service, nodeIds: Seq[NodeId]) extends Legend {
+final class BasicLegend(namer: Namer, nodeIds: Seq[NodeId]) extends Legend {
   private val nodeMap: Map[String, NodeName] = nodeIds.map(nodeId => (nodeId.tId -> namer.get(nodeId.name))).toMap
 
   override def entry(tId: String): Option[NodeName] =
@@ -19,7 +19,7 @@ final class BasicLegend(namer: Namer.Service, nodeIds: Seq[NodeId]) extends Lege
 }
 
 object Legend {
-  def apply(namer: Namer.Service, nodeIds: Seq[NodeId]): Legend =
+  def apply(namer: Namer, nodeIds: Seq[NodeId]): Legend =
     new BasicLegend(namer, nodeIds)
 
   val empty: Legend = new BasicLegend(namer = new EmptyNamer(), nodeIds = Seq.empty[NodeId])
