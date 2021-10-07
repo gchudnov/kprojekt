@@ -5,25 +5,12 @@ import com.github.gchudnov.kprojekt.formatter.FolderConfig
 import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
 import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
 import com.github.gchudnov.kprojekt.parser.LiveParser
-import com.github.gchudnov.kprojekt.util.LogOps
 import scopt.{ OParser, OParserBuilder }
 import zio.Console.printLineError
 import zio.{ Has, ZEnv, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer }
 
 import java.io.File
 
-/**
- * Command-Line Application for topology parser
- *
- * {{{
- * building an image:
- * sbt cli/assembly
- *
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/topology.log
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/topology.log
- * }}}
- */
 object Cli extends ZIOAppDefault {
 
   final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
@@ -54,8 +41,7 @@ object Cli extends ZIOAppDefault {
     val program: ZIO[Has[ZIOAppArgs], Throwable, Unit] = for {
       as     <- args
       config <- ZIO.attempt(OParser.parse(parser, as, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
-      env     = makeEnv(config.space)
-      _       = LogOps.setLogVerbosity(config.isVerbose)
+      env     = makeEnv(config)
       _      <- Projektor.run(config.topologyFile).provideLayer(env)
     } yield ()
 
@@ -63,12 +49,12 @@ object Cli extends ZIOAppDefault {
       .tapError(t => printLineError(s"Error: ${t.getMessage}"))
   }
 
-  private def makeEnv(space: String): ZLayer[Any, Throwable, Has[Projektor]] = {
+  private def makeEnv(c: AppConfig): ZLayer[Any, Throwable, Has[Projektor]] = {
     val parseEnv  = LiveParser.layer
     val nameEnv   = NamerConfig.layer >>> LiveNamer.layer
-    val foldEnv   = (FolderConfig.make(space) ++ nameEnv) >>> DotFolder.layer
+    val foldEnv   = (FolderConfig.make(c.space) ++ nameEnv) >>> DotFolder.layer
     val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
-    val bundleEnv = DotBundler.layer
+    val bundleEnv = DotBundler.layer(c.isVerbose)
     val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
 
     projEnv
