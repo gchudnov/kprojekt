@@ -19,7 +19,7 @@ import scala.jdk.CollectionConverters._
 object ParserSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =
     suite("ParserSpec")(
-      testM("parse fan-out topology description should return the parsed structure") {
+      test("parse fan-out topology description should return the parsed structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/fan-out.log"))
           desc  <- Parser.run(input).provideLayer(defaultEnv)
@@ -59,7 +59,7 @@ object ParserSpec extends DefaultRunnableSpec {
           assert(sink2.successors().asScala)(hasSize(equalTo(0)))
         }
       },
-      testM("parse global-store topology description should return the valid structure") {
+      test("parse global-store topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/global-store.log"))
           desc  <- Parser.run(input).provideLayer(defaultEnv)
@@ -83,7 +83,7 @@ object ParserSpec extends DefaultRunnableSpec {
           assert(sink)(isNone)
         }
       },
-      testM("parse complex topology description should return the valid structure") {
+      test("parse complex topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-1.log"))
           desc  <- Parser.run(input).provideLayer(defaultEnv)
@@ -101,7 +101,7 @@ object ParserSpec extends DefaultRunnableSpec {
           assert(nodes1)(hasSize(equalTo(19)))
         }
       },
-      testM("parse an invalid input should return an error") {
+      test("parse an invalid input should return an error") {
         val res = for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/invalid-structure.log"))
           desc  <- Parser.run(input).provideLayer(defaultEnv)
@@ -112,5 +112,5 @@ object ParserSpec extends DefaultRunnableSpec {
     )
 
   private val defaultEnv =
-    Parser.live
+    LiveParser.layer
 }

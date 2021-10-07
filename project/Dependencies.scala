@@ -3,14 +3,13 @@ import sbt._
 object Dependencies {
 
   object versions {
-    val fastparse     = "2.3.2"
-    val kafka         = "2.8.0"
+    val fastparse     = "2.3.3"
+    val kafka         = "3.0.0"
     val kindProjector = "0.10.3"
-    val logback       = "1.2.5"
-    val pureConfig    = "0.16.0"
+    val logback       = "1.2.6"
+    val pureConfig    = "0.17.0"
     val scopt         = "4.0.1"
-    val zio           = "1.0.11"
-    val zioLogging    = "0.5.11"
+    val zio           = "2.0.0-M3"
   }
 
   private val compiler = Seq(
@@ -24,8 +23,6 @@ object Dependencies {
   private val pureConfig      = "com.github.pureconfig" %% "pureconfig"          % versions.pureConfig
   private val scopt           = "com.github.scopt"      %% "scopt"               % versions.scopt
   private val zio             = "dev.zio"               %% "zio"                 % versions.zio
-  private val zioLogging      = "dev.zio"               %% "zio-logging"         % versions.zioLogging
-  private val zioLoggingSlf4j = "dev.zio"               %% "zio-logging-slf4j"   % versions.zioLogging
   private val zioStreams      = "dev.zio"               %% "zio-streams"         % versions.zio
   private val zioTest         = "dev.zio"               %% "zio-test"            % versions.zio
   private val zioTestMagnolia = "dev.zio"               %% "zio-test-magnolia"   % versions.zio
@@ -39,8 +36,6 @@ object Dependencies {
       pureConfig,
       scopt,
       zio,
-      zioLogging,
-      zioLoggingSlf4j,
       zioStreams
     )
     val test = Seq(

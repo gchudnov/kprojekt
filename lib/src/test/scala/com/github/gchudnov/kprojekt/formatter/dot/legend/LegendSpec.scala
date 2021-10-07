@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt.formatter.dot.legend
 
 import com.github.gchudnov.kprojekt.ids.{ NodeId, ProcessorId }
-import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig, NodeName }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, Namer, NamerConfig, NodeName }
 import zio.test.Assertion.equalTo
 import zio.test._
 import zio.{ Has, ZIO, ZLayer }
@@ -9,9 +9,9 @@ import zio.{ Has, ZIO, ZLayer }
 object LegendSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =
     suite("Legend")(
-      testM("if empty returns no nodes for the given name") {
+      test("if empty returns no nodes for the given name") {
         val program = for {
-          namer <- ZIO.service[Namer.Service]
+          namer <- ZIO.service[Namer]
         } yield {
           val input  = Seq.empty[NodeId]
           val legend = Legend(namer, input)
@@ -22,9 +22,9 @@ object LegendSpec extends DefaultRunnableSpec {
 
         program.provideLayer(defaultEnv)
       },
-      testM("if non-empty, nodes can be queries by name") {
+      test("if non-empty, nodes can be queries by name") {
         val program = for {
-          namer <- ZIO.service[Namer.Service]
+          namer <- ZIO.service[Namer]
         } yield {
           val orininalName1 = "KSTREAM-MAPVALUES-0000000002"
           val originalName2 = "KSTREAM-SELECT-KEY-0000000003"
@@ -48,11 +48,11 @@ object LegendSpec extends DefaultRunnableSpec {
 
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Has[Namer.Service]] = withEnv(defaultNameConfig)
+  private val defaultEnv: ZLayer[Any, Nothing, Has[Namer]] = withEnv(defaultNameConfig)
 
-  private def withEnv(nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Namer.Service]] = {
+  private def withEnv(nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Namer]] = {
     val nameConfigEnv = ZLayer.succeed(nameConfig)
-    val nameEnv       = (nameConfigEnv >>> Namer.live)
+    val nameEnv       = (nameConfigEnv >>> LiveNamer.layer)
 
     val env = nameEnv
     env

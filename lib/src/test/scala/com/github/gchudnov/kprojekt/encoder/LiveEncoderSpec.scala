@@ -1,15 +1,14 @@
 package com.github.gchudnov.kprojekt.encoder
 
-import com.github.gchudnov.kprojekt.formatter.Folder
-import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotSpace }
-import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig }
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpace }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.GlobalKTable
 import org.apache.kafka.streams.processor.api.{ Processor, ProcessorContext, ProcessorSupplier, Record }
 import org.apache.kafka.streams.scala.ImplicitConversions._
-import org.apache.kafka.streams.scala.serialization.Serdes._
 import org.apache.kafka.streams.scala.kstream.{ KStream, KTable, Materialized }
+import org.apache.kafka.streams.scala.serialization.Serdes._
 import org.apache.kafka.streams.scala.{ ByteArrayKeyValueStore, StreamsBuilder }
 import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
 import zio.test.Assertion._
@@ -24,7 +23,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
         assert(errOrData)(isRight) &&
         assert(errOrData.toTry.get)(isNonEmptyString)
       },
-      testM("encoding a fan-out topology should produce the expected graphviz output") {
+      test("encoding a fan-out topology should produce the expected graphviz output") {
         val builder = new StreamsBuilder
 
         val stream1 = builder.stream[String, String]("topic-a")
@@ -41,7 +40,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
           actual   <- Encoder.encode("fan-out", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
-      testM("encoding the word-count topology should produce the expected graphviz output") {
+      test("encoding the word-count topology should produce the expected graphviz output") {
         val builder = new StreamsBuilder
         val source  = builder.stream[String, String]("streams-plaintext-input")
 
@@ -60,7 +59,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
           actual   <- Encoder.encode("word-count", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
-      testM("encoding the word-count topology should produce the expected graphviz output (embed stores)") {
+      test("encoding the word-count topology should produce the expected graphviz output (embed stores)") {
         val builder = new StreamsBuilder
         val source  = builder.stream[String, String]("streams-plaintext-input")
         source
@@ -78,7 +77,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
           actual   <- Encoder.encode("word-count", desc).provideLayer(embeddedEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
-      testM("encoding a topology with global store should produce the expected graphviz output") {
+      test("encoding a topology with global store should produce the expected graphviz output") {
         val stateStoreName = "test-store"
 
         def processor: Processor[String, Long, Void, Void] = new Processor[String, Long, Void, Void] {
@@ -108,7 +107,7 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
           actual   <- Encoder.encode("global-store-usage", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
-      testM("encoding topology where store and topic has the same name should properly create a dot-file") {
+      test("encoding topology where store and topic has the same name should properly create a dot-file") {
         val builder = new StreamsBuilder
 
         val requests: KStream[String, Double] = builder
@@ -144,20 +143,20 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
   private val embeddedDotConfig = defaultDotConfig.copy(isEmbedStore = true)
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder.Service]] =
+  private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder]] =
     withEnv(defaultDotConfig, defaultNameConfig)
 
-  private val embeddedEnv: ZLayer[Any, Nothing, Has[Encoder.Service]] =
+  private val embeddedEnv: ZLayer[Any, Nothing, Has[Encoder]] =
     withEnv(embeddedDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Encoder.Service]] = {
+  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Encoder]] = {
     val dotConfigEnv  = ZLayer.succeed(dotConfig)
     val nameConfigEnv = ZLayer.succeed(nameConfig)
 
-    val nameEnv = (nameConfigEnv >>> Namer.live)
-    val foldEnv = ((dotConfigEnv ++ nameEnv) >>> Folder.live)
+    val nameEnv = (nameConfigEnv >>> LiveNamer.layer)
+    val foldEnv = ((dotConfigEnv ++ nameEnv) >>> DotFolder.layer)
 
-    val encoderEnv = foldEnv >>> Encoder.live
+    val encoderEnv = foldEnv >>> LiveEncoder.layer
     encoderEnv
   }
 }

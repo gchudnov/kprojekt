@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt.naming
 import zio.UIO
 
-final class EmptyNamer() extends Namer.Service {
+final class EmptyNamer() extends Namer {
   private val emptyName = NodeName(None, "", "")
 
   override def name(input: String): UIO[NodeName] = UIO(get(input))

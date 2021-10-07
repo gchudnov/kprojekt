@@ -5,12 +5,12 @@ import fastparse.MultiLineWhitespace._
 import fastparse._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.{ Node, Subtopology }
-import zio.{ Task, ZIO }
+import zio.{ Has, Task, ZIO, ZLayer }
 
 /**
  * Parses the text description of the Topology
  */
-final class LiveParser() extends Parser.Service {
+final class LiveParser() extends Parser {
   import LiveParser._
 
   override def run(input: String): Task[TopologyDescription] =
@@ -53,6 +53,8 @@ object LiveParser {
   private def subtopology[_: P]   = P(subtopologyId ~ (source | processor | sink).rep).map(SubtopologyRef.tupled)
 
   private def topology[_: P] = P("Topologies:" ~/ subtopology.rep).map(TopologyRef)
+
+  def layer: ZLayer[Any, Nothing, Has[Parser]] = ZLayer.succeed(new LiveParser())
 
   private def toTopologyDescription(topoRef: TopologyRef): TopologyDescription = {
     val ss   = topoRef.subtopologies.map(buildSubtopology)

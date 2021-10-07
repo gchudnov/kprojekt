@@ -1,30 +1,20 @@
 package com.github.gchudnov.kprojekt
 
+import com.github.gchudnov.kprojekt.encoder.LiveEncoder
+import com.github.gchudnov.kprojekt.formatter.FolderConfig
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
+import com.github.gchudnov.kprojekt.parser.LiveParser
+import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
+import scopt.{ DefaultOParserSetup, OParser, OParserBuilder, OParserSetup }
+import zio.Console.printLineError
+import zio.{ Console, Has, ZEnv, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer }
+
 import java.io.File
 
-import com.github.gchudnov.kprojekt.encoder.Encoder
-import com.github.gchudnov.kprojekt.formatter.{ Bundler, Folder, FolderConfig }
-import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig }
-import com.github.gchudnov.kprojekt.parser.Parser
-import com.github.gchudnov.kprojekt.util.LogOps
-import scopt.{ OParser, OParserBuilder }
-import zio.logging.Logging
-import zio.logging.slf4j.Slf4jLogger
-import zio.{ ExitCode, ZEnv, ZIO }
-
-/**
- * Command-Line Application for topology parser
- *
- * {{{
- * building an image:
- * sbt cli/assembly
- *
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- /path/to/toplogogy.log
- * bloop run cli -m com.github.gchudnov.kprojekt.Cli -- --space=l --verbose /path/to/toplogogy.log
- * }}}
- */
-object Cli extends zio.App {
+object Cli extends ZIOAppDefault {
+  val osetup: ZLayer[Has[Console], Throwable, Has[OZEffectSetup]] = makeOZEffectSetup()
+  val psetup: OParserSetup                                        = makePEffectSetup()
 
   final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
 
@@ -50,30 +40,35 @@ object Cli extends zio.App {
     )
   }
 
-  override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
-    val oconf    = OParser.parse(parser, args, AppConfig())
-    val spaceArg = oconf.map(_.space).getOrElse("")
-
-    val logEnv = Slf4jLogger.make(logFormat = (_, logEntry) => logEntry)
-
-    val parseEnv  = Parser.live
-    val nameEnv   = NamerConfig.live >>> Namer.live
-    val foldEnv   = (FolderConfig.make(spaceArg) ++ nameEnv) >>> Folder.live
-    val encEnv    = nameEnv ++ foldEnv >>> Encoder.live
-    val bundleEnv = logEnv >>> Bundler.live
-    val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> Projektor.live
-
-    val env = logEnv ++ projEnv
-
-    val program = for {
-      config <- ZIO.fromOption(oconf).mapError(_ => "")
-      _       = LogOps.setLogVerbosity(config.isVerbose)
-      _      <- Projektor.run(config.topologyFile)
+  override def run: ZIO[Environment with ZEnv with Has[ZIOAppArgs], Any, Any] = {
+    val program: ZIO[Has[ZIOAppArgs], Throwable, Unit] = for {
+      as     <- args
+      config <- ZIO.attempt(OParser.parse(parser, as, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
+      env     = makeEnv(config)
+      _      <- Projektor.run(config.topologyFile).provideLayer(env)
     } yield ()
 
     program
-      .flatMapError(it => Logging.error(it.toString))
-      .provideLayer(env)
-      .exitCode
+      .tapError(t => printLineError(s"Error: ${t.getMessage}"))
   }
+
+  private def makeEnv(c: AppConfig): ZLayer[Any, Throwable, Has[Projektor]] = {
+    val parseEnv  = LiveParser.layer
+    val nameEnv   = NamerConfig.layer >>> LiveNamer.layer
+    val foldEnv   = (FolderConfig.make(c.space) ++ nameEnv) >>> DotFolder.layer
+    val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
+    val bundleEnv = DotBundler.layer(c.isVerbose)
+    val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
+
+    projEnv
+  }
+
+  private def makeOZEffectSetup(): ZLayer[Has[Console], Nothing, Has[OZEffectSetup]] =
+    StdioEffectSetup.layer
+
+  private def makePEffectSetup(): OParserSetup =
+    new DefaultOParserSetup with OParserSetup {
+      override def errorOnUnknownArgument: Boolean   = false
+      override def showUsageOnError: Option[Boolean] = Some(false)
+    }
 }

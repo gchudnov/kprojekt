@@ -5,14 +5,14 @@ import com.github.gchudnov.kprojekt.ids.NodeIdOrdering._
 import com.github.gchudnov.kprojekt.ids._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription._
-import zio.UIO
+import zio.{ Has, UIO, ZIO, ZLayer }
 
 import scala.jdk.CollectionConverters._
 
 /**
  * Encodes TopologyDescription to a string.
  */
-final class LiveEncoder(folder: Folder.Service) extends Encoder.Service {
+final class LiveEncoder(folder: Folder) extends Encoder {
   import LiveEncoder._
 
   override def encode(name: String, desc: TopologyDescription): UIO[String] =
@@ -65,7 +65,13 @@ object LiveEncoder {
   private val KeyProcessor = "p"
   private val KeySink      = "k"
 
-  private def collectSubtopology(ra: Folder.Service)(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Folder.Service = {
+  def layer: ZLayer[Has[Folder], Nothing, Has[Encoder]] =
+    (for {
+      folder <- ZIO.service[Folder]
+      service = new LiveEncoder(folder)
+    } yield service).toLayer
+
+  private def collectSubtopology(ra: Folder)(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Folder = {
     val nodeEdges  = collectNodeEdges(sources ++ processors ++ sinks.asInstanceOf[Seq[Node]])
     val stores     = collectStores(processors)
     val storeEdges = collectStoreEdges(processors)
