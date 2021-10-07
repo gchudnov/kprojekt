@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt.formatter
 
 import com.github.gchudnov.kprojekt.formatter.dot.DotConfig
-import zio.{Has, ZIO, ZLayer}
+import zio.{ Has, ZIO, ZLayer }
 
 object FolderConfig {
   val layer: ZLayer[Any, Throwable, Has[DotConfig]] =

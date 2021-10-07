@@ -1,20 +1,20 @@
 package com.github.gchudnov.kprojekt.encoder
 
 import com.github.gchudnov.kprojekt.formatter.Folder
-import com.github.gchudnov.kprojekt.formatter.dot.{DotConfig, DotFolder, DotSpace}
-import com.github.gchudnov.kprojekt.naming.{LiveNamer, Namer, NamerConfig}
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpace }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, Namer, NamerConfig }
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.GlobalKTable
-import org.apache.kafka.streams.processor.api.{Processor, ProcessorContext, ProcessorSupplier, Record}
+import org.apache.kafka.streams.processor.api.{ Processor, ProcessorContext, ProcessorSupplier, Record }
 import org.apache.kafka.streams.scala.ImplicitConversions._
 import org.apache.kafka.streams.scala.serialization.Serdes._
-import org.apache.kafka.streams.scala.kstream.{KStream, KTable, Materialized}
-import org.apache.kafka.streams.scala.{ByteArrayKeyValueStore, StreamsBuilder}
-import org.apache.kafka.streams.state.{KeyValueStore, StoreBuilder, Stores}
+import org.apache.kafka.streams.scala.kstream.{ KStream, KTable, Materialized }
+import org.apache.kafka.streams.scala.{ ByteArrayKeyValueStore, StreamsBuilder }
+import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
 import zio.test.Assertion._
 import zio.test._
-import zio.{Has, ZIO, ZLayer}
+import zio.{ Has, ZIO, ZLayer }
 
 object LiveEncoderSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =

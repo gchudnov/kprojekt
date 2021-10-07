@@ -1,10 +1,10 @@
 package com.github.gchudnov.kprojekt.formatter.dot.legend
 
-import com.github.gchudnov.kprojekt.ids.{NodeId, ProcessorId}
-import com.github.gchudnov.kprojekt.naming.{LiveNamer, Namer, NamerConfig, NodeName}
+import com.github.gchudnov.kprojekt.ids.{ NodeId, ProcessorId }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, Namer, NamerConfig, NodeName }
 import zio.test.Assertion.equalTo
 import zio.test._
-import zio.{Has, ZIO, ZLayer}
+import zio.{ Has, ZIO, ZLayer }
 
 object LegendSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =

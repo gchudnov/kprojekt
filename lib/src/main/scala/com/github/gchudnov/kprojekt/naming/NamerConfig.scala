@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt.naming
 
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import zio.{Has, ZIO, ZLayer}
+import zio.{ Has, ZIO, ZLayer }
 
 import scala.annotation.nowarn
 
