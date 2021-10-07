@@ -54,4 +54,7 @@ will be picked up automatically.
 
 # generate an image from the topology (./res/example/word-count.png)
 ./kprojekt-cli ./res/example/word-count.log
+
+# copy
+cp ./kprojekt-cli /usr/local/bin/
 ```
