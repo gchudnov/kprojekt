@@ -1,10 +1,9 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.encoder.Encoder
-import com.github.gchudnov.kprojekt.formatter.Folder
-import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotSpace }
-import com.github.gchudnov.kprojekt.naming.{ Namer, NamerConfig }
-import com.github.gchudnov.kprojekt.parser.Parser
+import com.github.gchudnov.kprojekt.encoder.{ Encoder, LiveEncoder }
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpace }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
+import com.github.gchudnov.kprojekt.parser.{ LiveParser, Parser }
 import com.github.gchudnov.kprojekt.util.FileOps
 import zio.test.Assertion._
 import zio.test._
@@ -23,18 +22,18 @@ import zio.{ Has, ZIO, ZLayer }
 object ProjektorSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[Environment, Failure] =
     suite("ProjektorSpec")(
-      testM("parsing and rendering a complex topology should produce the expected graphviz output") {
+      test("parsing and rendering a complex topology should produce the expected graphviz output") {
         for {
           input    <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-1.log"))
-          desc     <- Parser.run(input).provideLayer(Parser.live)
+          desc     <- Parser.run(input).provideLayer(LiveParser.layer)
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/complex-topo-1.dot"))
           actual   <- Encoder.encode("complex-topo-1", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
-      testM("parsing a complex topology should produce no duplicates for sources") {
+      test("parsing a complex topology should produce no duplicates for sources") {
         for {
           input    <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-2.log"))
-          desc     <- Parser.run(input).provideLayer(Parser.live)
+          desc     <- Parser.run(input).provideLayer(LiveParser.layer)
           expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/complex-topo-2.dot"))
           actual   <- Encoder.encode("complex-topo-2", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
@@ -44,17 +43,17 @@ object ProjektorSpec extends DefaultRunnableSpec {
   private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false, space = DotSpace.Small)
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder.Service]] =
+  private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder]] =
     withEnv(defaultDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Encoder.Service]] = {
+  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Encoder]] = {
     val dotConfigEnv  = ZLayer.succeed(dotConfig)
     val nameConfigEnv = ZLayer.succeed(nameConfig)
 
-    val nameEnv = (nameConfigEnv >>> Namer.live)
-    val foldEnv = ((dotConfigEnv ++ nameEnv) >>> Folder.live)
+    val nameEnv = (nameConfigEnv >>> LiveNamer.layer)
+    val foldEnv = ((dotConfigEnv ++ nameEnv) >>> DotFolder.layer)
 
-    val encoderEnv = foldEnv >>> Encoder.live
+    val encoderEnv = foldEnv >>> LiveEncoder.layer
     encoderEnv
   }
 }

@@ -1,14 +1,16 @@
 package com.github.gchudnov.kprojekt
 
-import java.io.File
-import com.github.gchudnov.kprojekt.encoder.{Encoder, LiveEncoder}
-import com.github.gchudnov.kprojekt.formatter.dot.DotBundler
-import com.github.gchudnov.kprojekt.formatter.{Bundler, Folder, FolderConfig}
-import com.github.gchudnov.kprojekt.naming.{Namer, NamerConfig}
-import com.github.gchudnov.kprojekt.parser.Parser
+import com.github.gchudnov.kprojekt.encoder.LiveEncoder
+import com.github.gchudnov.kprojekt.formatter.FolderConfig
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
+import com.github.gchudnov.kprojekt.parser.LiveParser
 import com.github.gchudnov.kprojekt.util.LogOps
-import scopt.{OParser, OParserBuilder}
-import zio.{ExitCode, ZEnv, ZIO, ZIOAppDefault}
+import scopt.{ OParser, OParserBuilder }
+import zio.Console.printLineError
+import zio.{ Has, ZEnv, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer }
+
+import java.io.File
 
 /**
  * Command-Line Application for topology parser
@@ -48,28 +50,27 @@ object Cli extends ZIOAppDefault {
     )
   }
 
-  override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
-    val oconf    = OParser.parse(parser, args, AppConfig())
-    val spaceArg = oconf.map(_.space).getOrElse("")
-
-    val parseEnv  = Parser.live
-    val nameEnv   = NamerConfig.live >>> Namer.live
-    val foldEnv   = (FolderConfig.make(spaceArg) ++ nameEnv) >>> Folder.live
-    val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
-    val bundleEnv = DotBundler.layer
-    val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> Projektor.live
-
-    val env = projEnv
-
-    val program = for {
-      config <- ZIO.fromOption(oconf).orElseFail("")
+  override def run: ZIO[Environment with ZEnv with Has[ZIOAppArgs], Any, Any] = {
+    val program: ZIO[Has[ZIOAppArgs], Throwable, Unit] = for {
+      as     <- args
+      config <- ZIO.attempt(OParser.parse(parser, as, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
+      env     = makeEnv(config.space)
       _       = LogOps.setLogVerbosity(config.isVerbose)
-      _      <- Projektor.run(config.topologyFile)
+      _      <- Projektor.run(config.topologyFile).provideLayer(env)
     } yield ()
 
     program
-      .flatMapError(it => ZIO.logError(it.toString))
-      .provideLayer(env)
-      .exitCode
+      .tapError(t => printLineError(s"Error: ${t.getMessage}"))
+  }
+
+  private def makeEnv(space: String): ZLayer[Any, Throwable, Has[Projektor]] = {
+    val parseEnv  = LiveParser.layer
+    val nameEnv   = NamerConfig.layer >>> LiveNamer.layer
+    val foldEnv   = (FolderConfig.make(space) ++ nameEnv) >>> DotFolder.layer
+    val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
+    val bundleEnv = DotBundler.layer
+    val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
+
+    projEnv
   }
 }

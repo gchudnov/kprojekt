@@ -34,7 +34,6 @@ object DotConfig {
 
     @nowarn
     val res = userSource.withFallback(defaultSource).at("formatters.dot").loadOrThrow[DotConfig]
-
     res
   }
 
