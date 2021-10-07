@@ -5,13 +5,16 @@ import com.github.gchudnov.kprojekt.formatter.FolderConfig
 import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
 import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
 import com.github.gchudnov.kprojekt.parser.LiveParser
-import scopt.{ OParser, OParserBuilder }
+import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
+import scopt.{ DefaultOParserSetup, OParser, OParserBuilder, OParserSetup }
 import zio.Console.printLineError
-import zio.{ Has, ZEnv, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer }
+import zio.{ Console, Has, ZEnv, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer }
 
 import java.io.File
 
 object Cli extends ZIOAppDefault {
+  val osetup: ZLayer[Has[Console], Throwable, Has[OZEffectSetup]] = makeOZEffectSetup()
+  val psetup: OParserSetup                                        = makePEffectSetup()
 
   final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
 
@@ -59,4 +62,13 @@ object Cli extends ZIOAppDefault {
 
     projEnv
   }
+
+  private def makeOZEffectSetup(): ZLayer[Has[Console], Nothing, Has[OZEffectSetup]] =
+    StdioEffectSetup.layer
+
+  private def makePEffectSetup(): OParserSetup =
+    new DefaultOParserSetup with OParserSetup {
+      override def errorOnUnknownArgument: Boolean   = false
+      override def showUsageOnError: Option[Boolean] = Some(false)
+    }
 }

@@ -1,17 +1,22 @@
 package com.github.gchudnov.kprojekt.zopt.ozeffectsetup
 
-import zio.*
 import scopt.OEffect
-import scopt.OEffect.*
+import scopt.OEffect._
+import zio._
 
-trait OZEffectSetup:
+trait OZEffectSetup {
   def displayToOut(msg: String): Task[Unit]
-  def displayToErr(msg: String): Task[Unit]
-  def reportError(msg: String): Task[Unit]
-  def reportWarning(msg: String): Task[Unit]
-  def terminate(exitState: Either[String, Unit]): Task[Unit]
 
-object OZEffectSetup:
+  def displayToErr(msg: String): Task[Unit]
+
+  def reportError(msg: String): Task[Unit]
+
+  def reportWarning(msg: String): Task[Unit]
+
+  def terminate(exitState: Either[String, Unit]): Task[Unit]
+}
+
+object OZEffectSetup {
   def displayToOut(msg: String): ZIO[Has[OZEffectSetup], Throwable, Unit] =
     ZIO.serviceWith(_.displayToOut(msg))
 
@@ -37,3 +42,4 @@ object OZEffectSetup:
         case Terminate(exitState) => terminate(exitState)
       }
       .unit
+}
