@@ -47,6 +47,13 @@ object ParserSpec extends DefaultRunnableSpec {
               )
             )
           ) &&
+          assert(
+            source
+              .asInstanceOf[Source]
+              .topicSet()
+              .asScala
+              .toSet
+          )(equalTo(Set("A", "A.B", "A-B", "A_B"))) &&
           assert(source.predecessors().asScala)(isEmpty) &&
           assert(source.successors().asScala)(hasSize(equalTo(2))) &&
           assert(proc1.predecessors().asScala)(hasSize(equalTo(1))) &&
