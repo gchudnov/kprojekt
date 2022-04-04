@@ -6,6 +6,7 @@ import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
 import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
 import com.github.gchudnov.kprojekt.parser.LiveParser
 import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
+import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
 import scopt.{ DefaultOParserSetup, OParser, OParserBuilder, OParserSetup }
 import zio.Console.printLineError
 import zio._
@@ -17,8 +18,8 @@ object Cli extends ZIOAppDefault {
   override def run: ZIO[ZIOAppArgs, Any, Any] = {
 
     val program: ZIO[ZIOAppArgs, Throwable, Unit] = for {
-      as     <- getArgs
-      config <- ZIO.attempt(OParser.parse(parser, as, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
+      args   <- getArgs
+      config <- ZIO.attempt(OParser.parse(parser, args, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
       env     = makeEnv(config)
       _      <- Projektor.run(config.topologyFile).provideLayer(env)
     } yield ()
@@ -37,8 +38,8 @@ object Cli extends ZIOAppDefault {
   val parser: OParser[Unit, AppConfig] = {
     import builder._
     OParser.sequence(
-      programName(BuildInfo.name),
-      head(BuildInfo.name, BuildInfo.version),
+      programName(KBuildInfo.name),
+      head(KBuildInfo.name, KBuildInfo.version),
       help("help").text("prints this usage text"),
       opt[Unit]("verbose")
         .action((_, c) => c.copy(isVerbose = true))
