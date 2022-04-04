@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.naming
 
-import zio.{ Has, UIO, ZIO, ZLayer }
+import zio._
 
 import scala.util.matching.Regex
 
@@ -64,7 +64,7 @@ object LiveNamer {
     val Suffix   = "suffix"
   }
 
-  def layer: ZLayer[Has[NamerConfig], Nothing, Has[Namer]] =
+  def layer: ZLayer[NamerConfig, Nothing, Namer] =
     (for {
       config <- ZIO.service[NamerConfig]
       service = new LiveNamer(config)

@@ -8,12 +8,12 @@ import com.github.gchudnov.kprojekt.parser.LiveParser
 import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
 import scopt.{ DefaultOParserSetup, OParser, OParserBuilder, OParserSetup }
 import zio.Console.printLineError
-import zio.{ Console, Has, ZEnv, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer }
+import zio._
 
 import java.io.File
 
 object Cli extends ZIOAppDefault {
-  val osetup: ZLayer[Has[Console], Throwable, Has[OZEffectSetup]] = makeOZEffectSetup()
+  val osetup: ZLayer[Console, Throwable, OZEffectSetup] = makeOZEffectSetup()
   val psetup: OParserSetup                                        = makePEffectSetup()
 
   final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
@@ -40,8 +40,8 @@ object Cli extends ZIOAppDefault {
     )
   }
 
-  override def run: ZIO[Environment with ZEnv with Has[ZIOAppArgs], Any, Any] = {
-    val program: ZIO[Has[ZIOAppArgs], Throwable, Unit] = for {
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = {
+    val program: ZIO[ZIOAppArgs, Throwable, Unit] = for {
       as     <- args
       config <- ZIO.attempt(OParser.parse(parser, as, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
       env     = makeEnv(config)
@@ -63,7 +63,7 @@ object Cli extends ZIOAppDefault {
     projEnv
   }
 
-  private def makeOZEffectSetup(): ZLayer[Has[Console], Nothing, Has[OZEffectSetup]] =
+  private def makeOZEffectSetup(): ZLayer[Console, Nothing, OZEffectSetup] =
     StdioEffectSetup.layer
 
   private def makePEffectSetup(): OParserSetup =

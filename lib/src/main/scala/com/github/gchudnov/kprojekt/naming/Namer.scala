@@ -8,6 +8,6 @@ trait Namer {
 }
 
 object Namer {
-  def name(input: String): URIO[Has[Namer], NodeName] =
-    ZIO.serviceWith(_.name(input))
+  def name(input: String): URIO[Namer, NodeName] =
+    ZIO.serviceWithZIO(_.name(input))
 }

@@ -13,7 +13,7 @@ import zio.test._
  *   bloop test lib --only com.github.gchudnov.kprojekt.util.FileOpsSpec
  * }}}
  */
-object FileOpsSpec extends DefaultRunnableSpec {
+object FileOpsSpec extends ZIOSpecDefault {
   override def spec: ZSpec[Environment, Failure] =
     suite("FileOpsSpec")(
       test("resource should be non-empty") {

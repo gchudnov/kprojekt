@@ -13,9 +13,9 @@ import org.apache.kafka.streams.scala.{ ByteArrayKeyValueStore, StreamsBuilder }
 import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
 import zio.test.Assertion._
 import zio.test._
-import zio.{ Has, ZIO, ZLayer }
+import zio._
 
-object LiveEncoderSpec extends DefaultRunnableSpec {
+object LiveEncoderSpec extends ZIOSpecDefault {
   override def spec: ZSpec[Environment, Failure] =
     suite("EncoderSpec")(
       test("resource should be non-empty") {
@@ -143,13 +143,13 @@ object LiveEncoderSpec extends DefaultRunnableSpec {
   private val embeddedDotConfig = defaultDotConfig.copy(isEmbedStore = true)
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder]] =
+  private val defaultEnv: ZLayer[Any, Nothing, Encoder] =
     withEnv(defaultDotConfig, defaultNameConfig)
 
-  private val embeddedEnv: ZLayer[Any, Nothing, Has[Encoder]] =
+  private val embeddedEnv: ZLayer[Any, Nothing, Encoder] =
     withEnv(embeddedDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Encoder]] = {
+  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Encoder] = {
     val dotConfigEnv  = ZLayer.succeed(dotConfig)
     val nameConfigEnv = ZLayer.succeed(nameConfig)
 

@@ -16,7 +16,7 @@ import scala.jdk.CollectionConverters._
  *   bloop test lib --only com.github.gchudnov.parser.ParserSpec
  * }}}
  */
-object ParserSpec extends DefaultRunnableSpec {
+object ParserSpec extends ZIOSpecDefault {
   override def spec: ZSpec[Environment, Failure] =
     suite("ParserSpec")(
       test("parse fan-out topology description should return the parsed structure") {

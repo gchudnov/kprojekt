@@ -12,7 +12,7 @@ import zio.test._
  *   bloop test lib --only com.github.gchudnov.kprojekt.format.DotFormatSpec
  * }}}
  */
-object DotFolderSpec extends DefaultRunnableSpec {
+object DotFolderSpec extends ZIOSpecDefault {
   override def spec: ZSpec[Environment, Failure] =
     suite("DotFolderSpec")(
       test("node ids can be converted to the expected identifiers") {

@@ -25,7 +25,7 @@ class StdioEffectSetup(console: Console) extends OZEffectSetup {
 }
 
 object StdioEffectSetup {
-  def layer: ZLayer[Has[Console], Nothing, Has[OZEffectSetup]] =
+  def layer: ZLayer[Console, Nothing, OZEffectSetup] =
     (for {
       console <- ZIO.service[Console]
       service  = new StdioEffectSetup(console)

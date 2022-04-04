@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt.parser
 
 import org.apache.kafka.streams.TopologyDescription
-import zio.{ Has, RIO, Task, ZIO }
+import zio._
 
 trait Parser {
   def run(input: String): Task[TopologyDescription]
@@ -9,6 +9,6 @@ trait Parser {
 
 object Parser {
 
-  def run(input: String): RIO[Has[Parser], TopologyDescription] =
-    ZIO.serviceWith(_.run(input))
+  def run(input: String): RIO[Parser, TopologyDescription] =
+    ZIO.serviceWithZIO(_.run(input))
 }

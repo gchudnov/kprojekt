@@ -3,7 +3,7 @@ import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.Bundler
 import com.github.gchudnov.kprojekt.parser.Parser
 import com.github.gchudnov.kprojekt.util.FileOps
-import zio.{ Has, Task, ZIO, ZLayer }
+import zio._
 
 import java.io.File
 
@@ -22,7 +22,7 @@ final class LiveProjector(parser: Parser, encoder: Encoder, bundler: Bundler) ex
 
 object LiveProjector {
 
-  def layer: ZLayer[Has[Parser] with Has[Encoder] with Has[Bundler], Nothing, Has[Projektor]] =
+  def layer: ZLayer[Parser with Encoder with Bundler, Nothing, Projektor] =
     (for {
       parser  <- ZIO.service[Parser]
       encoder <- ZIO.service[Encoder]

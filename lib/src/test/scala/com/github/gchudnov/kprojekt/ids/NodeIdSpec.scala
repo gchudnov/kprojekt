@@ -4,7 +4,7 @@ import zio.test.Assertion.equalTo
 import zio.test._
 import NodeIdOrdering._
 
-object NodeIdSpec extends DefaultRunnableSpec {
+object NodeIdSpec extends ZIOSpecDefault {
   override def spec: ZSpec[Environment, Failure] =
     suite("NodeId")(
       test("can be ordered") {

@@ -3,7 +3,7 @@ package com.github.gchudnov.kprojekt.formatter.dot
 import zio.test._
 import zio.test.Assertion._
 
-object DotSpaceSpec extends DefaultRunnableSpec {
+object DotSpaceSpec extends ZIOSpecDefault {
   override def spec: ZSpec[Environment, Failure] =
     suite("DotSpaceSpec")(
       test("space can be parsed") {

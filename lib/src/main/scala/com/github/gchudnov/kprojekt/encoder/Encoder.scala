@@ -8,6 +8,6 @@ trait Encoder {
 }
 
 object Encoder {
-  def encode(name: String, desc: TopologyDescription): URIO[Has[Encoder], String] =
-    ZIO.serviceWith(_.encode(name, desc))
+  def encode(name: String, desc: TopologyDescription): URIO[Encoder, String] =
+    ZIO.serviceWithZIO(_.encode(name, desc))
 }

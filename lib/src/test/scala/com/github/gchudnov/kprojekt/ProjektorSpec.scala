@@ -7,7 +7,7 @@ import com.github.gchudnov.kprojekt.parser.{ LiveParser, Parser }
 import com.github.gchudnov.kprojekt.util.FileOps
 import zio.test.Assertion._
 import zio.test._
-import zio.{ Has, ZIO, ZLayer }
+import zio._
 
 /**
  * ProjektorSpec
@@ -19,7 +19,7 @@ import zio.{ Has, ZIO, ZLayer }
  *   cat graph.dot | dot -Tpng > graph.png
  * }}}
  */
-object ProjektorSpec extends DefaultRunnableSpec {
+object ProjektorSpec extends ZIOSpecDefault {
   override def spec: ZSpec[Environment, Failure] =
     suite("ProjektorSpec")(
       test("parsing and rendering a complex topology should produce the expected graphviz output") {
@@ -43,10 +43,10 @@ object ProjektorSpec extends DefaultRunnableSpec {
   private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false, space = DotSpace.Small)
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Has[Encoder]] =
+  private val defaultEnv: ZLayer[Any, Nothing, Encoder] =
     withEnv(defaultDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Encoder]] = {
+  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Encoder] = {
     val dotConfigEnv  = ZLayer.succeed(dotConfig)
     val nameConfigEnv = ZLayer.succeed(nameConfig)
 
