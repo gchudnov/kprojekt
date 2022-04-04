@@ -1,6 +1,6 @@
 Topologies:
    Sub-topology: 0
-    Source: KSTREAM-SOURCE-0000000000 (topics: [A])
+    Source: KSTREAM-SOURCE-0000000000 (topics: [A, A.B, A-B, A_B])
       --> KSTREAM-MAPVALUES-0000000001, KSTREAM-MAPVALUES-0000000002
     Processor: KSTREAM-MAPVALUES-0000000001 (stores: [])
       --> KSTREAM-SINK-0000000003
