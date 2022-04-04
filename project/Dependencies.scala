@@ -9,7 +9,8 @@ object Dependencies {
     val logback       = "1.2.11"
     val pureConfig    = "0.17.0" // TODO: replace with ZIO-config
     val scopt         = "4.0.1"
-    val zio           = "2.0.0-M3"
+    val zio           = "2.0.0-RC3"
+    val zioConfig     = "3.0.0-RC6"
   }
 
   private val compiler = Seq(
@@ -22,6 +23,8 @@ object Dependencies {
   private val logback         = "ch.qos.logback"         % "logback-classic"     % versions.logback
   private val pureConfig      = "com.github.pureconfig" %% "pureconfig"          % versions.pureConfig
   private val scopt           = "com.github.scopt"      %% "scopt"               % versions.scopt
+
+  private val zioConfig       = "dev.zio"               %% "zio-config" % versions.zioConfig
 
   private val zio             = "dev.zio"               %% "zio"                 % versions.zio
   private val zioStreams      = "dev.zio"               %% "zio-streams"         % versions.zio
@@ -37,7 +40,8 @@ object Dependencies {
       pureConfig,
       scopt,
       zio,
-      zioStreams
+      zioStreams,
+      zioConfig
     )
     val test = Seq(
       kafkaStreams,
