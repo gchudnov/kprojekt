@@ -5,9 +5,9 @@ import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpa
 import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
 import com.github.gchudnov.kprojekt.parser.{ LiveParser, Parser }
 import com.github.gchudnov.kprojekt.util.FileOps
-import zio.test.Assertion._
-import zio.test._
 import zio._
+import zio.test.Assertion._
+import zio.test.{ TestEnvironment, _ }
 
 /**
  * ProjektorSpec
@@ -20,7 +20,8 @@ import zio._
  * }}}
  */
 object ProjektorSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[Environment, Failure] =
+
+  override def spec: ZSpec[TestEnvironment with Scope, Any] =
     suite("ProjektorSpec")(
       test("parsing and rendering a complex topology should produce the expected graphviz output") {
         for {
@@ -43,10 +44,10 @@ object ProjektorSpec extends ZIOSpecDefault {
   private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false, space = DotSpace.Small)
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Encoder] =
+  private val defaultEnv =
     withEnv(defaultDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Encoder] = {
+  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig) = {
     val dotConfigEnv  = ZLayer.succeed(dotConfig)
     val nameConfigEnv = ZLayer.succeed(nameConfig)
 
@@ -54,6 +55,7 @@ object ProjektorSpec extends ZIOSpecDefault {
     val foldEnv = ((dotConfigEnv ++ nameEnv) >>> DotFolder.layer)
 
     val encoderEnv = foldEnv >>> LiveEncoder.layer
+
     encoderEnv
   }
 }

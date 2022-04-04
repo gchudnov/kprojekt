@@ -16,7 +16,7 @@ import zio.test._
 import zio._
 
 object LiveEncoderSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[Environment, Failure] =
+  override def spec: ZSpec[TestEnvironment with Scope, Any] =
     suite("EncoderSpec")(
       test("resource should be non-empty") {
         val errOrData = FileOps.stringFromResource("graphs/fan-out.dot")
@@ -143,13 +143,13 @@ object LiveEncoderSpec extends ZIOSpecDefault {
   private val embeddedDotConfig = defaultDotConfig.copy(isEmbedStore = true)
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Encoder] =
+  private val defaultEnv =
     withEnv(defaultDotConfig, defaultNameConfig)
 
-  private val embeddedEnv: ZLayer[Any, Nothing, Encoder] =
+  private val embeddedEnv =
     withEnv(embeddedDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig): ZLayer[Any, Nothing, Encoder] = {
+  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig) = {
     val dotConfigEnv  = ZLayer.succeed(dotConfig)
     val nameConfigEnv = ZLayer.succeed(nameConfig)
 

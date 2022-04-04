@@ -64,7 +64,7 @@ object LiveNamer {
     val Suffix   = "suffix"
   }
 
-  def layer: ZLayer[NamerConfig, Nothing, Namer] =
+  def layer: ZLayer[NamerConfig, Nothing, LiveNamer] =
     (for {
       config <- ZIO.service[NamerConfig]
       service = new LiveNamer(config)
