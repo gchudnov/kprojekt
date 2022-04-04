@@ -4,10 +4,10 @@ object Dependencies {
 
   object versions {
     val fastparse     = "2.3.3"
-    val kafka         = "3.0.0"
+    val kafka         = "3.1.0"
     val kindProjector = "0.10.3"
-    val logback       = "1.2.6"
-    val pureConfig    = "0.17.0"
+    val logback       = "1.2.11"
+    val pureConfig    = "0.17.0" // TODO: replace with ZIO-config
     val scopt         = "4.0.1"
     val zio           = "2.0.0-M3"
   }
@@ -22,6 +22,7 @@ object Dependencies {
   private val logback         = "ch.qos.logback"         % "logback-classic"     % versions.logback
   private val pureConfig      = "com.github.pureconfig" %% "pureconfig"          % versions.pureConfig
   private val scopt           = "com.github.scopt"      %% "scopt"               % versions.scopt
+
   private val zio             = "dev.zio"               %% "zio"                 % versions.zio
   private val zioStreams      = "dev.zio"               %% "zio-streams"         % versions.zio
   private val zioTest         = "dev.zio"               %% "zio-test"            % versions.zio
