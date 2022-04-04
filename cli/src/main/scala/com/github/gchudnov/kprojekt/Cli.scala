@@ -13,6 +13,20 @@ import zio._
 import java.io.File
 
 object Cli extends ZIOAppDefault {
+
+  override def run: ZIO[ZIOAppArgs, Any, Any] = {
+
+    val program: ZIO[ZIOAppArgs, Throwable, Unit] = for {
+      as     <- getArgs
+      config <- ZIO.attempt(OParser.parse(parser, as, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
+      env     = makeEnv(config)
+      _      <- Projektor.run(config.topologyFile).provideLayer(env)
+    } yield ()
+
+    program
+      .tapError(t => printLineError(s"Error: ${t.getMessage}"))
+  }
+
   val osetup: ZLayer[Console, Throwable, OZEffectSetup] = makeOZEffectSetup()
   val psetup: OParserSetup                                        = makePEffectSetup()
 
@@ -40,19 +54,7 @@ object Cli extends ZIOAppDefault {
     )
   }
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = {
-    val program: ZIO[ZIOAppArgs, Throwable, Unit] = for {
-      as     <- args
-      config <- ZIO.attempt(OParser.parse(parser, as, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
-      env     = makeEnv(config)
-      _      <- Projektor.run(config.topologyFile).provideLayer(env)
-    } yield ()
-
-    program
-      .tapError(t => printLineError(s"Error: ${t.getMessage}"))
-  }
-
-  private def makeEnv(c: AppConfig): ZLayer[Any, Throwable, Has[Projektor]] = {
+  private def makeEnv(c: AppConfig): ZLayer[Any, Throwable, Projektor] = {
     val parseEnv  = LiveParser.layer
     val nameEnv   = NamerConfig.layer >>> LiveNamer.layer
     val foldEnv   = (FolderConfig.make(c.space) ++ nameEnv) >>> DotFolder.layer

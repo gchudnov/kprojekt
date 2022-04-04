@@ -9,14 +9,15 @@ lazy val allSettings = Settings.sharedSettings ++ Settings.testSettings
 
 lazy val lib = (project in file("lib"))
   .settings(allSettings: _*)
+  .settings(Settings.assemblySettings)
   .settings(
     name := "lib",
     libraryDependencies ++= Dependencies.All
   )
 
 lazy val cli = (project in file("cli"))
-  .enablePlugins(BuildInfoPlugin)
   .dependsOn(lib)
+  .enablePlugins(BuildInfoPlugin)
   .settings(allSettings: _*)
   .settings(Settings.assemblySettings)
   .settings(
