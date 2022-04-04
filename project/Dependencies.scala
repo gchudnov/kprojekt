@@ -17,20 +17,20 @@ object Dependencies {
     compilerPlugin("org.typelevel" %% "kind-projector" % versions.kindProjector)
   )
 
-  private val fastparse       = "com.lihaoyi"           %% "fastparse"           % versions.fastparse
-  private val kafkaStreams    = "org.apache.kafka"      %% "kafka-streams-scala" % versions.kafka
-  private val kafkaClients    = "org.apache.kafka"       % "kafka-clients"       % versions.kafka
-  private val logback         = "ch.qos.logback"         % "logback-classic"     % versions.logback
-  private val pureConfig      = "com.github.pureconfig" %% "pureconfig"          % versions.pureConfig
-  private val scopt           = "com.github.scopt"      %% "scopt"               % versions.scopt
+  private val fastparse    = "com.lihaoyi"           %% "fastparse"           % versions.fastparse
+  private val kafkaStreams = "org.apache.kafka"      %% "kafka-streams-scala" % versions.kafka
+  private val kafkaClients = "org.apache.kafka"       % "kafka-clients"       % versions.kafka
+  private val logback      = "ch.qos.logback"         % "logback-classic"     % versions.logback
+  private val pureConfig   = "com.github.pureconfig" %% "pureconfig"          % versions.pureConfig
+  private val scopt        = "com.github.scopt"      %% "scopt"               % versions.scopt
 
-  private val zioConfig       = "dev.zio"               %% "zio-config" % versions.zioConfig
+  private val zioConfig = "dev.zio" %% "zio-config" % versions.zioConfig
 
-  private val zio             = "dev.zio"               %% "zio"                 % versions.zio
-  private val zioStreams      = "dev.zio"               %% "zio-streams"         % versions.zio
-  private val zioTest         = "dev.zio"               %% "zio-test"            % versions.zio
-  private val zioTestMagnolia = "dev.zio"               %% "zio-test-magnolia"   % versions.zio
-  private val zioTestSbt      = "dev.zio"               %% "zio-test-sbt"        % versions.zio
+  private val zio             = "dev.zio" %% "zio"               % versions.zio
+  private val zioStreams      = "dev.zio" %% "zio-streams"       % versions.zio
+  private val zioTest         = "dev.zio" %% "zio-test"          % versions.zio
+  private val zioTestMagnolia = "dev.zio" %% "zio-test-magnolia" % versions.zio
+  private val zioTestSbt      = "dev.zio" %% "zio-test-sbt"      % versions.zio
 
   val All: Seq[ModuleID] = {
     val compile = Seq(

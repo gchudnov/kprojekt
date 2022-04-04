@@ -1,8 +1,8 @@
 package com.github.gchudnov.kprojekt.parser
 
 import com.github.gchudnov.kprojekt.util.FileOps
-import org.apache.kafka.streams.TopologyDescription.{Processor, Sink, Source}
-import zio.{Scope, ZIO}
+import org.apache.kafka.streams.TopologyDescription.{ Processor, Sink, Source }
+import zio.{ Scope, ZIO }
 import zio.test.Assertion._
 import zio.test._
 

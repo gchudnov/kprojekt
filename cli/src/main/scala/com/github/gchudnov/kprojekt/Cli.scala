@@ -28,7 +28,7 @@ object Cli extends ZIOAppDefault {
   }
 
   val osetup: ZLayer[Console, Throwable, OZEffectSetup] = makeOZEffectSetup()
-  val psetup: OParserSetup                                        = makePEffectSetup()
+  val psetup: OParserSetup                              = makePEffectSetup()
 
   final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
 
