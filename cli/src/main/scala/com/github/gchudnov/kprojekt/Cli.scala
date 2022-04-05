@@ -2,12 +2,12 @@ package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.encoder.LiveEncoder
 import com.github.gchudnov.kprojekt.formatter.FolderConfig
-import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
-import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
+import com.github.gchudnov.kprojekt.formatter.dot.{DotBundler, DotFolder}
+import com.github.gchudnov.kprojekt.naming.{LiveNamer, NamerConfig}
 import com.github.gchudnov.kprojekt.parser.LiveParser
-import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
-import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
-import scopt.{ DefaultOParserSetup, OParser, OParserBuilder, OParserSetup }
+import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{OZEffectSetup, StdioEffectSetup}
+import com.github.gchudnov.kprojekt.{BuildInfo => KBuildInfo}
+import scopt.{DefaultOParserSetup, OParser, OParserBuilder, OParserSetup}
 import zio.Console.printLineError
 import zio._
 
@@ -16,6 +16,12 @@ import java.io.File
 object Cli extends ZIOAppDefault {
 
   override def run: ZIO[ZIOAppArgs, Any, Any] = {
+    val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
+    val psetup: OParserSetup                          = makePEffectSetup()
+
+
+
+    // TODO: use CliConfig, see sqsmove
 
     val program: ZIO[ZIOAppArgs, Throwable, Unit] = for {
       args   <- getArgs
@@ -66,12 +72,13 @@ object Cli extends ZIOAppDefault {
     projEnv
   }
 
-  private def makeOZEffectSetup(): ZLayer[Console, Nothing, OZEffectSetup] =
+  private def makeOZEffectSetup(): ZLayer[Any, Nothing, OZEffectSetup] =
     StdioEffectSetup.layer
 
-  private def makePEffectSetup(): OParserSetup =
+  private def makePEffectSetup(): OParserSetup = {
     new DefaultOParserSetup with OParserSetup {
-      override def errorOnUnknownArgument: Boolean   = false
+      override def errorOnUnknownArgument: Boolean = false
       override def showUsageOnError: Option[Boolean] = Some(false)
     }
+  }
 }

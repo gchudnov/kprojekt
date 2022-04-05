@@ -1,15 +1,16 @@
 package com.github.gchudnov.kprojekt.zopt.ozeffectsetup
 
 import com.github.gchudnov.kprojekt.zopt.{ FailureExitException, SuccessExitException }
+import zio.Console._
 import zio._
 
-class StdioEffectSetup(console: Console) extends OZEffectSetup {
+class StdioEffectSetup() extends OZEffectSetup {
 
   override def displayToOut(msg: String): Task[Unit] =
-    console.printLine(msg)
+    printLine(msg)
 
   override def displayToErr(msg: String): Task[Unit] =
-    console.printLineError(msg)
+    printLineError(msg)
 
   override def reportError(msg: String): Task[Unit] =
     displayToErr("Error: " + msg)
@@ -25,9 +26,6 @@ class StdioEffectSetup(console: Console) extends OZEffectSetup {
 }
 
 object StdioEffectSetup {
-  def layer: ZLayer[Console, Nothing, OZEffectSetup] =
-    (for {
-      console <- ZIO.service[Console]
-      service  = new StdioEffectSetup(console)
-    } yield service).toLayer
+  def layer: ZLayer[Any, Nothing, OZEffectSetup] =
+    ZLayer.succeed(new StdioEffectSetup())
 }

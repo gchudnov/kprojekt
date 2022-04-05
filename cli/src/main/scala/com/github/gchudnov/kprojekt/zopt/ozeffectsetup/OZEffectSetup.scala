@@ -6,13 +6,9 @@ import zio._
 
 trait OZEffectSetup {
   def displayToOut(msg: String): Task[Unit]
-
   def displayToErr(msg: String): Task[Unit]
-
   def reportError(msg: String): Task[Unit]
-
   def reportWarning(msg: String): Task[Unit]
-
   def terminate(exitState: Either[String, Unit]): Task[Unit]
 }
 
