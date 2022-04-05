@@ -1,6 +1,7 @@
 package com.github.gchudnov.kprojekt.formatter.dot
 
-import pureconfig.{ ConfigSource, _ }
+import com.github.gchudnov.kprojekt.formatter.FolderConfig
+import pureconfig.{ConfigSource, _}
 import pureconfig.error.CannotConvert
 import pureconfig.generic.auto._
 
@@ -13,7 +14,7 @@ final case class DotConfig(
   isEmbedStore: Boolean,
   hasLegend: Boolean,
   space: DotSpace
-)
+) extends FolderConfig
 
 object DotConfig {
   val cylinderFileName: String = "cylinder.png"

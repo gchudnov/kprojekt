@@ -12,8 +12,18 @@ object DotSpace {
       case "s" | "small"  => Right(Small)
       case "m" | "medium" => Right(Medium)
       case "l" | "large"  => Right(Large)
-      case value          => Left(new RuntimeException(s"""unknown space value: '$value'. Allowed values are: [${allowed.mkString(",")}]"""))
+      case value          => Left(new RuntimeException(s"""Unknown space value: '$value', must be one of: [${allowed.mkString(",")}]"""))
     }
 
+  def asString(value: DotSpace): String =
+    toName(value)
+
   private lazy val allowed = List("s", "small", "m", "medium", "l", "large")
+
+  private val toName: Map[DotSpace, String] =
+    Map(
+      Small  -> "small",  // s
+      Medium -> "medium", // m
+      Large  -> "large"   // l
+    )
 }

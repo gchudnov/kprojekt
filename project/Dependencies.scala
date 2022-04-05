@@ -24,7 +24,9 @@ object Dependencies {
   private val pureConfig   = "com.github.pureconfig" %% "pureconfig"          % versions.pureConfig
   private val scopt        = "com.github.scopt"      %% "scopt"               % versions.scopt
 
-  private val zioConfig = "dev.zio" %% "zio-config" % versions.zioConfig
+  private val zioConfig         = "dev.zio" %% "zio-config" % versions.zioConfig
+  private val zioConfigMagnolia = "dev.zio" %% "zio-config-magnolia" % versions.zioConfig
+  private val zioConfigTypesafe = "dev.zio" %% "zio-config-typesafe" % versions.zioConfig
 
   private val zio             = "dev.zio" %% "zio"               % versions.zio
   private val zioStreams      = "dev.zio" %% "zio-streams"       % versions.zio
@@ -32,16 +34,23 @@ object Dependencies {
   private val zioTestMagnolia = "dev.zio" %% "zio-test-magnolia" % versions.zio
   private val zioTestSbt      = "dev.zio" %% "zio-test-sbt"      % versions.zio
 
+  // TODO: split for Cli and Lib
   val All: Seq[ModuleID] = {
     val compile = Seq(
+      // zio
+      zio,
+      zioStreams,
+      // config
+      zioConfig,
+      zioConfigMagnolia,
+      zioConfigTypesafe,
+      // options
+      scopt,
+      // util
       fastparse,
       kafkaStreams,
       logback,
-      pureConfig,
-      scopt,
-      zio,
-      zioStreams,
-      zioConfig
+      pureConfig
     )
     val test = Seq(
       kafkaStreams,
