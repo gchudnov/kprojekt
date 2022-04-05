@@ -6,8 +6,9 @@ import zio._
 
 class StdioEffectSetup() extends OZEffectSetup {
 
-  override def displayToOut(msg: String): Task[Unit] =
+  override def displayToOut(msg: String): Task[Unit] = {
     printLine(msg)
+  }
 
   override def displayToErr(msg: String): Task[Unit] =
     printLineError(msg)

@@ -11,5 +11,4 @@ trait Projektor {
 object Projektor {
   def run(topologyFile: File): RIO[Projektor, File] =
     ZIO.serviceWithZIO(_.run(topologyFile))
-
 }

@@ -119,7 +119,7 @@ object CliConfig {
   private def listSpacesText(): String = {
     val names     = List(SmallSpace, MediumSpace, LargeSpace).map(it => CliArgs.spaceNames(it))
     val namePairs = names.map(s => s"${s},${s.head}")
-    namePairs.mkString(";")
+    namePairs.mkString("; ")
   }
 
   private def ensureSpace(key: String): Either[Throwable, Unit] = {
@@ -144,6 +144,7 @@ object CliConfig {
         case (_, _) =>
           ""
       }
+
       displayToOut(value) *> ZIO.fail(new SuccessExitException())
     } else
       ZIO.attempt(effects.filterNot(it => it.isInstanceOf[ReportError] && it.asInstanceOf[ReportError].msg.startsWith(OEffectPrefix)))

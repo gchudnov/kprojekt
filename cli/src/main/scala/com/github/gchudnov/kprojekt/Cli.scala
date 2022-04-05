@@ -2,16 +2,14 @@ package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.encoder.LiveEncoder
 import com.github.gchudnov.kprojekt.formatter.FolderConfig
-import com.github.gchudnov.kprojekt.formatter.dot.{DotBundler, DotFolder}
-import com.github.gchudnov.kprojekt.naming.{LiveNamer, NamerConfig}
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
+import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
 import com.github.gchudnov.kprojekt.parser.LiveParser
-import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{OZEffectSetup, StdioEffectSetup}
-import com.github.gchudnov.kprojekt.{BuildInfo => KBuildInfo}
-import scopt.{DefaultOParserSetup, OParser, OParserBuilder, OParserSetup}
+import com.github.gchudnov.kprojekt.zopt.SuccessExitException
+import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
+import scopt.{ DefaultOParserSetup, OParserSetup }
 import zio.Console.printLineError
 import zio._
-
-import java.io.File
 
 object Cli extends ZIOAppDefault {
 
@@ -19,54 +17,30 @@ object Cli extends ZIOAppDefault {
     val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
     val psetup: OParserSetup                          = makePEffectSetup()
 
-
-
-    // TODO: use CliConfig, see sqsmove
-
-    val program: ZIO[ZIOAppArgs, Throwable, Unit] = for {
-      args   <- getArgs
-      config <- ZIO.attempt(OParser.parse(parser, args, AppConfig())).flatMap(c => ZIO.fromOption(c).orElseFail(new RuntimeException("Arguments Configuration cannot be created")))
-      env     = makeEnv(config)
-      _      <- Projektor.run(config.topologyFile).provideLayer(env)
+    val program = for {
+      as  <- getArgs
+      cfg <- CliConfig.fromArgs(as.toList)(psetup).provideLayer(osetup)
+      env  = makeEnv(cfg)
+      _   <- makeProgram(cfg).provideLayer(env)
     } yield ()
 
-    program
+    program.catchSome { case _: SuccessExitException => ZIO.unit }
       .tapError(t => printLineError(s"Error: ${t.getMessage}"))
+      .ignore
   }
 
-  val osetup: ZLayer[Console, Throwable, OZEffectSetup] = makeOZEffectSetup()
-  val psetup: OParserSetup                              = makePEffectSetup()
+  private def makeProgram(cfg: CliConfig): ZIO[Projektor, Throwable, Unit] =
+    for {
+      projector <- ZIO.service[Projektor]
+      _         <- projector.run(cfg.file)
+    } yield ()
 
-  final case class AppConfig(topologyFile: File = new File("."), space: String = "medium", isVerbose: Boolean = false)
-
-  val builder: OParserBuilder[AppConfig] = OParser.builder[AppConfig]
-
-  val parser: OParser[Unit, AppConfig] = {
-    import builder._
-    OParser.sequence(
-      programName(KBuildInfo.name),
-      head(KBuildInfo.name, KBuildInfo.version),
-      help("help").text("prints this usage text"),
-      opt[Unit]("verbose")
-        .action((_, c) => c.copy(isVerbose = true))
-        .text("verbose mode"),
-      opt[String]("space")
-        .action((x, c) => c.copy(space = x))
-        .text("space between nodes: [small,s; medium,m; large,l] (default: m)"),
-      arg[File]("<file>")
-        .required()
-        .action((x, c) => c.copy(topologyFile = x))
-        .text("path to topology description"),
-      version("version")
-    )
-  }
-
-  private def makeEnv(c: AppConfig): ZLayer[Any, Throwable, Projektor] = {
+  private def makeEnv(cfg: CliConfig): ZLayer[Any, Throwable, Projektor] = {
     val parseEnv  = LiveParser.layer
     val nameEnv   = NamerConfig.layer >>> LiveNamer.layer
-    val foldEnv   = (FolderConfig.make(c.space) ++ nameEnv) >>> DotFolder.layer
+    val foldEnv   = (FolderConfig.make(cfg.space) ++ nameEnv) >>> DotFolder.layer
     val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
-    val bundleEnv = DotBundler.layer(c.isVerbose)
+    val bundleEnv = DotBundler.layer(cfg.isVerbose)
     val projEnv   = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
 
     projEnv
@@ -75,10 +49,9 @@ object Cli extends ZIOAppDefault {
   private def makeOZEffectSetup(): ZLayer[Any, Nothing, OZEffectSetup] =
     StdioEffectSetup.layer
 
-  private def makePEffectSetup(): OParserSetup = {
+  private def makePEffectSetup(): OParserSetup =
     new DefaultOParserSetup with OParserSetup {
-      override def errorOnUnknownArgument: Boolean = false
+      override def errorOnUnknownArgument: Boolean   = false
       override def showUsageOnError: Option[Boolean] = Some(false)
     }
-  }
 }

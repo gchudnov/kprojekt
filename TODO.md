@@ -1,3 +1,0 @@
-- for some reason the app hangs when called with --version
-- refactor args reading
-- 
