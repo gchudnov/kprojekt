@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.encoder.LiveEncoder
 import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
-import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
+import com.github.gchudnov.kprojekt.naming.LiveNamer
 import com.github.gchudnov.kprojekt.parser.LiveParser
 import com.github.gchudnov.kprojekt.zopt.SuccessExitException
 import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
@@ -41,7 +41,7 @@ object Cli extends ZIOAppDefault {
     val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
     val bundleEnv = DotBundler.layer(cfg.isVerbose)
 
-    val env   = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
+    val env = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
 
     env
   }
