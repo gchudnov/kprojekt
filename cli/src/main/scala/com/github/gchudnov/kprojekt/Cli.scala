@@ -31,7 +31,7 @@ object Cli extends ZIOAppDefault {
   private def makeProgram(cfg: CliConfig): ZIO[Projektor, Throwable, Unit] =
     for {
       projector <- ZIO.service[Projektor]
-      _         <- projector.run(cfg.file)
+      _         <- projector.run(cfg.topologyFile)
     } yield ()
 
   private def makeEnv(cfg: CliConfig): ZLayer[Any, Throwable, Projektor] = {

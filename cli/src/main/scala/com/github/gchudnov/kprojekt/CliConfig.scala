@@ -36,7 +36,7 @@ object CliArgs {
 }
 
 final case class CliConfig(
-  file: File,
+  topologyFile: File,
   dot: DotConfig,
   isVerbose: Boolean
 )
@@ -101,7 +101,7 @@ object CliConfig {
                       baseConf <- loadResourceConfig()
                       isVerbose = argsConf.isVerbose
                     } yield CliConfig(
-                      file = file,
+                      topologyFile = file,
                       dot = baseConf.dot,
                       isVerbose = isVerbose
                     )
