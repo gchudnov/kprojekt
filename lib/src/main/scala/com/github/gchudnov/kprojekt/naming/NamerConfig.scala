@@ -12,7 +12,10 @@ final case class NamerConfig(
 )
 
 object NamerConfig {
-  @nowarn
-  val layer: ZLayer[Any, Throwable, NamerConfig] =
-    ZIO.attempt(ConfigSource.default.at("naming").loadOrThrow[NamerConfig]).toLayer
+
+  def default: NamerConfig =
+    NamerConfig(
+      maxLenWithoutShortening = 13,
+      separator = ","
+    )
 }

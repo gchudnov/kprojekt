@@ -36,7 +36,7 @@ object Cli extends ZIOAppDefault {
 
   private def makeEnv(cfg: CliConfig): ZLayer[Any, Throwable, Projektor] = {
     val parseEnv  = LiveParser.layer
-    val nameEnv   = NamerConfig.layer >>> LiveNamer.layer
+    val nameEnv   = ZLayer.succeed(cfg.naming) >>> LiveNamer.layer
     val foldEnv   = (ZLayer.succeed(cfg.dot) ++ nameEnv) >>> DotFolder.layer
     val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
     val bundleEnv = DotBundler.layer(cfg.isVerbose)
