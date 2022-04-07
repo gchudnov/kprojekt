@@ -7,7 +7,6 @@ object Dependencies {
     val kafka         = "3.1.0"
     val kindProjector = "0.10.3"
     val logback       = "1.2.11"
-    val pureConfig    = "0.17.0" // TODO: replace with ZIO-config
     val scopt         = "4.0.1"
     val zio           = "2.0.0-RC4"
     val zioConfig     = "3.0.0-RC7"
@@ -21,7 +20,6 @@ object Dependencies {
   private val kafkaStreams = "org.apache.kafka"      %% "kafka-streams-scala" % versions.kafka
   private val kafkaClients = "org.apache.kafka"       % "kafka-clients"       % versions.kafka
   private val logback      = "ch.qos.logback"         % "logback-classic"     % versions.logback
-  private val pureConfig   = "com.github.pureconfig" %% "pureconfig"          % versions.pureConfig
   private val scopt        = "com.github.scopt"      %% "scopt"               % versions.scopt
 
   private val zioConfig         = "dev.zio" %% "zio-config" % versions.zioConfig
@@ -49,8 +47,7 @@ object Dependencies {
       // util
       fastparse,
       kafkaStreams,
-      logback,
-      pureConfig
+      logback
     )
     val test = Seq(
       kafkaStreams,

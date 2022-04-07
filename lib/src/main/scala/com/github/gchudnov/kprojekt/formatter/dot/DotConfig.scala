@@ -1,7 +1,6 @@
 package com.github.gchudnov.kprojekt.formatter.dot
 
 import com.github.gchudnov.kprojekt.formatter.FolderConfig
-import pureconfig.generic.auto._
 
 final case class DotConfig(
   indent: Int,
