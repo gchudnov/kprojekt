@@ -1,11 +1,7 @@
 package com.github.gchudnov.kprojekt.formatter.dot
 
 import com.github.gchudnov.kprojekt.formatter.FolderConfig
-import pureconfig.{ConfigSource, _}
-import pureconfig.error.CannotConvert
 import pureconfig.generic.auto._
-
-import scala.annotation.nowarn
 
 final case class DotConfig(
   indent: Int,
@@ -19,34 +15,13 @@ final case class DotConfig(
 object DotConfig {
   val cylinderFileName: String = "cylinder.png"
 
-  @nowarn
-  private implicit val spaceReader: ConfigReader[DotSpace] = ConfigReader[String]
-    .emap(it =>
-      DotSpace
-        .parse(it)
-        .fold(t => Left(CannotConvert("space", "space", t.getMessage)), value => Right(value))
+  def default: DotConfig =
+    DotConfig(
+      indent = 2,
+      fontName = "sans-serif",
+      fontSize = 10,
+      isEmbedStore = false,
+      hasLegend = true,
+      space = DotSpace.Medium
     )
-
-  def load(space: String = ""): DotConfig = {
-    val str = makeStringSource(space)
-
-    val userSource    = ConfigSource.string(str)
-    val defaultSource = ConfigSource.default
-
-    @nowarn
-    val res = userSource.withFallback(defaultSource).at("formatters.dot").loadOrThrow[DotConfig]
-    res
-  }
-
-  private def makeStringSource(space: String): String =
-    if (space.nonEmpty)
-      s"""
-         |formatters {
-         |  dot {
-         |    space: "$space"
-         |  }
-         |}
-         |""".stripMargin
-    else
-      ""
 }

@@ -8,9 +8,9 @@ import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
 import scopt.OEffect.ReportError
 import scopt.{ OEffect, OParser, OParserSetup }
 import zio._
-import zio.config.{ ReadError, _ }
 import zio.config.magnolia._
 import zio.config.typesafe._
+import zio.config.{ ReadError, _ }
 
 import java.io.File
 
@@ -22,8 +22,10 @@ final case class CliArgs(
 
 object CliArgs {
 
+  private val defaultDotConfig = DotConfig.default
+
   private[kprojekt] val DefaultVerbose: Boolean = false
-  private[kprojekt] val DefaultSpace: String    = DotSpace.asString(DotSpace.Medium)
+  private[kprojekt] val DefaultSpace: String    = DotSpace.asString(defaultDotConfig.space)
 
   def empty: CliArgs =
     CliArgs(
@@ -144,7 +146,7 @@ object CliConfig {
     s"${KBuildInfo.name} ${KBuildInfo.version}"
 
   private def loadResourceConfig(): IO[ReadError[String], CliConfig] = {
-    implicit def deriveForZonedDateTime: Descriptor[DotSpace] =
+    implicit def deriveForDotSpace: Descriptor[DotSpace] =
       Descriptor[String].transformOrFail(s => DotSpace.parse(s).left.map(_.getMessage), r => Right(DotSpace.asString(r)))
 
     read(descriptor[CliConfig] from TypesafeConfigSource.fromResourcePath)
