@@ -1,17 +1,17 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.formatter.dot.{DotConfig, DotSpace}
+import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotSpace }
 import com.github.gchudnov.kprojekt.naming.NamerConfig
 import com.github.gchudnov.kprojekt.zopt.SuccessExitException
 import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.OZEffectSetup
-import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.OZEffectSetup.{displayToOut, runOEffects}
-import com.github.gchudnov.kprojekt.{BuildInfo => KBuildInfo}
+import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.OZEffectSetup.{ displayToOut, runOEffects }
+import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
 import scopt.OEffect.ReportError
-import scopt.{OEffect, OParser, OParserSetup}
+import scopt.{ OEffect, OParser, OParserSetup }
 import zio._
 import zio.config.magnolia._
 import zio.config.typesafe._
-import zio.config.{ReadError, _}
+import zio.config.{ ReadError, _ }
 
 import java.io.File
 
