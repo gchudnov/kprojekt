@@ -5,7 +5,7 @@ import com.github.gchudnov.kprojekt.formatter.dot.DotSpace._
 import com.github.gchudnov.kprojekt.formatter.dot.legend.Legend
 import com.github.gchudnov.kprojekt.ids.NodeId
 import com.github.gchudnov.kprojekt.naming.{ Namer, NodeName }
-import zio.{ Has, ZIO, ZLayer }
+import zio._
 
 final case class DotFolderState(
   inner: String = "",
@@ -270,12 +270,12 @@ object DotFolder {
 
   val UnknownName = "?"
 
-  def layer: ZLayer[Has[DotConfig] with Has[Namer], Nothing, Has[Folder]] =
-    (for {
+  def layer: ZLayer[DotConfig with Namer, Nothing, Folder] =
+    ZLayer(for {
       config <- ZIO.service[DotConfig]
       namer  <- ZIO.service[Namer]
       service = new DotFolder(config = config, namer = namer, state = DotFolderState())
-    } yield service).toLayer
+    } yield service)
 
   def sanitize(value: String): String =
     value.replaceAll("""[-.:]""", "_")

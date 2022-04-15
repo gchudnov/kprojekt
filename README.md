@@ -28,7 +28,7 @@ Visualizes kafka topology.
 ```text
   ./kprojekt-cli --help
 
-  kprojekt-cli 1.2.0
+  kprojekt-cli 1.2.1
   Usage: kprojekt-cli [options] <file>
 
   --help           prints this usage text

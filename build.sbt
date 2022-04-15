@@ -9,19 +9,20 @@ lazy val allSettings = Settings.sharedSettings ++ Settings.testSettings
 
 lazy val lib = (project in file("lib"))
   .settings(allSettings: _*)
+  .settings(Settings.assemblySettings)
   .settings(
     name := "lib",
-    libraryDependencies ++= Dependencies.All
+    libraryDependencies ++= Dependencies.Lib
   )
 
 lazy val cli = (project in file("cli"))
-  .enablePlugins(BuildInfoPlugin)
   .dependsOn(lib)
+  .enablePlugins(BuildInfoPlugin)
   .settings(allSettings: _*)
   .settings(Settings.assemblySettings)
   .settings(
     name := "kprojekt-cli",
-    libraryDependencies ++= Dependencies.All,
+    libraryDependencies ++= Dependencies.Cli,
     buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage              := "com.github.gchudnov.kprojekt",
     assembly / mainClass          := Some("com.github.gchudnov.kprojekt.Cli"),

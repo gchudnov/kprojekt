@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.formatter
 
-import zio.{ Has, RIO, Task, ZIO }
+import zio._
 
 import java.io.File
 
@@ -9,6 +9,6 @@ trait Bundler {
 }
 
 object Bundler {
-  def bundle(topologyPath: File, data: String): RIO[Has[Bundler], File] =
-    ZIO.serviceWith(_.bundle(topologyPath, data))
+  def bundle(topologyPath: File, data: String): RIO[Bundler, File] =
+    ZIO.serviceWithZIO(_.bundle(topologyPath, data))
 }

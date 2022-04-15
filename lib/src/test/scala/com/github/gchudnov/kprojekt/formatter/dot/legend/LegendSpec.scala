@@ -4,10 +4,10 @@ import com.github.gchudnov.kprojekt.ids.{ NodeId, ProcessorId }
 import com.github.gchudnov.kprojekt.naming.{ LiveNamer, Namer, NamerConfig, NodeName }
 import zio.test.Assertion.equalTo
 import zio.test._
-import zio.{ Has, ZIO, ZLayer }
+import zio._
 
-object LegendSpec extends DefaultRunnableSpec {
-  override def spec: ZSpec[Environment, Failure] =
+object LegendSpec extends ZIOSpecDefault {
+  override def spec: ZSpec[TestEnvironment, Any] =
     suite("Legend")(
       test("if empty returns no nodes for the given name") {
         val program = for {
@@ -48,9 +48,9 @@ object LegendSpec extends DefaultRunnableSpec {
 
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Has[Namer]] = withEnv(defaultNameConfig)
+  private val defaultEnv: ZLayer[Any, Nothing, Namer] = withEnv(defaultNameConfig)
 
-  private def withEnv(nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Namer]] = {
+  private def withEnv(nameConfig: NamerConfig): ZLayer[Any, Nothing, Namer] = {
     val nameConfigEnv = ZLayer.succeed(nameConfig)
     val nameEnv       = (nameConfigEnv >>> LiveNamer.layer)
 

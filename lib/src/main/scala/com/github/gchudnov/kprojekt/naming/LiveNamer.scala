@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.naming
 
-import zio.{ Has, UIO, ZIO, ZLayer }
+import zio._
 
 import scala.util.matching.Regex
 
@@ -64,11 +64,11 @@ object LiveNamer {
     val Suffix   = "suffix"
   }
 
-  def layer: ZLayer[Has[NamerConfig], Nothing, Has[Namer]] =
-    (for {
+  def layer: ZLayer[NamerConfig, Nothing, LiveNamer] =
+    ZLayer(for {
       config <- ZIO.service[NamerConfig]
       service = new LiveNamer(config)
-    } yield service).toLayer
+    } yield service)
 
   private val groupNames = Seq(RxGroups.Kind, RxGroups.Operator, RxGroups.Uid, RxGroups.Suffix)
   private val pattern    = new Regex("""^(?<kind>\w+)-(?<operator>[\w-]+)-(?<uid>\d+)-?(?<suffix>\w+)?$""", groupNames: _*)

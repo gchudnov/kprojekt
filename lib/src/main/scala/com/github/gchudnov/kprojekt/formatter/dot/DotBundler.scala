@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt.formatter.dot
 
 import com.github.gchudnov.kprojekt.formatter.Bundler
 import com.github.gchudnov.kprojekt.util.FileOps
-import zio.{ Has, Task, ZIO, ZLayer }
+import zio._
 
 import java.io.File
 import scala.collection.mutable.ListBuffer
@@ -46,6 +46,6 @@ object DotBundler {
   private val ExtDot: String    = "dot"
   private val ExtPng: String    = "png"
 
-  def layer(isVerbose: Boolean): ZLayer[Any, Nothing, Has[Bundler]] =
-    ZIO.succeed(new DotBundler(isVerbose)).toLayer
+  def layer(isVerbose: Boolean): ZLayer[Any, Nothing, Bundler] =
+    ZLayer(ZIO.succeed(new DotBundler(isVerbose)))
 }

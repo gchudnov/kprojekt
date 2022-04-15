@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.naming
 
-import zio.{ Has, ZLayer }
+import zio._
 import zio.test.Assertion.equalTo
 import zio.test._
 
@@ -12,8 +12,8 @@ import zio.test._
  *   bloop test lib --only com.github.gchudnov.name.NodeNameSpec
  * }}}
  */
-object LiveNamerSpec extends DefaultRunnableSpec {
-  override def spec: ZSpec[Environment, Failure] =
+object LiveNamerSpec extends ZIOSpecDefault {
+  override def spec: ZSpec[TestEnvironment, Any] =
     suite("NodeNameSpec")(
       test("one-word name is parsed should correctly split it in parts") {
         val input    = "KSTREAM-MAPVALUES-0000000002"
@@ -59,10 +59,10 @@ object LiveNamerSpec extends DefaultRunnableSpec {
 
   private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv: ZLayer[Any, Nothing, Has[Namer]] =
+  private val defaultEnv: ZLayer[Any, Nothing, Namer] =
     withEnv(defaultNameConfig)
 
-  private def withEnv(nameConfig: NamerConfig): ZLayer[Any, Nothing, Has[Namer]] = {
+  private def withEnv(nameConfig: NamerConfig): ZLayer[Any, Nothing, Namer] = {
     val nameConfigEnv = ZLayer.succeed(nameConfig)
     val nameEnv       = (nameConfigEnv >>> LiveNamer.layer)
 

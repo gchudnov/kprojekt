@@ -4,8 +4,8 @@ import zio.test.Assertion.equalTo
 import zio.test._
 import NodeIdOrdering._
 
-object NodeIdSpec extends DefaultRunnableSpec {
-  override def spec: ZSpec[Environment, Failure] =
+object NodeIdSpec extends ZIOSpecDefault {
+  override def spec: ZSpec[TestEnvironment, Any] =
     suite("NodeId")(
       test("can be ordered") {
         val topicId  = TopicId("a")     // t:a

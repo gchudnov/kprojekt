@@ -5,7 +5,7 @@ import com.github.gchudnov.kprojekt.ids.NodeIdOrdering._
 import com.github.gchudnov.kprojekt.ids._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription._
-import zio.{ Has, UIO, ZIO, ZLayer }
+import zio._
 
 import scala.jdk.CollectionConverters._
 
@@ -16,7 +16,7 @@ final class LiveEncoder(folder: Folder) extends Encoder {
   import LiveEncoder._
 
   override def encode(name: String, desc: TopologyDescription): UIO[String] =
-    UIO {
+    UIO.succeed {
       val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
       val globalStores  = desc.globalStores().asScala.toSeq.sortBy(_.id())
 
@@ -65,11 +65,11 @@ object LiveEncoder {
   private val KeyProcessor = "p"
   private val KeySink      = "k"
 
-  def layer: ZLayer[Has[Folder], Nothing, Has[Encoder]] =
-    (for {
+  def layer: ZLayer[Folder, Nothing, Encoder] =
+    ZLayer(for {
       folder <- ZIO.service[Folder]
       service = new LiveEncoder(folder)
-    } yield service).toLayer
+    } yield service)
 
   private def collectSubtopology(ra: Folder)(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Folder = {
     val nodeEdges  = collectNodeEdges(sources ++ processors ++ sinks.asInstanceOf[Seq[Node]])

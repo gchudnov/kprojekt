@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt.parser
 
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.TopologyDescription.{ Processor, Sink, Source }
-import zio.ZIO
+import zio.{ Scope, ZIO }
 import zio.test.Assertion._
 import zio.test._
 
@@ -16,8 +16,9 @@ import scala.jdk.CollectionConverters._
  *   bloop test lib --only com.github.gchudnov.parser.ParserSpec
  * }}}
  */
-object ParserSpec extends DefaultRunnableSpec {
-  override def spec: ZSpec[Environment, Failure] =
+object ParserSpec extends ZIOSpecDefault {
+
+  override def spec: ZSpec[TestEnvironment with Scope, Any] =
     suite("ParserSpec")(
       test("parse fan-out topology description should return the parsed structure") {
         for {
@@ -114,7 +115,7 @@ object ParserSpec extends DefaultRunnableSpec {
           desc  <- Parser.run(input).provideLayer(defaultEnv)
         } yield desc
 
-        assertM(res.run)(fails(isSubtype[ParseException](anything)))
+        assertM(res.exit)(fails(isSubtype[ParseException](anything)))
       }
     )
 

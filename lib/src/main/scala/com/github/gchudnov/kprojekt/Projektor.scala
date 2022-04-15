@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt
 
-import zio.{ Has, Task, ZIO }
+import zio._
 
 import java.io.File
 
@@ -9,7 +9,6 @@ trait Projektor {
 }
 
 object Projektor {
-  def run(topologyFile: File): ZIO[Has[Projektor], Throwable, File] =
-    ZIO.serviceWith(_.run(topologyFile))
-
+  def run(topologyFile: File): RIO[Projektor, File] =
+    ZIO.serviceWithZIO(_.run(topologyFile))
 }

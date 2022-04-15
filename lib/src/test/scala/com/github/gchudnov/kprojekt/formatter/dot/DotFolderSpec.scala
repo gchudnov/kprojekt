@@ -12,8 +12,8 @@ import zio.test._
  *   bloop test lib --only com.github.gchudnov.kprojekt.format.DotFormatSpec
  * }}}
  */
-object DotFolderSpec extends DefaultRunnableSpec {
-  override def spec: ZSpec[Environment, Failure] =
+object DotFolderSpec extends ZIOSpecDefault {
+  override def spec: ZSpec[TestEnvironment, Any] =
     suite("DotFolderSpec")(
       test("node ids can be converted to the expected identifiers") {
         val input    = List[NodeId](TopicId("a"), SourceId("b"), ProcessorId("c"), SinkId("d"), StoreId("e"))
