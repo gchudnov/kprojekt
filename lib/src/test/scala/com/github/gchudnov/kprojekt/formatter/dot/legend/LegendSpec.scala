@@ -7,7 +7,7 @@ import zio.test._
 import zio._
 
 object LegendSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[Environment, Failure] =
+  override def spec: ZSpec[TestEnvironment, Any] =
     suite("Legend")(
       test("if empty returns no nodes for the given name") {
         val program = for {

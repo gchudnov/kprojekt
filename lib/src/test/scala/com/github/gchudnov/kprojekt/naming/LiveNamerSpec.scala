@@ -13,7 +13,7 @@ import zio.test._
  * }}}
  */
 object LiveNamerSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[Environment, Failure] =
+  override def spec: ZSpec[TestEnvironment, Any] =
     suite("NodeNameSpec")(
       test("one-word name is parsed should correctly split it in parts") {
         val input    = "KSTREAM-MAPVALUES-0000000002"

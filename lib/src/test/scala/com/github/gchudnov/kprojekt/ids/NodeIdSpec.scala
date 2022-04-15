@@ -5,7 +5,7 @@ import zio.test._
 import NodeIdOrdering._
 
 object NodeIdSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[Environment, Failure] =
+  override def spec: ZSpec[TestEnvironment, Any] =
     suite("NodeId")(
       test("can be ordered") {
         val topicId  = TopicId("a")     // t:a

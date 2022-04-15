@@ -149,7 +149,7 @@ object CliConfig {
     s"${KBuildInfo.name} ${KBuildInfo.version}"
 
   private def loadResourceConfig(): IO[ReadError[String], CliConfig] = {
-    implicit def deriveForDotSpace: Descriptor[DotSpace] =
+    implicit val deriveForDotSpace: Descriptor[DotSpace] =
       Descriptor[String].transformOrFail(s => DotSpace.parse(s).left.map(_.getMessage), r => Right(DotSpace.asString(r)))
 
     read(descriptor[CliConfig] from TypesafeConfigSource.fromResourcePath)

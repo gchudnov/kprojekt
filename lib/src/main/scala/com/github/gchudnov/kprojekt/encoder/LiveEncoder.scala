@@ -66,10 +66,10 @@ object LiveEncoder {
   private val KeySink      = "k"
 
   def layer: ZLayer[Folder, Nothing, Encoder] =
-    (for {
+    ZLayer(for {
       folder <- ZIO.service[Folder]
       service = new LiveEncoder(folder)
-    } yield service).toLayer
+    } yield service)
 
   private def collectSubtopology(ra: Folder)(stName: String, sources: Seq[Source], processors: Seq[Processor], sinks: Seq[Sink]): Folder = {
     val nodeEdges  = collectNodeEdges(sources ++ processors ++ sinks.asInstanceOf[Seq[Node]])

@@ -23,11 +23,11 @@ final class LiveProjector(parser: Parser, encoder: Encoder, bundler: Bundler) ex
 object LiveProjector {
 
   def layer: ZLayer[Parser with Encoder with Bundler, Nothing, Projektor] =
-    (for {
+    ZLayer(for {
       parser  <- ZIO.service[Parser]
       encoder <- ZIO.service[Encoder]
       bundler <- ZIO.service[Bundler]
       service  = new LiveProjector(parser, encoder, bundler)
-    } yield service).toLayer
+    } yield service)
 
 }

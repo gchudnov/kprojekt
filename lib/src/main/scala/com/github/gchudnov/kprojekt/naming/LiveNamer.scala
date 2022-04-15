@@ -65,10 +65,10 @@ object LiveNamer {
   }
 
   def layer: ZLayer[NamerConfig, Nothing, LiveNamer] =
-    (for {
+    ZLayer(for {
       config <- ZIO.service[NamerConfig]
       service = new LiveNamer(config)
-    } yield service).toLayer
+    } yield service)
 
   private val groupNames = Seq(RxGroups.Kind, RxGroups.Operator, RxGroups.Uid, RxGroups.Suffix)
   private val pattern    = new Regex("""^(?<kind>\w+)-(?<operator>[\w-]+)-(?<uid>\d+)-?(?<suffix>\w+)?$""", groupNames: _*)

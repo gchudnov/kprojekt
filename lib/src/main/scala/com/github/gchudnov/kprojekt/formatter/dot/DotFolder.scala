@@ -271,11 +271,11 @@ object DotFolder {
   val UnknownName = "?"
 
   def layer: ZLayer[DotConfig with Namer, Nothing, Folder] =
-    (for {
+    ZLayer(for {
       config <- ZIO.service[DotConfig]
       namer  <- ZIO.service[Namer]
       service = new DotFolder(config = config, namer = namer, state = DotFolderState())
-    } yield service).toLayer
+    } yield service)
 
   def sanitize(value: String): String =
     value.replaceAll("""[-.:]""", "_")

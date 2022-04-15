@@ -8,8 +8,8 @@ object Dependencies {
     val kindProjector = "0.10.3"
     val logback       = "1.2.11"
     val scopt         = "4.0.1"
-    val zio           = "2.0.0-RC4"
-    val zioConfig     = "3.0.0-RC7"
+    val zio           = "2.0.0-RC5"
+    val zioConfig     = "3.0.0-RC8"
   }
 
   private val compiler = Seq(

@@ -47,5 +47,5 @@ object DotBundler {
   private val ExtPng: String    = "png"
 
   def layer(isVerbose: Boolean): ZLayer[Any, Nothing, Bundler] =
-    ZIO.succeed(new DotBundler(isVerbose)).toLayer
+    ZLayer(ZIO.succeed(new DotBundler(isVerbose)))
 }
