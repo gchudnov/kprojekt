@@ -1,8 +1,10 @@
 {
   "resources":{
   "includes":[
-    {"pattern":"\\Qimages/cylinder.png\\E"}, 
-    {"pattern":"\\Qreference.conf\\E"}
+    {"pattern":"reference.conf"},
+    {"pattern":"application.conf"},
+    {"pattern":"\\Qlogback.xml\\E"},
+    {"pattern":"\\Qimages/cylinder.png\\E"}
   ]},
   "bundles":[]
 }
