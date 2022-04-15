@@ -32,9 +32,11 @@ object Cli extends ZIOAppDefault {
       _   <- makeProgram(cfg).provideLayer(env)
     } yield ()
 
-    program.catchSome { case _: SuccessExitException => ZIO.unit }
+    val logic = program.catchSome { case _: SuccessExitException => ZIO.unit }
       .tapError(t => printLineError(s"Error: ${t.getMessage}"))
       .ignore
+
+    ZIO.withRuntimeConfig(RuntimeConfig.default.copy(logger = ZLogger.none) @@ slf4jAspect)(logic)
   }
 
   private def makeProgram(cfg: CliConfig): ZIO[Projektor, Throwable, Unit] =
