@@ -102,12 +102,14 @@ object CliConfig {
                       file     <- ZIO.fromOption(argsConf.file) orElseFail (new IllegalArgumentException(s"Topology file is not specified."))
                       baseConf <- loadResourceConfig()
                       isVerbose = argsConf.isVerbose
+                      dotSpace <- ZIO.fromEither(DotSpace.parse(argsConf.space))
                     } yield CliConfig(
                       topologyFile = file,
-                      dot = baseConf.dot,
+                      dot = baseConf.dot.copy(space = dotSpace),
                       naming = baseConf.naming,
                       isVerbose = isVerbose
                     )
+          _ <- ZIO.logInfo(config.toString).when(argsConf.isVerbose)
         } yield config
     }
 

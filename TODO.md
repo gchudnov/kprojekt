@@ -1,4 +1,0 @@
-= TODO: refactor verbose mode
-- TODO: make sure space is used
-- TODO: split Dependencies for Cli and Lib
-- check for TODO

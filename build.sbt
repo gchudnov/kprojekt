@@ -12,7 +12,7 @@ lazy val lib = (project in file("lib"))
   .settings(Settings.assemblySettings)
   .settings(
     name := "lib",
-    libraryDependencies ++= Dependencies.All
+    libraryDependencies ++= Dependencies.Lib
   )
 
 lazy val cli = (project in file("cli"))
@@ -22,7 +22,7 @@ lazy val cli = (project in file("cli"))
   .settings(Settings.assemblySettings)
   .settings(
     name := "kprojekt-cli",
-    libraryDependencies ++= Dependencies.All,
+    libraryDependencies ++= Dependencies.Cli,
     buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage              := "com.github.gchudnov.kprojekt",
     assembly / mainClass          := Some("com.github.gchudnov.kprojekt.Cli"),

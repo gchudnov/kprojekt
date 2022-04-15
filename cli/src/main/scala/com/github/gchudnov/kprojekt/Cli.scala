@@ -9,8 +9,17 @@ import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEff
 import scopt.{ DefaultOParserSetup, OParserSetup }
 import zio.Console.printLineError
 import zio._
+import zio.logging.backend.SLF4J
+import zio.logging.LogFormat
 
 object Cli extends ZIOAppDefault {
+
+  private val slf4jAspect = SLF4J.slf4j(
+    logLevel = LogLevel.All,
+    format = LogFormat.line
+  )
+
+  override def hook: RuntimeConfigAspect = slf4jAspect
 
   override def run: ZIO[ZIOAppArgs, Any, Any] = {
     val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
