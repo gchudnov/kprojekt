@@ -8,13 +8,14 @@ rm -f "${APP_JAR_PATH}"
 rm -f "./${APP_NAME}"
 sbt "test; cli/assembly"
 
-# 21.0.0.2.r11-grl
+# 22.1.0.r17-grl
+
+RUNTIME_INIT_LIST="$(cat ./res/graalvm/init-run-time.txt | tr '\n' ',')"
 
 native-image \
   --verbose \
-  --initialize-at-build-time \
+  --initialize-at-run-time="${RUNTIME_INIT_LIST}" \
   --no-fallback \
-  --allow-incomplete-classpath \
   -H:+ReportUnsupportedElementsAtRuntime \
   -H:+ReportExceptionStackTraces \
   -jar "${APP_JAR_PATH}" "${APP_NAME}"
