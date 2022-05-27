@@ -16,7 +16,7 @@ final class LiveEncoder(folder: Folder) extends Encoder {
   import LiveEncoder._
 
   override def encode(name: String, desc: TopologyDescription): UIO[String] =
-    UIO.succeed {
+    ZIO.succeed {
       val subtopologies = desc.subtopologies().asScala.toSeq.sortBy(_.id())
       val globalStores  = desc.globalStores().asScala.toSeq.sortBy(_.id())
 

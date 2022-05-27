@@ -4,13 +4,13 @@ object Dependencies {
 
   object versions {
     val fastparse      = "2.3.3"
-    val kafka          = "3.1.0"
+    val kafka          = "3.2.0"
     val kindProjector  = "0.10.3"
     val logbackClassic = "1.2.11"
     val scopt          = "4.0.1"
-    val zio            = "2.0.0-RC5"
-    val zioConfig      = "3.0.0-RC8"
-    val zioLogging     = "2.0.0-RC8"
+    val zio            = "2.0.0-RC6"
+    val zioConfig      = "3.0.0-RC9"
+    val zioLogging     = "2.0.0-RC10"
   }
 
   private val compiler = Seq(

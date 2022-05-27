@@ -7,7 +7,7 @@ import com.github.gchudnov.kprojekt.parser.LiveParser
 import com.github.gchudnov.kprojekt.zopt.SuccessExitException
 import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
 import scopt.{ DefaultOParserSetup, OParserSetup }
-import zio.Console.printLineError
+import zio.Console._
 import zio._
 import zio.logging.backend.SLF4J
 import zio.logging.LogFormat
@@ -19,7 +19,7 @@ object Cli extends ZIOAppDefault {
     format = LogFormat.line
   )
 
-  override def hook: RuntimeConfigAspect = slf4jAspect
+  override val bootstrap: ZLayer[ZIOAppArgs with Scope, Any, Environment] = ZLayer.empty ++ slf4jAspect
 
   override def run: ZIO[ZIOAppArgs, Any, Any] = {
     val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
@@ -32,11 +32,11 @@ object Cli extends ZIOAppDefault {
       _   <- makeProgram(cfg).provideLayer(env)
     } yield ()
 
-    val logic = program.catchSome { case _: SuccessExitException => ZIO.unit }
+    program.catchSome { case _: SuccessExitException => ZIO.unit }
       .tapError(t => printLineError(s"Error: ${t.getMessage}"))
       .ignore
 
-    ZIO.withRuntimeConfig(RuntimeConfig.default.copy(logger = ZLogger.none) @@ slf4jAspect)(logic)
+    // ZIO.withRuntimeConfig(RuntimeConfig.default.copy(logger = ZLogger.none) @@ slf4jAspect)(logic)
   }
 
   private def makeProgram(cfg: CliConfig): ZIO[Projektor, Throwable, Unit] =

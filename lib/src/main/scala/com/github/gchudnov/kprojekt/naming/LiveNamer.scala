@@ -11,7 +11,7 @@ final class LiveNamer(config: NamerConfig) extends Namer {
   import LiveNamer._
 
   override def name(input: String): UIO[NodeName] =
-    UIO.succeed(get(input))
+    ZIO.succeed(get(input))
 
   def get(input: String): NodeName =
     pattern

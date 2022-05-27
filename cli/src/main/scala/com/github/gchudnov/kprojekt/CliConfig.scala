@@ -12,6 +12,7 @@ import zio._
 import zio.config.magnolia._
 import zio.config.typesafe._
 import zio.config.{ ReadError, _ }
+import scala.annotation.nowarn
 
 import java.io.File
 
@@ -151,7 +152,7 @@ object CliConfig {
     s"${KBuildInfo.name} ${KBuildInfo.version}"
 
   private def loadResourceConfig(): IO[ReadError[String], CliConfig] = {
-    implicit val deriveForDotSpace: Descriptor[DotSpace] =
+    implicit @nowarn val deriveForDotSpace: Descriptor[DotSpace] =
       Descriptor[String].transformOrFail(s => DotSpace.parse(s).left.map(_.getMessage), r => Right(DotSpace.asString(r)))
 
     read(descriptor[CliConfig] from TypesafeConfigSource.fromResourcePath)
