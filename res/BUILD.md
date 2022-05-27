@@ -11,7 +11,8 @@ mkdir -p ./cli/src/main/resources/META-INF/native-image
 3. Having `java` pointing to `GraalVM`, run the app with `native-image-agent` to trace execution.
 
 ```bash
-sdk use java 21.0.0.2.r11-grl
+sdk use java 22.1.0.r17-grl
+gu install native-image
 java -agentlib:native-image-agent=config-output-dir=./cli/src/main/resources/META-INF/native-image -jar ./target/kprojekt-cli.jar ./res/example/word-count.log
 ```
 

@@ -1,55 +1,26 @@
 [
-  {
-    "name": "java.lang.ClassValue"
-  },
-  {
-    "name": "java.lang.String[]"
-  },
-  {
-    "name": "java.lang.invoke.VarHandle",
-    "methods": [
-      {
-        "name": "releaseFence",
-        "parameterTypes": []
-      }
-    ]
-  },
-  {
-    "name": "java.security.MessageDigestSpi"
-  },
-  {
-    "name": "java.security.SecureRandomParameters"
-  },
-  {
-    "name": "scala.Symbol",
-    "methods": [
-      {
-        "name": "apply",
-        "parameterTypes": [
-          "java.lang.String"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "sun.security.provider.NativePRNG",
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": []
-      }
-    ]
-  },
-  {
-    "name": "sun.security.provider.SHA",
-    "methods": [
-      {
-        "name": "<init>",
-        "parameterTypes": []
-      }
-    ]
-  },
-  {
-    "name": "zio.internal.ZScheduler$Worker[]"
-  }
+{
+  "name":"[Ljava.lang.String;"
+},
+{
+  "name":"[Lzio.internal.ZScheduler$Worker;"
+},
+{
+  "name":"java.lang.ClassValue"
+},
+{
+  "name":"java.lang.invoke.VarHandle",
+  "methods":[{"name":"releaseFence","parameterTypes":[] }]
+},
+{
+  "name":"java.security.SecureRandomParameters"
+},
+{
+  "name":"sun.security.provider.NativePRNG",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.SHA",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
 ]
