@@ -14,7 +14,7 @@ import zio.test._
  * }}}
  */
 object FileOpsSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[TestEnvironment, Any] =
+  override def spec: Spec[TestEnvironment, Any] =
     suite("FileOpsSpec")(
       test("resource should be non-empty") {
         val errOrData = FileOps.stringFromResource("graphs/fan-out.dot")

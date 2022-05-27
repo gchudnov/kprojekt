@@ -18,7 +18,7 @@ import scala.jdk.CollectionConverters._
  */
 object ParserSpec extends ZIOSpecDefault {
 
-  override def spec: ZSpec[TestEnvironment with Scope, Any] =
+  override def spec: Spec[TestEnvironment with Scope, Any] =
     suite("ParserSpec")(
       test("parse fan-out topology description should return the parsed structure") {
         for {
@@ -110,12 +110,10 @@ object ParserSpec extends ZIOSpecDefault {
         }
       },
       test("parse an invalid input should return an error") {
-        val res = for {
+        for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/invalid-structure.log"))
-          desc  <- Parser.run(input).provideLayer(defaultEnv)
-        } yield desc
-
-        assertM(res.exit)(fails(isSubtype[ParseException](anything)))
+          res   <- Parser.run(input).provideLayer(defaultEnv).exit
+        } yield assert(res)(fails(isSubtype[ParseException](anything)))
       }
     )
 

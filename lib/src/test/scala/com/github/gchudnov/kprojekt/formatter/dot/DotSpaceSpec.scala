@@ -4,7 +4,7 @@ import zio.test._
 import zio.test.Assertion._
 
 object DotSpaceSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[TestEnvironment, Any] =
+  override def spec: Spec[TestEnvironment, Any] =
     suite("DotSpaceSpec")(
       test("space can be parsed") {
         val cases = Map(

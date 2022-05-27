@@ -16,7 +16,7 @@ import zio.test._
 import zio._
 
 object LiveEncoderSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[TestEnvironment with Scope, Any] =
+  override def spec: Spec[TestEnvironment with Scope, Any] =
     suite("EncoderSpec")(
       test("resource should be non-empty") {
         val errOrData = FileOps.stringFromResource("graphs/fan-out.dot")

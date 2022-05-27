@@ -13,7 +13,7 @@ import zio.test._
  * }}}
  */
 object DotFolderSpec extends ZIOSpecDefault {
-  override def spec: ZSpec[TestEnvironment, Any] =
+  override def spec: Spec[TestEnvironment, Any] =
     suite("DotFolderSpec")(
       test("node ids can be converted to the expected identifiers") {
         val input    = List[NodeId](TopicId("a"), SourceId("b"), ProcessorId("c"), SinkId("d"), StoreId("e"))

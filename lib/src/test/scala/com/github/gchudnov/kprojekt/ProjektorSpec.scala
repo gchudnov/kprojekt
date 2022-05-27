@@ -21,7 +21,7 @@ import zio.test.{ TestEnvironment, _ }
  */
 object ProjektorSpec extends ZIOSpecDefault {
 
-  override def spec: ZSpec[TestEnvironment with Scope, Any] =
+  override def spec: Spec[TestEnvironment with Scope, Any] =
     suite("ProjektorSpec")(
       test("parsing and rendering a complex topology should produce the expected graphviz output") {
         for {
