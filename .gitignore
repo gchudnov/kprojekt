@@ -6,7 +6,9 @@
 .metals
 __pycache__
 target
+
 kprojekt-cli
+kprojekt-cli.build_artifacts.txt
 
 **/metals.sbt
 
