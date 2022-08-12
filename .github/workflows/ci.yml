@@ -60,15 +60,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-10.15]
+        os: [ubuntu-22.04, macos-12]
     steps:
-      - uses: DeLaGuardo/setup-graalvm@5.0
+      - uses: actions/checkout@v2
+      - uses: graalvm/setup-graalvm@v1
         with:
-          graalvm: '21.0.0.2'
-          java: 'java11'
-
-      - name: Install GraalVM's native-image extension
-        run: gu install native-image
+          version: 'latest'
+          java-version: '17'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check Env
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          gu --version
+          native-image --version
 
       - uses: actions/download-artifact@v2
         with:
@@ -88,9 +95,8 @@ jobs:
       - name: Create tarball
         run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" kprojekt-cli
 
-      - name: Release artifact
-        uses: softprops/action-gh-release@v1
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
         with:
-          files: 'kprojekt-cli-${{ matrix.os }}.tar.gz'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: helloworld-${{ matrix.os }}
+          path: kprojekt-cli-${{ matrix.os }}.tar.gz
