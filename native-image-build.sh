@@ -8,7 +8,7 @@ rm -f "${APP_JAR_PATH}"
 rm -f "./${APP_NAME}"
 sbt "test; cli/assembly"
 
-# 22.1.0.r17-grl
+# 22.2.r17-grl
 
 RUNTIME_INIT_LIST="$(cat ./res/graalvm/init-run-time.txt | tr '\n' ',')"
 

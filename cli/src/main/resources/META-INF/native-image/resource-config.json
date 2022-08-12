@@ -1,10 +1,11 @@
 {
   "resources":{
   "includes":[
-    {"pattern":"reference.conf"},
-    {"pattern":"application.conf"},
+    {"pattern":"\\Qreference.conf\\Q"},
+    {"pattern":"\\Qapplication.conf\\Q"},
     {"pattern":"\\Qlogback.xml\\E"},
-    {"pattern":"\\Qimages/cylinder.png\\E"}
+    {"pattern":"\\Qimages/cylinder.png\\E"},
+    {"pattern":"\\QMETA-INF/MANIFEST.MF\\E"}
   ]},
   "bundles":[]
 }
