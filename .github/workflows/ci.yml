@@ -87,8 +87,9 @@ jobs:
       - name: Create tarball
         run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" kprojekt-cli
 
-      - name: Upload binary
-        uses: actions/upload-artifact@v3
+      - name: Release artifact
+        uses: softprops/action-gh-release@v1
         with:
-          name: helloworld-${{ matrix.os }}
-          path: kprojekt-cli-${{ matrix.os }}.tar.gz
+          files: 'kprojekt-cli-${{ matrix.os }}.tar.gz'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
