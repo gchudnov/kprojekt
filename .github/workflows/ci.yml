@@ -78,9 +78,8 @@ jobs:
         run: |
           native-image \
             --verbose \
-            --initialize-at-build-time \
+            --initialize-at-run-time="$(cat ./artifact/init-run-time.txt | tr '\n' ',' | sed 's/,$//')" \
             --no-fallback \
-            --allow-incomplete-classpath \
             -H:+ReportUnsupportedElementsAtRuntime \
             -H:+ReportExceptionStackTraces \
             -jar "./artifact/kprojekt-cli.jar" "kprojekt-cli"
