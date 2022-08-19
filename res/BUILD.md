@@ -5,7 +5,8 @@
 2. Create the directory `META-INF/native-image` to track execution of `native-image-agent`:
 
 ```bash
-mkdir -p ./cli/src/main/resources/META-INF/native-image
+export META_INF_DIR=./cli/src/main/resources/META-INF/native-image
+mkdir -p "${META_INF_DIR}"
 ```
 
 3. Having `java` pointing to `GraalVM`, run the app with `native-image-agent` to trace execution.
@@ -13,7 +14,8 @@ mkdir -p ./cli/src/main/resources/META-INF/native-image
 ```bash
 sdk use java 22.2.r17-grl
 gu install native-image
-java -agentlib:native-image-agent=config-output-dir=./cli/src/main/resources/META-INF/native-image -jar ./target/kprojekt-cli.jar ./res/example/word-count.log
+
+java -agentlib:native-image-agent=config-output-dir="${META_INF_DIR}" -jar ./target/kprojekt-cli.jar ./res/example/word-count.log
 ```
 
 After execution, `META-INF/native-image` directory will have a set of files for `native-image`.
@@ -60,5 +62,5 @@ ${APP_BUILD_DIR}/kprojekt-cli --help
 ${APP_BUILD_DIR}/kprojekt-cli "res/example/word-count.log"
 
 # copy
-cp .${APP_BUILD_DIR}kprojekt-cli /usr/local/bin/
+cp .${APP_BUILD_DIR}/kprojekt-cli /usr/local/bin/
 ```
