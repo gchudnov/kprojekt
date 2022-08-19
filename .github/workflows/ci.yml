@@ -10,7 +10,7 @@ on:
       - master
 jobs:
   build:
-    name: Build, Test and Assembly
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,30 +21,6 @@ jobs:
           cache: 'sbt'
       - name: Run tests
         run: sbt test
-      - name: Assembly JAR
-        run: sbt cli/assembly
-      - uses: actions/upload-artifact@v3
-        with:
-          path: target/kprojekt-cli.jar
-      - uses: actions/upload-artifact@v3
-        with:
-          path: res/graalvm/
-
-  release_jar:
-    name: Release Jar
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          path: ./
-      - name: Release artifact
-        uses: softprops/action-gh-release@v1
-        with:
-          files: 'artifact/kprojekt-cli.jar'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release_nix:
     name: Build native images
@@ -53,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-12]
+        os: [ubuntu-22.04]
     steps:
       - uses: actions/checkout@v3
       - uses: graalvm/setup-graalvm@v1
@@ -70,22 +46,12 @@ jobs:
           gu --version
           native-image --version
 
-      - uses: actions/download-artifact@v3
-        with:
-          path: ./
-
       - name: Create native image
         run: |
-          native-image \
-            --verbose \
-            --initialize-at-run-time="$(cat ./artifact/init-run-time.txt | tr '\n' ',' | sed 's/,$//')" \
-            --no-fallback \
-            -H:+ReportUnsupportedElementsAtRuntime \
-            -H:+ReportExceptionStackTraces \
-            -jar "./artifact/kprojekt-cli.jar" "kprojekt-cli"
+          ./native-image-build.sh
 
       - name: Create tarball
-        run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" kprojekt-cli
+        run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" cli/target/graalvm-native-image/kprojekt-cli
 
       - name: Release artifact
         uses: softprops/action-gh-release@v1
