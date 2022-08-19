@@ -19,10 +19,10 @@ lazy val cli = (project in file("cli"))
   .settings(allSettings: _*)
   .settings(
     name := "kprojekt-cli",
-    libraryDependencies       ++= Dependencies.Cli,
-    buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage              := "com.github.gchudnov.kprojekt",
-    graalVMNativeImageOptions ++= Seq("--no-fallback", "--verbose"), // NOTE: add --dry-run to investigate the build
+    libraryDependencies ++= Dependencies.Cli,
+    buildInfoKeys    := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.github.gchudnov.kprojekt",
+    graalVMNativeImageOptions ++= Seq("--no-fallback", "--verbose") // NOTE: add --dry-run to investigate the build
   )
 
 lazy val root = (project in file("."))

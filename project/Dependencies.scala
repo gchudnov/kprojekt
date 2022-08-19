@@ -8,7 +8,7 @@ object Dependencies {
     val kindProjector  = "0.10.3"
     val logbackClassic = "1.2.11"
     val scopt          = "4.1.0"
-    val zio            = "2.0.0"
+    val zio            = "2.0.1"
     val zioConfig      = "3.0.2"
     val zioLogging     = "2.0.1"
   }
