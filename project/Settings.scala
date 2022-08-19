@@ -1,7 +1,6 @@
 import sbt.Keys._
 import sbt._
-import sbtassembly.AssemblyKeys._
-import sbtassembly.MergeStrategy
+import sbt.Package._
 
 object Settings {
   private val scalaV = "2.13.8"
@@ -25,19 +24,6 @@ object Settings {
   )
 
   val globalScalaVersion: String = scalaV
-
-  type MergeStrategySelector = String => MergeStrategy
-
-  def defaultMergeStrategy(fallbackStrategy: MergeStrategySelector): MergeStrategySelector = {
-    case x if x.contains("module-info.class") => MergeStrategy.discard
-    case x                                    => fallbackStrategy(x)
-  }
-
-  val assemblySettings: Seq[Setting[_]] = Seq(
-    assembly / test                  := {},
-    assembly / assemblyOutputPath    := new File("./target") / (assembly / assemblyJarName).value,
-    assembly / assemblyMergeStrategy := defaultMergeStrategy((assembly / assemblyMergeStrategy).value)
-  )
 
   val sharedResolvers: Vector[MavenRepository] = Seq(
     Resolver.jcenterRepo,

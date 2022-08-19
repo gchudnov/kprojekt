@@ -3,6 +3,9 @@
   "name":"[Ljava.lang.String;"
 },
 {
+  "name":"[Lzio.ZIO$EvaluationStep;"
+},
+{
   "name":"[Lzio.internal.ZScheduler$Worker;"
 },
 {

@@ -50,12 +50,15 @@ will be picked up automatically.
 6. Verify that the native app works:
 
 ```bash
-# should print help
-./kprojekt-cli --help
+export EXAMPLE_DIR="./res/example"
+export APP_BUILD_DIR="./cli/target/graalvm-native-image"
 
-# generate an image from the topology (./res/example/word-count.png)
-./kprojekt-cli ./res/example/word-count.log
+# should print help
+${APP_BUILD_DIR}/kprojekt-cli --help
+
+# generate an image from the topology 
+${APP_BUILD_DIR}/kprojekt-cli "res/example/word-count.log"
 
 # copy
-cp ./kprojekt-cli /usr/local/bin/
+cp .${APP_BUILD_DIR}kprojekt-cli /usr/local/bin/
 ```
