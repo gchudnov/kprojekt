@@ -15,7 +15,11 @@ mkdir -p "${META_INF_DIR}"
 sdk use java 22.2.r17-grl
 gu install native-image
 
-java -agentlib:native-image-agent=config-output-dir="${META_INF_DIR}" -jar ./target/kprojekt-cli.jar ./res/example/word-count.log
+# stage your app so you can run it locally without having the app packaged
+sbt stage
+
+export APP_BIN_DIR="./cli/target/universal/stage/bin"
+JAVA_OPTS=-agentlib:native-image-agent=config-output-dir="${META_INF_DIR}" "${APP_BIN_DIR}/kprojekt-cli" -- --verbose ./res/example/word-count.log
 ```
 
 After execution, `META-INF/native-image` directory will have a set of files for `native-image`.
@@ -59,7 +63,7 @@ export APP_BUILD_DIR="./cli/target/graalvm-native-image"
 ${APP_BUILD_DIR}/kprojekt-cli --help
 
 # generate an image from the topology 
-${APP_BUILD_DIR}/kprojekt-cli "res/example/word-count.log"
+${APP_BUILD_DIR}/kprojekt-cli --verbose "res/example/word-count.log"
 
 # copy
 cp .${APP_BUILD_DIR}/kprojekt-cli /usr/local/bin/

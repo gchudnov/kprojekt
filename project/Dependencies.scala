@@ -10,7 +10,7 @@ object Dependencies {
     val scopt          = "4.1.0"
     val zio            = "2.0.1"
     val zioConfig      = "3.0.2"
-    val zioLogging     = "2.0.1"
+    val zioLogging     = "2.1.0"
   }
 
   private val compiler = Seq(
