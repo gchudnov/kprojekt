@@ -14,9 +14,9 @@ import zio.logging.LogFormat
 
 object Cli extends ZIOAppDefault {
 
-  private val slf4jAspect = SLF4J.slf4j(format = LogFormat.line)
+  private val slf4jLayer = SLF4J.slf4j(format = LogFormat.line)
 
-  override val bootstrap: ZLayer[ZIOAppArgs with Scope, Any, Environment] = ZLayer.empty ++ slf4jAspect
+  override val bootstrap: ZLayer[ZIOAppArgs with Scope, Any, Environment] = ZLayer.empty ++ slf4jLayer
 
   override def run: ZIO[ZIOAppArgs, Any, Any] = {
     val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
