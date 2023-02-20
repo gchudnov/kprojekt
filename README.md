@@ -1,6 +1,6 @@
 # KProjekt - Kafka Topology Visualization
 
-<img src="res/images/projektor-192.png" width="192px" height="192px" align="right" />
+<img src="res/projektor-192.png" width="192px" height="192px" align="right" />
 
 Visualizes kafka topology.
 
