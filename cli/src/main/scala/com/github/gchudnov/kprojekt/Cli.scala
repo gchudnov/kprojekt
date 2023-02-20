@@ -14,13 +14,14 @@ import zio.logging.LogFormat
 
 object Cli extends ZIOAppDefault {
 
-  private val slf4jLayer = 
-    SLF4J.slf4j(format = LogFormat.line)
+  private val slf4jLayer = SLF4J.slf4j(
+    format = LogFormat.default
+  )
 
-  override val bootstrap: ZLayer[ZIOAppArgs with Scope, Any, Environment] = 
+  override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] = 
     Runtime.removeDefaultLoggers ++ slf4jLayer
 
-  override def run: ZIO[ZIOAppArgs, Any, Any] = {
+  override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] = {
     val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
     val psetup: OParserSetup                          = makePEffectSetup()
 

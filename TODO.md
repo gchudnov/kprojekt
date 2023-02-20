@@ -1,0 +1,2 @@
+- add sbt-assembly as an alternative
+- add zio-cli
