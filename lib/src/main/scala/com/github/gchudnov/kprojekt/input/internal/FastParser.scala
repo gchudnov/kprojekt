@@ -1,30 +1,35 @@
-package com.github.gchudnov.kprojekt.parser
+package com.github.gchudnov.kprojekt.input.internal
 
+import com.github.gchudnov.kprojekt.input.ParseException
+import com.github.gchudnov.kprojekt.input.Parser
 import com.github.gchudnov.kprojekt.parser.structure._
-import fastparse.MultiLineWhitespace._
-import fastparse._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.{ Node, Subtopology }
+import fastparse.{parse => fparse}
 import zio._
 
 /**
  * Parses the text description of the Topology
  */
-final class LiveParser() extends Parser {
-  import LiveParser._
+private[input] final class FastParser() extends Parser {
+  import FastParser._
 
-  override def run(input: String): Task[TopologyDescription] =
+  override def parse(input: String): Task[TopologyDescription] =
     ZIO.fromEither {
-      parse(input, topology(_)).fold(
-        (msg, pos, _) => Left[ParseException, TopologyDescription](new ParseException(s"Cannot parse input: $msg at $pos")),
-        (t, _) => Right[ParseException, TopologyDescription](toTopologyDescription(t))
+      fparse(input, topology(_)).fold[Either[ParseException, TopologyDescription]](
+        (msg, pos, _) => 
+          Left(new ParseException(s"Cannot parse input: $msg at $pos")),
+        (t, _) => 
+          Right(toTopologyDescription(t))
       )
     }
 }
 
-object LiveParser {
-  sealed trait NodeRef
+private[input] object FastParser {
+  import fastparse.MultiLineWhitespace._
+  import fastparse._
 
+  sealed trait NodeRef
   final case class TopologyRef(subtopologies: Seq[SubtopologyRef])
   final case class SubtopologyRef(name: String, nodes: Seq[NodeRef])
   final case class SourceRef(name: String, topics: Seq[String], next: Seq[String])                       extends NodeRef
@@ -53,8 +58,6 @@ object LiveParser {
   private def subtopology[_: P]   = P(subtopologyId ~ (source | processor | sink).rep).map(SubtopologyRef.tupled)
 
   private def topology[_: P] = P("Topologies:" ~/ subtopology.rep).map(TopologyRef)
-
-  def layer: ZLayer[Any, Nothing, Parser] = ZLayer.succeed(new LiveParser())
 
   private def toTopologyDescription(topoRef: TopologyRef): TopologyDescription = {
     val ss   = topoRef.subtopologies.map(buildSubtopology)

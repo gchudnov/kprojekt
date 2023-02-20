@@ -8,6 +8,7 @@ import zio.test._
 
 import scala.jdk.CollectionConverters._
 
+import com.github.gchudnov.kprojekt.input.Parser
 /**
  * ParserSpec
  *

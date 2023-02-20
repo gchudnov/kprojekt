@@ -3,8 +3,8 @@ package com.github.gchudnov.kprojekt
 import com.github.gchudnov.kprojekt.encoder.{ Encoder, LiveEncoder }
 import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpace }
 import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
-import com.github.gchudnov.kprojekt.parser.{ LiveParser, Parser }
-import com.github.gchudnov.kprojekt.util.FileOps
+import com.github.gchudnov.kprojekt.parser.{ LiveParser }
+import com.github.gchudnov.kprojekt.input.Parserimport com.github.gchudnov.kprojekt.util.FileOps
 import zio._
 import zio.test.Assertion._
 import zio.test.{ TestEnvironment, _ }

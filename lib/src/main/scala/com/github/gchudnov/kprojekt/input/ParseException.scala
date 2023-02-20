@@ -1,0 +1,22 @@
+package com.github.gchudnov.kprojekt.input
+
+import com.github.gchudnov.kprojekt.KProjektException
+
+final class ParseException(message: String) extends KProjektException(message) {
+
+  def this(message: String, cause: Throwable) = {
+    this(message)
+    initCause(cause)
+  }
+
+  def this(cause: Throwable) =
+    this(Option(cause).map(_.toString).orNull, cause)
+
+  def this() =
+    this(null: String)
+}
+
+object KProjektException {
+  def unapply(e: KProjektException): Option[(String, Throwable)] =
+    Some((e.getMessage, e.getCause))
+}
