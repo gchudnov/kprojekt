@@ -10,6 +10,7 @@ object Dependencies {
     val zio            = "2.0.9"
     val zioConfig      = "3.0.7"
     val zioLogging     = "2.1.9"
+    val zioCli         = "0.3.0-M02"
   }
 
   private val compiler = Seq(
@@ -23,7 +24,9 @@ object Dependencies {
   private val zioConfigMagnolia = "dev.zio" %% "zio-config-magnolia" % versions.zioConfig
   private val zioConfigTypesafe = "dev.zio" %% "zio-config-typesafe" % versions.zioConfig
 
-  private val zioLogging      = "dev.zio"       %% "zio-logging"       % versions.zioLogging
+  private val zioLogging      = "dev.zio" %% "zio-logging"       % versions.zioLogging
+
+  private val zioCli          = "dev.zio" %% "zio-cli" % versions.zioCli
 
   private val zioTest         = "dev.zio" %% "zio-test"          % versions.zio
   private val zioTestMagnolia = "dev.zio" %% "zio-test-magnolia" % versions.zio
@@ -64,7 +67,8 @@ object Dependencies {
       // log
       zioLogging,
       // util
-      scopt
+      scopt,
+      zioCli
     )
     val test = Seq(
       kafkaClients,

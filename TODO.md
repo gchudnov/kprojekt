@@ -1,2 +1,2 @@
-- remove sl4j logging
 - add zio-cli
+- update parser -- make input, flow, output directories
