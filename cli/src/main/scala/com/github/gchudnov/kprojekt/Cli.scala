@@ -9,17 +9,12 @@ import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEff
 import scopt.{ DefaultOParserSetup, OParserSetup }
 import zio.Console._
 import zio._
-import zio.logging.backend.SLF4J
-import zio.logging.LogFormat
+import zio.logging.{LogFormat, console}
 
 object Cli extends ZIOAppDefault {
 
-  private val slf4jLayer = SLF4J.slf4j(
-    format = LogFormat.default
-  )
-
   override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] = 
-    Runtime.removeDefaultLoggers ++ slf4jLayer
+    Runtime.removeDefaultLoggers ++ console(LogFormat.default)
 
   override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] = {
     val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()

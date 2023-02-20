@@ -1,2 +1,2 @@
-- add sbt-assembly as an alternative
+- remove sl4j logging
 - add zio-cli

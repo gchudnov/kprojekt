@@ -6,7 +6,6 @@ object Dependencies {
     val fastparse      = "2.3.3"
     val kafka          = "3.4.0"
     val kindProjector  = "0.10.3"
-    val logbackClassic = "1.4.5"
     val scopt          = "4.1.0"
     val zio            = "2.0.9"
     val zioConfig      = "3.0.7"
@@ -25,8 +24,6 @@ object Dependencies {
   private val zioConfigTypesafe = "dev.zio" %% "zio-config-typesafe" % versions.zioConfig
 
   private val zioLogging      = "dev.zio"       %% "zio-logging"       % versions.zioLogging
-  private val zioLoggingSlf4j = "dev.zio"       %% "zio-logging-slf4j" % versions.zioLogging
-  private val logbackClassic  = "ch.qos.logback" % "logback-classic"   % versions.logbackClassic
 
   private val zioTest         = "dev.zio" %% "zio-test"          % versions.zio
   private val zioTestMagnolia = "dev.zio" %% "zio-test-magnolia" % versions.zio
@@ -66,8 +63,6 @@ object Dependencies {
       zioConfigTypesafe,
       // log
       zioLogging,
-      zioLoggingSlf4j,
-      logbackClassic,
       // util
       scopt
     )
