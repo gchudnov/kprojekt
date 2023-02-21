@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.util
 
-object MapOps {
+object Maps {
 
   private def combine[T](a: Map[T, List[T]], b: Map[T, List[T]]): Map[T, List[T]] =
     a ++ b.map { case (k, v) => k -> (v ++ a.getOrElse(k, List.empty[T])) }

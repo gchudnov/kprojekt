@@ -3,7 +3,7 @@ package com.github.gchudnov.kprojekt
 import com.github.gchudnov.kprojekt.encoder.LiveEncoder
 import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
 import com.github.gchudnov.kprojekt.naming.LiveNamer
-import com.github.gchudnov.kprojekt.parser.LiveParser
+// import com.github.gchudnov.kprojekt.parser.LiveParser
 import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
 import zio.cli.HelpDoc.Span.text
 import zio.Console._

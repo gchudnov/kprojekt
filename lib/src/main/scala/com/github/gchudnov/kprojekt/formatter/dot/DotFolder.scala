@@ -266,7 +266,7 @@ final class DotFolder(config: DotConfig, namer: Namer, state: DotFolderState) ex
 }
 
 object DotFolder {
-  import com.github.gchudnov.kprojekt.util.MapOps._
+  import com.github.gchudnov.kprojekt.util.Maps._
 
   val UnknownName = "?"
 

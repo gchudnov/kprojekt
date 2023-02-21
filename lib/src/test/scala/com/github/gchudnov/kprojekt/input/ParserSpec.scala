@@ -1,8 +1,8 @@
-package com.github.gchudnov.kprojekt.parser
+package com.github.gchudnov.kprojekt.input
 
 import com.github.gchudnov.kprojekt.util.FileOps
 import org.apache.kafka.streams.TopologyDescription.{ Processor, Sink, Source }
-import zio.{ Scope, ZIO }
+import zio._
 import zio.test.Assertion._
 import zio.test._
 
@@ -24,7 +24,7 @@ object ParserSpec extends ZIOSpecDefault {
       test("parse fan-out topology description should return the parsed structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/fan-out.log"))
-          desc  <- Parser.run(input).provideLayer(defaultEnv)
+          desc  <- Parser.parse(input).provideLayer(defaultEnv)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSeq
           val subtopology   = subtopologies.head
@@ -71,7 +71,7 @@ object ParserSpec extends ZIOSpecDefault {
       test("parse global-store topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/global-store.log"))
-          desc  <- Parser.run(input).provideLayer(defaultEnv)
+          desc  <- Parser.parse(input).provideLayer(defaultEnv)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSeq
           val subtopology   = subtopologies.head
@@ -95,7 +95,7 @@ object ParserSpec extends ZIOSpecDefault {
       test("parse complex topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/complex-topo-1.log"))
-          desc  <- Parser.run(input).provideLayer(defaultEnv)
+          desc  <- Parser.parse(input).provideLayer(defaultEnv)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSet
           val subtopology0  = subtopologies.find(_.id() == 0).get
@@ -113,11 +113,11 @@ object ParserSpec extends ZIOSpecDefault {
       test("parse an invalid input should return an error") {
         for {
           input <- ZIO.fromEither(FileOps.stringFromResource("topologies/invalid-structure.log"))
-          res   <- Parser.run(input).provideLayer(defaultEnv).exit
+          res   <- Parser.parse(input).provideLayer(defaultEnv).exit
         } yield assert(res)(fails(isSubtype[ParseException](anything)))
       }
     )
 
-  private val defaultEnv =
-    LiveParser.layer
+  private val defaultEnv: ULayer[Parser] =
+    Parser.make()
 }

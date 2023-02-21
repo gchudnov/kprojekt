@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt.input.internal
 
 import com.github.gchudnov.kprojekt.input.ParseException
 import com.github.gchudnov.kprojekt.input.Parser
-import com.github.gchudnov.kprojekt.parser.structure._
+import com.github.gchudnov.kprojekt.input.internal.flow._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.{ Node, Subtopology }
 import fastparse.{parse => fparse}
@@ -61,21 +61,21 @@ private[input] object FastParser {
 
   private def toTopologyDescription(topoRef: TopologyRef): TopologyDescription = {
     val ss   = topoRef.subtopologies.map(buildSubtopology)
-    val desc = new TopologyDescriptionBlock()
+    val desc = new KTopologyDescription()
     desc.addSubtopologies(ss)
     desc
   }
 
   private def buildSubtopology(st: SubtopologyRef): Subtopology = {
-    import com.github.gchudnov.kprojekt.util.MapOps._
+    import com.github.gchudnov.kprojekt.util.Maps._
 
-    val subtopology = new SubtopologyBlock(st.name.toInt)
-    val (nodes, succ, pred) = st.nodes.foldLeft((Map.empty[String, NodeBlock], Map.empty[String, List[String]], Map.empty[String, List[String]])) { (acc, n) =>
+    val subtopology = new KSubtopology(st.name.toInt)
+    val (nodes, succ, pred) = st.nodes.foldLeft((Map.empty[String, KNode], Map.empty[String, List[String]], Map.empty[String, List[String]])) { (acc, n) =>
       val (nodes, succ, pred) = acc
       n match {
-        case SourceRef(name, topics, next)          => (nodes + (name -> new SourceBlock(name, topics)), succ |+| Map(name -> next.toList), pred)
-        case ProcessorRef(name, stores, next, prev) => (nodes + (name -> new ProcessorBlock(name, stores)), succ |+| Map(name -> next.toList), pred |+| Map(name -> prev.toList))
-        case SinkRef(name, topic, prev)             => (nodes + (name -> new SinkBlock(name, topic)), succ, pred |+| Map(name -> prev.toList))
+        case SourceRef(name, topics, next)          => (nodes + (name -> new KSource(name, topics)), succ |+| Map(name -> next.toList), pred)
+        case ProcessorRef(name, stores, next, prev) => (nodes + (name -> new KProcessor(name, stores)), succ |+| Map(name -> next.toList), pred |+| Map(name -> prev.toList))
+        case SinkRef(name, topic, prev)             => (nodes + (name -> new KSink(name, topic)), succ, pred |+| Map(name -> prev.toList))
       }
     }
 
@@ -92,7 +92,7 @@ private[input] object FastParser {
     subtopology
   }
 
-  private def extractNodes(nodeName: String, m: Map[String, List[String]], nodes: Map[String, NodeBlock]): List[Node] =
+  private def extractNodes(nodeName: String, m: Map[String, List[String]], nodes: Map[String, KNode]): List[Node] =
     m.getOrElse(nodeName, List.empty[String])
       .foldLeft(List.empty[Node]) { (acc, name) =>
         nodes.get(name) match {

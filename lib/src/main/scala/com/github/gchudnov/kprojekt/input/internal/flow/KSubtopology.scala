@@ -1,18 +1,19 @@
-package com.github.gchudnov.kprojekt.parser.structure
+package com.github.gchudnov.kprojekt.input.internal.flow
 
 import java.util.{ HashSet => JHashSet, Set => JSet }
-
 import org.apache.kafka.streams.TopologyDescription.{ Node, Subtopology }
-
 import scala.jdk.CollectionConverters._
 
-final class SubtopologyBlock(sid: Int) extends Subtopology {
+final class KSubtopology(sid: Int) extends Subtopology {
 
   private val nodeSet: JSet[Node] = new JHashSet[Node]
 
   def addNodes(ns: Seq[Node]): Unit =
     nodeSet.addAll(ns.asJava)
 
-  override def id(): Int           = sid
-  override def nodes(): JSet[Node] = nodeSet
+  override def id(): Int           = 
+    sid
+
+  override def nodes(): JSet[Node] = 
+    nodeSet
 }
