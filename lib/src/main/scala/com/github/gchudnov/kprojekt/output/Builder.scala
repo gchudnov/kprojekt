@@ -18,7 +18,7 @@ trait Builder {
   def subtopologyEnd(): Builder
 
   def edges(f: Builder => Builder): Builder = f(this)
-  def edge(from: Id, to: Id): Builder
+  def edge(e: Edge): Builder
 
   def sources(f: Builder => Builder): Builder = f(this)
   def source(id: Id, topics: Iterable[Id]): Builder
@@ -29,7 +29,7 @@ trait Builder {
   def sinks(f: Builder => Builder): Builder = f(this)
   def sink(id: Id, topic: Id): Builder
 
-  def storeEdges(edges: Iterable[(Id, Id)]): Builder
+  def storeEdges(edges: Iterable[Edge]): Builder
   def stores(f: Builder => Builder): Builder = f(this)
   def store(id: Id): Builder
 
