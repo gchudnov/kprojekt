@@ -1,0 +1,47 @@
+package com.github.gchudnov.kprojekt.output
+
+import com.github.gchudnov.kprojekt.output.internal.dot.DotBuilder
+import zio._
+
+trait Builder {
+
+  def build: String
+
+  def topologyStart(name: String): Builder
+  def topologyEnd(): Builder
+
+  def topics(f: Builder => Builder): Builder = f(this)
+  def topic(id: Id): Builder
+
+  def subtopologies(f: Builder => Builder): Builder = f(this)
+  def subtopologyStart(name: String): Builder
+  def subtopologyEnd(): Builder
+
+  def edges(f: Builder => Builder): Builder = f(this)
+  def edge(from: Id, to: Id): Builder
+
+  def sources(f: Builder => Builder): Builder = f(this)
+  def source(id: Id, topics: Iterable[Id]): Builder
+
+  def processors(f: Builder => Builder): Builder = f(this)
+  def processor(id: Id, stores: Iterable[Id]): Builder
+
+  def sinks(f: Builder => Builder): Builder = f(this)
+  def sink(id: Id, topic: Id): Builder
+
+  def storeEdges(edges: Iterable[(Id, Id)]): Builder
+  def stores(f: Builder => Builder): Builder = f(this)
+  def store(id: Id): Builder
+
+  def repository(ns: Iterable[Id]): Builder
+
+  def rank(a: Id, b: Id): Builder
+
+}
+
+object Builder {
+
+  def makeDot: ZLayer[Any, Nothing, Builder] = 
+    ZLayer.succeed(new DotBuilder())
+
+}
