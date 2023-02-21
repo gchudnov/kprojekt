@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt
 import com.github.gchudnov.kprojekt.encoder.Encoder
 import com.github.gchudnov.kprojekt.formatter.Bundler
 import com.github.gchudnov.kprojekt.input.Parser
-import com.github.gchudnov.kprojekt.util.FileOps
+import com.github.gchudnov.kprojekt.util.Files
 import zio._
 
 import java.io.File
@@ -13,7 +13,7 @@ import java.io.File
 final class LiveProjector(parser: Parser, encoder: Encoder, bundler: Bundler) extends Projektor {
   override def run(topologyFile: File): Task[File] =
     // for {
-    //   input   <- ZIO.fromEither(FileOps.stringFromFile(topologyFile))
+    //   input   <- ZIO.fromEither(Files.stringFromFile(topologyFile))
     //   desc    <- parser.run(input)
     //   encoded <- encoder.encode(topologyFile.getName, desc)
     //   file    <- bundler.bundle(topologyFile, encoded)

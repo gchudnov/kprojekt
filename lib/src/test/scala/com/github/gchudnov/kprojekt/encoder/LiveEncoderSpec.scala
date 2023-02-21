@@ -2,7 +2,7 @@ package com.github.gchudnov.kprojekt.encoder
 
 import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpace }
 import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
-import com.github.gchudnov.kprojekt.util.FileOps
+import com.github.gchudnov.kprojekt.util.{ Files, Resources }
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.GlobalKTable
 import org.apache.kafka.streams.processor.api.{ Processor, ProcessorContext, ProcessorSupplier, Record }
@@ -19,7 +19,7 @@ object LiveEncoderSpec extends ZIOSpecDefault {
   override def spec: Spec[TestEnvironment with Scope, Any] =
     suite("EncoderSpec")(
       test("resource should be non-empty") {
-        val errOrData = FileOps.stringFromResource("graphs/fan-out.dot")
+        val errOrData = Resources.linesFromResource("graphs/fan-out.dot")
         assert(errOrData)(isRight) &&
         assert(errOrData.toTry.get)(isNonEmptyString)
       },
@@ -36,7 +36,7 @@ object LiveEncoderSpec extends ZIOSpecDefault {
         val desc     = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/fan-out.dot"))
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/fan-out.dot"))
           actual   <- Encoder.encode("fan-out", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
@@ -55,7 +55,7 @@ object LiveEncoderSpec extends ZIOSpecDefault {
         val desc     = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/word-count.dot"))
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/word-count.dot"))
           actual   <- Encoder.encode("word-count", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
@@ -73,7 +73,7 @@ object LiveEncoderSpec extends ZIOSpecDefault {
         val desc     = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/word-count-embed.dot"))
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/word-count-embed.dot"))
           actual   <- Encoder.encode("word-count", desc).provideLayer(embeddedEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
@@ -103,7 +103,7 @@ object LiveEncoderSpec extends ZIOSpecDefault {
         val desc = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/global-store.dot"))
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/global-store.dot"))
           actual   <- Encoder.encode("global-store-usage", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
@@ -133,7 +133,7 @@ object LiveEncoderSpec extends ZIOSpecDefault {
         val desc     = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(FileOps.stringFromResource("graphs/store-topic-same-name.dot"))
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/store-topic-same-name.dot"))
           actual   <- Encoder.encode("same-name", desc).provideLayer(defaultEnv)
         } yield assert(actual.trim)(equalTo(expected.trim))
       }

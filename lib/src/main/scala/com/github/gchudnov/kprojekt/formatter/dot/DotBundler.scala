@@ -1,7 +1,7 @@
 package com.github.gchudnov.kprojekt.formatter.dot
 
 import com.github.gchudnov.kprojekt.formatter.Bundler
-import com.github.gchudnov.kprojekt.util.FileOps
+import com.github.gchudnov.kprojekt.util.{ Files, Dirs, Resources }
 import zio._
 
 import java.io.File
@@ -13,18 +13,18 @@ final class DotBundler(isVerbose: Boolean = false) extends Bundler {
 
   override def bundle(topologyPath: File, data: String): Task[File] =
     for {
-      tmpDir          <- ZIO.fromEither(FileOps.createTempDir(DirPrefix))
+      tmpDir          <- ZIO.fromEither(Dirs.makeTempDir(DirPrefix))
       _               <- ZIO.logInfo(s"Created temp directory: '${tmpDir.toString}'.").when(isVerbose)
       fileName         = topologyPath.getName
-      dotFile          = FileOps.changeExtension(new File(tmpDir, fileName), ExtDot)
+      dotFile          = Files.changeExtension(new File(tmpDir, fileName), ExtDot)
       cylinderFile     = new File(tmpDir, DotConfig.cylinderFileName)
       updData          = data.replaceAll(DotConfig.cylinderFileName, cylinderFile.toString)
-      _               <- ZIO.fromEither(FileOps.saveString(dotFile)(updData))
+      _               <- ZIO.fromEither(Files.saveString(dotFile, updData))
       _               <- ZIO.logInfo(s"Created Dot-file: '${dotFile.toString}'.").when(isVerbose)
-      _               <- ZIO.fromEither(FileOps.saveResource(cylinderFile)(s"images/${DotConfig.cylinderFileName}"))
+      _               <- ZIO.fromEither(Resources.saveResource(cylinderFile, s"images/${DotConfig.cylinderFileName}"))
       _               <- ZIO.logInfo(s"Created Cylinder-file: '${cylinderFile.toString}'.").when(isVerbose)
       (procLogger, qs) = buildProcessLogger()
-      pngFile          = FileOps.changeExtension(topologyPath, ExtPng)
+      pngFile          = Files.changeExtension(topologyPath, ExtPng)
       _               <- ZIO.logInfo(s"Producing PNG: '${pngFile.toString}'.").when(isVerbose)
       _                = s"dot -Tpng ${dotFile.getAbsolutePath} -o${pngFile.getAbsolutePath}" ! procLogger
       logs             = qs.toList
