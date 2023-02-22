@@ -38,7 +38,8 @@ object DotLegend {
       None
 
   private def toAlias(operator: String, suffix: String, n: Option[Int]) = {
-    val value = List(operator, suffix).filter(_.nonEmpty).mkString("_")
+    val input = if (suffix.nonEmpty) List(suffix) else List(operator, suffix)
+    val value = input.filter(_.nonEmpty).mkString("_")
     val parts = value.split("""[\s-_]""").toList
     parts.mkString(".")
   }
