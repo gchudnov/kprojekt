@@ -8,7 +8,7 @@ import scala.util.control.Exception._
 
 object Resources {
 
-  def saveResource(file: File, resourcePath: String): Either[Throwable, Long] =
+  def save(file: File, resourcePath: String): Either[Throwable, Long] =
     nonFatalCatch.either {
       val classLoader: ClassLoader = getClass.getClassLoader
       Using.resources(classLoader.getResourceAsStream(resourcePath), new FileOutputStream(file)) { (inStream, outStream) =>
@@ -16,7 +16,7 @@ object Resources {
       }
     }.left.map(t => new RuntimeException(s"Cannot save the resource '$resourcePath' to '${file.getAbsolutePath}'", t))
 
-  def linesFromResource(resourcePath: String): Either[Throwable, String] =
+  def lines(resourcePath: String): Either[Throwable, String] =
     nonFatalCatch.either {
       Using.resource(Source.fromResource(resourcePath)) { source =>
         source.getLines().mkString("\n").trim()

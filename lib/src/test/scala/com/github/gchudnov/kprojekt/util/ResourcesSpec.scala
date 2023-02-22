@@ -5,7 +5,6 @@ import java.io.File
 import zio.test.Assertion._
 import zio.test._
 
-
 object ResourcesSpec extends ZIOSpecDefault {
   override def spec: Spec[TestEnvironment, Any] =
     suite("Resources")(
@@ -14,16 +13,16 @@ object ResourcesSpec extends ZIOSpecDefault {
         tmpFile.deleteOnExit()
         val initLen = tmpFile.length()
 
-        val errOrRes = Resources.saveResource(tmpFile, "graphs/complex-topo-1.dot")
+        val errOrRes = Resources.save(tmpFile, "graphs/complex-topo-1.dot")
 
         assert(initLen)(equalTo(0L)) &&
         assert(errOrRes)(isRight) &&
         assert(tmpFile.length())(isGreaterThan(0L))
       },
       test("resource should be non-empty") {
-        val errOrData = Resources.linesFromResource("graphs/fan-out.dot")
+        val errOrData = Resources.lines("graphs/fan-out.dot")
         assert(errOrData)(isRight) &&
         assert(errOrData.toTry.get)(isNonEmptyString)
-      },
+      }
     )
 }

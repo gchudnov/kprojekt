@@ -8,14 +8,14 @@ import scala.util.control.Exception._
 
 object Files {
 
-  def linesFromFile(file: File): Either[Throwable, String] =
+  def lines(file: File): Either[Throwable, String] =
     nonFatalCatch.either {
       Using.resource(Source.fromFile(file)) { file =>
         file.getLines().mkString("\n").trim()
       }
     }
 
-  def saveString(file: File, data: String): Either[Throwable, Unit] =
+  def save(file: File, data: String): Either[Throwable, Unit] =
     nonFatalCatch.either {
       Using.resource(new BufferedWriter(new FileWriter(file))) { writer =>
         writer.write(data)

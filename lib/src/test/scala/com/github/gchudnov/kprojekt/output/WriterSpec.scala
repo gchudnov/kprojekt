@@ -1,7 +1,5 @@
 package com.github.gchudnov.kprojekt.output
 
-import com.github.gchudnov.kprojekt.output.Id
-import com.github.gchudnov.kprojekt.output.Builder
 import com.github.gchudnov.kprojekt.util.Resources
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.GlobalKTable
@@ -15,10 +13,6 @@ import zio._
 import zio.test.Assertion._
 import zio.test._
 import com.github.gchudnov.kprojekt.output.Builder
-
-import com.github.gchudnov.kprojekt.util.Files
-import java.nio.file.Paths
-
 
 object WriterSpec extends ZIOSpecDefault {
 
@@ -39,7 +33,7 @@ object WriterSpec extends ZIOSpecDefault {
         val desc     = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/fan-out.dot"))
+          expected <- ZIO.fromEither(Resources.lines("graphs/fan-out.dot"))
           actual   <- Writer.write("fan-out", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
@@ -58,7 +52,7 @@ object WriterSpec extends ZIOSpecDefault {
         val desc     = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/word-count.dot"))
+          expected <- ZIO.fromEither(Resources.lines("graphs/word-count.dot"))
           actual   <- Writer.write("word-count", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
@@ -88,7 +82,7 @@ object WriterSpec extends ZIOSpecDefault {
         val desc = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/global-store.dot"))
+          expected <- ZIO.fromEither(Resources.lines("graphs/global-store.dot"))
           actual   <- Writer.write("global-store-usage", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
@@ -118,14 +112,14 @@ object WriterSpec extends ZIOSpecDefault {
         val desc     = topology.describe()
 
         for {
-          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/store-topic-same-name.dot"))
+          expected <- ZIO.fromEither(Resources.lines("graphs/store-topic-same-name.dot"))
           actual   <- Writer.write("same-name", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       }
     )
 
   private def makeEnv: ULayer[Writer] = {
-    val dotEnv = Builder.dot
+    val dotEnv    = Builder.dot
     val writerEnv = dotEnv >>> Writer.make
 
     val env = writerEnv
@@ -133,5 +127,3 @@ object WriterSpec extends ZIOSpecDefault {
     env
   }
 }
-
-          // _ = Files.saveString(Paths.get("/home/gchudnov/Projects/kprojekt/lib/src/test/resources/graphs/fan-out.dot").toFile, actual)

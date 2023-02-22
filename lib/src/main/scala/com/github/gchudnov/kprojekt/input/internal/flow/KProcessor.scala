@@ -5,6 +5,6 @@ import org.apache.kafka.streams.TopologyDescription.Processor
 import scala.jdk.CollectionConverters._
 
 final class KProcessor(procName: String, stores: Seq[String]) extends KNode(procName) with Processor {
-  override def stores(): JSet[String] = 
+  override def stores(): JSet[String] =
     stores.toSet.asJava
 }

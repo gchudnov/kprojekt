@@ -11,9 +11,9 @@ final class KSubtopology(sid: Int) extends Subtopology {
   def addNodes(ns: Seq[Node]): Unit =
     nodeSet.addAll(ns.asJava)
 
-  override def id(): Int           = 
+  override def id(): Int =
     sid
 
-  override def nodes(): JSet[Node] = 
+  override def nodes(): JSet[Node] =
     nodeSet
 }

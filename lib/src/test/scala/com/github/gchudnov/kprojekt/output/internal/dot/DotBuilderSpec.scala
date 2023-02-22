@@ -20,9 +20,9 @@ object DotBuilderSpec extends ZIOSpecDefault {
         val name     = "some-name.txt"
         val expected = "t_some_name_txt"
 
-        val actual   = DotBuilder.toDotId(Id.topic(name))
+        val actual = DotBuilder.toDotId(Id.topic(name))
 
         assert(actual)(equalTo(expected))
-      },
+      }
     )
 }

@@ -23,8 +23,8 @@ lazy val cli = (project in file("cli"))
   .settings(
     name := "kprojekt-cli",
     libraryDependencies ++= Dependencies.Cli,
-    buildInfoKeys    := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "com.github.gchudnov.kprojekt",
+    buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage              := "com.github.gchudnov.kprojekt",
     assembly / mainClass          := Some("com.github.gchudnov.kprojekt.Cli"),
     assembly / assemblyOption     := (assembly / assemblyOption).value.withPrependShellScript(Some(defaultUniversalScript(shebang = true))),
     assembly / assemblyOutputPath := new File(s"./target/${name.value}"),

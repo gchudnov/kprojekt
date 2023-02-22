@@ -6,14 +6,14 @@ import com.github.gchudnov.kprojekt.output.Builder
 import com.github.gchudnov.kprojekt.output.internal.dot.DotBuilder.State
 
 /**
-  * Dot Builder
-  *
-  * http://www.graphviz.org/
-  */
+ * Dot Builder
+ *
+ * http://www.graphviz.org/
+ */
 private[internal] final class DotBuilder(config: DotConfig, state: State) extends Builder {
   import DotBuilder._
 
-  override def build: String = 
+  override def build: String =
     state.sb.toString()
 
   override def legend(ids: Iterable[Id]): Builder = {
@@ -31,7 +31,7 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
       .append(s"""${T2}node [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
       .append(s"""${T2}edge [fontname = "${config.fontName}", fontsize=${config.fontSize}];\n""")
 
-      withState(state.copy(sb = state.sb.append(sb1), indent = state.indent + 1))
+    withState(state.copy(sb = state.sb.append(sb1), indent = state.indent + 1))
   }
 
   override def topologyEnd(): Builder = {
@@ -51,8 +51,8 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
 
   override def subtopologyStart(name: String): Builder = {
     val sb1 = new StringBuilder()
-            .append(s"${T1}subgraph cluster_${sanitizeName(name)} {\n")
-            .append(s"${T2}style=dotted;\n")
+      .append(s"${T1}subgraph cluster_${sanitizeName(name)} {\n")
+      .append(s"${T2}style=dotted;\n")
 
     withState(state.copy(sb = state.sb.append(sb1), indent = state.indent + 1))
   }
@@ -92,14 +92,13 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
     withState(state.copy(sb = state.sb.append(sb1)))
   }
 
-  override def storeEdges(edges: Iterable[Edge]): Builder = {
+  override def storeEdges(edges: Iterable[Edge]): Builder =
     this
-  }
 
   override def store(id: Id): Builder = {
     val sb1 = new StringBuilder()
       .append(s"""$T1${toDotId(id)} [shape=cylinder, fixedsize=true, width=0.5, label="${toAlias(id)}", xlabel="", style=filled, fillcolor="$colorStoreFill"];\n""")
-    
+
     withState(state.copy(sb = state.sb.append(sb1)))
   }
 
@@ -147,47 +146,47 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
   }
 
   /**
-    * Make a new builder with an updated state
-    *
-    * @param state
-    */
+   * Make a new builder with an updated state
+   *
+   * @param state
+   */
   private def withState(state: State): DotBuilder =
     new DotBuilder(
       config = config,
       state = state
     )
 
-  private def T1: String = 
+  private def T1: String =
     tab(state.indent)
 
-  private def T2: String = 
+  private def T2: String =
     tab(state.indent + 1)
 
-  private def T3: String  = 
+  private def T3: String =
     tab(state.indent + 2)
 
-  private def T4: String  = 
+  private def T4: String =
     tab(state.indent + 3)
 
-  private def T5: String  = 
+  private def T5: String =
     tab(state.indent + 4)
 
-  private def T_1: String = 
+  private def T_1: String =
     tab(state.indent - 1)
 
-  private def tab(value: Int): String = 
+  private def tab(value: Int): String =
     " " * (value * config.indent)
 }
 
 object DotBuilder {
 
-  private val padG: String = "0.5"
+  private val padG: String    = "0.5"
   private val sepNode: String = "0.5"
   private val sepRank: String = "0.75"
 
   private val colorTableHeaderBg = "#cdcdcd"
-  private val colorTopicFill = "#e8e8e8"
-  private val colorStoreFill = "#eeecae"
+  private val colorTopicFill     = "#e8e8e8"
+  private val colorStoreFill     = "#eeecae"
 
   final case class LegendEntry(id: Id, alias: String, n: Option[Int])
 
@@ -198,7 +197,7 @@ object DotBuilder {
   )
 
   object State {
-    def empty: State = 
+    def empty: State =
       State(
         sb = new StringBuilder,
         legend = Map.empty[Id, LegendEntry],
@@ -208,7 +207,7 @@ object DotBuilder {
 
   def apply(): DotBuilder = {
     val config = DotConfig.default
-    val state = State.empty
+    val state  = State.empty
 
     new DotBuilder(config = config, state = state)
   }

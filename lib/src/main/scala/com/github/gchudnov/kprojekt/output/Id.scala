@@ -9,7 +9,7 @@ final case class Id(
 
 object Id {
 
-  implicit val idOrdering: Ordering[Id] = 
+  implicit val idOrdering: Ordering[Id] =
     (x: Id, y: Id) => x.uid.compare(y.uid)
 
   def topic(name: String): Id =

@@ -16,9 +16,9 @@ final class KTopologyDescription() extends TopologyDescription {
   def addGlobalStores(gs: Seq[GlobalStore]): Unit =
     globalStoreSet.addAll(gs.asJava)
 
-  override def subtopologies(): JSet[Subtopology] = 
+  override def subtopologies(): JSet[Subtopology] =
     subtopologySet
 
-  override def globalStores(): JSet[GlobalStore] = 
+  override def globalStores(): JSet[GlobalStore] =
     globalStoreSet
 }

@@ -5,7 +5,7 @@ import com.github.gchudnov.kprojekt.input.Parser
 import com.github.gchudnov.kprojekt.input.internal.flow._
 import org.apache.kafka.streams.TopologyDescription
 import org.apache.kafka.streams.TopologyDescription.{ Node, Subtopology }
-import fastparse.{parse => fparse}
+import fastparse.{ parse => fparse }
 import zio._
 
 /**
@@ -17,10 +17,8 @@ private[input] final class FastParser() extends Parser {
   override def parse(input: String): Task[TopologyDescription] =
     ZIO.fromEither {
       fparse(input, topology(_)).fold[Either[ParseException, TopologyDescription]](
-        (msg, pos, _) => 
-          Left(new ParseException(s"Cannot parse input: $msg at $pos")),
-        (t, _) => 
-          Right(toTopologyDescription(t))
+        (msg, pos, _) => Left(new ParseException(s"Cannot parse input: $msg at $pos")),
+        (t, _) => Right(toTopologyDescription(t))
       )
     }
 }

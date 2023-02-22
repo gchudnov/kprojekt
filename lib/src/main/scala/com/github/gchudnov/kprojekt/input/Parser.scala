@@ -9,10 +9,10 @@ trait Parser {
 }
 
 object Parser {
-  
+
   def parse(input: String): RIO[Parser, TopologyDescription] =
     ZIO.serviceWithZIO(_.parse(input))
 
-  def make(): ULayer[Parser] =
+  def make: ULayer[Parser] =
     ZLayer.succeed(new FastParser())
 }

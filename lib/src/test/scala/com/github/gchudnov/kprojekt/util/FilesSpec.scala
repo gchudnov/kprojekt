@@ -5,7 +5,6 @@ import java.io.File
 import zio.test.Assertion._
 import zio.test._
 
-
 object FilesSpec extends ZIOSpecDefault {
   override def spec: Spec[TestEnvironment, Any] =
     suite("Files")(

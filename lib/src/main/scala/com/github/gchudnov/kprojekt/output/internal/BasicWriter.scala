@@ -10,12 +10,12 @@ import zio._
 
 import scala.jdk.CollectionConverters._
 
-
 /**
-  * Write Topology using the provided Builder
-  *
-  * @param builder Builder to use (e.g. DotBuilder)
-  */
+ * Write Topology using the provided Builder
+ *
+ * @param builder
+ *   Builder to use (e.g. DotBuilder)
+ */
 final class BasicWriter(builder: Builder) extends Writer {
   import BasicWriter._
 
@@ -25,8 +25,8 @@ final class BasicWriter(builder: Builder) extends Writer {
       val globalStores: List[GlobalStore]  = desc.globalStores().asScala.toList.sortBy(_.id())
 
       val maybeTopicRelatedNodes: List[Node] = subtopologies.flatMap(_.nodes().asScala) ++ globalStores.map(_.source())
-      val topics                 = findTopicIds(maybeTopicRelatedNodes)
-      val topicEdges             = findTopicEdges(maybeTopicRelatedNodes)
+      val topics                             = findTopicIds(maybeTopicRelatedNodes)
+      val topicEdges                         = findTopicEdges(maybeTopicRelatedNodes)
 
       val allIds = findTopologyIds(desc)
 
@@ -88,7 +88,7 @@ object BasicWriter {
       .processors { b =>
         processors.foldLeft(b) { (acc, p) =>
           val pid = toId(p)
-          val ss = p.stores().asScala.toList.map(it => Id.store(it)).sorted
+          val ss  = p.stores().asScala.toList.map(it => Id.store(it)).sorted
           acc.processor(pid, ss)
         }
       }
@@ -112,8 +112,8 @@ object BasicWriter {
   }
 
   /**
-    * Find all topic identifiers
-    */
+   * Find all topic identifiers
+   */
   private def findTopicIds(nodes: List[Node]): List[Id] =
     nodes.collect {
       case s: Source => s.topicSet().asScala.toSet
@@ -124,8 +124,8 @@ object BasicWriter {
       .sorted
 
   /**
-    * Find all topic edges: (X -> Topic)
-    */
+   * Find all topic edges: (X -> Topic)
+   */
   private def findTopicEdges(nodes: List[Node]): List[Edge] =
     nodes.collect {
       case s: Source => s.topicSet().asScala.toSet.map((t: String) => Edge(Id.topic(t), toId(s)))
@@ -133,41 +133,44 @@ object BasicWriter {
     }.flatten.distinct.sorted
 
   /**
-    * Find Nodes for subtopology
-    */
+   * Find Nodes for subtopology
+   */
   private def findNodes(subtopology: Subtopology): List[Node] =
     uniqSort(subtopology.nodes().asScala.toList)
 
   /**
-    * Collects all edges
-    */
+   * Collects all edges
+   */
   private def findNodeEdges(nodes: List[Node]): List[Edge] =
     nodes
-      .flatMap(from => from.successors().asScala
-      .map(to => Edge(toId(from), toId(to))))
+      .flatMap(from =>
+        from
+          .successors()
+          .asScala
+          .map(to => Edge(toId(from), toId(to)))
+      )
       .distinct
       .sorted
 
   /**
-    * Finds all distinct nodes by type
-    */
+   * Finds all distinct nodes by type
+   */
   private def findDistinctNodesByType(nodes: List[Node]): (List[Source], List[Processor], List[Sink]) = {
-    val (sources, processors, sinks) = nodes.foldLeft((List.empty[Source], List.empty[Processor], List.empty[Sink])) {
-      case (acc, n) =>
-        n match {
-          case s: Source    => acc.copy(_1 = acc._1 :+ s)
-          case p: Processor => acc.copy(_2 = acc._2 :+ p)
-          case k: Sink      => acc.copy(_3 = acc._3 :+ k)
-          case _            => sys.error(s"Invalid node type: $n; This is a bug in the library.")
-        }
+    val (sources, processors, sinks) = nodes.foldLeft((List.empty[Source], List.empty[Processor], List.empty[Sink])) { case (acc, n) =>
+      n match {
+        case s: Source    => acc.copy(_1 = acc._1 :+ s)
+        case p: Processor => acc.copy(_2 = acc._2 :+ p)
+        case k: Sink      => acc.copy(_3 = acc._3 :+ k)
+        case _            => sys.error(s"Invalid node type: $n; This is a bug in the library.")
+      }
     }
 
     (uniqSort(sources), uniqSort(processors), uniqSort(sinks))
   }
 
   /**
-    * Find all store identifiers, linked to processors
-    */
+   * Find all store identifiers, linked to processors
+   */
   private def findStoreIds(processors: List[Processor]): List[Id] =
     processors
       .foldLeft(Set.empty[Id]) { (acc, p) =>
@@ -178,8 +181,8 @@ object BasicWriter {
       .sorted
 
   /**
-    * Collect all store edges
-    */
+   * Collect all store edges
+   */
   private def findStoreEdges(processors: List[Processor]): List[Edge] =
     processors
       .foldLeft(Set.empty[Edge]) { (acc, p) =>
@@ -190,8 +193,8 @@ object BasicWriter {
       .sorted
 
   /**
-    * Extract all Ids from a topology
-    */
+   * Extract all Ids from a topology
+   */
   private def findTopologyIds(desc: TopologyDescription): List[Id] = {
     val subtopologies: List[Subtopology] = desc.subtopologies().asScala.toList
     val globalStores: List[GlobalStore]  = desc.globalStores().asScala.toList
@@ -211,19 +214,19 @@ object BasicWriter {
   }
 
   /**
-    * Given a collection of sources, processors and sinks, extract Ids
-    */
+   * Given a collection of sources, processors and sinks, extract Ids
+   */
   private def findIds(sources: List[Source], processors: List[Processor], sinks: List[Sink]): List[Id] = {
     val sourceIds = sources.flatMap(s => toId(s) +: s.topicSet().asScala.toList.map(it => Id.topic(it)))
     val procIds   = processors.flatMap(p => toId(p) +: p.stores().asScala.toList.map(it => Id.store(it)))
     val sinkIds   = sinks.flatMap(k => List(toId(k), Id.topic(k.topic())))
-    
+
     sourceIds ++ procIds ++ sinkIds
   }
 
   /**
-    * Extract Id from a Node
-    */
+   * Extract Id from a Node
+   */
   private def toId(node: Node): Id =
     node match {
       case s: Source =>

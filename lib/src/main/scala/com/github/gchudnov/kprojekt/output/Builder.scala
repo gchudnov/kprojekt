@@ -41,7 +41,7 @@ trait Builder {
 
 object Builder {
 
-  def dot: ZLayer[Any, Nothing, Builder] = 
+  def dot: ZLayer[Any, Nothing, Builder] =
     ZLayer.succeed(DotBuilder())
 
 }
