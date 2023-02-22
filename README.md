@@ -11,6 +11,10 @@ Visualizes kafka topology.
 ## Usage
 
 - Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
+  ```bash
+  # Ubuntu
+  sudo apt install graphviz
+  ```
 - Download and extract [kproject-cli executable](https://github.com/gchudnov/kprojekt/releases).
 - Prepare a file with Kafka-topology ([word-count example](res/example/word-count.log)).
 - Run application from the command line:

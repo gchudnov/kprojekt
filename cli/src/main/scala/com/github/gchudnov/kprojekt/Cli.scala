@@ -1,11 +1,15 @@
 package com.github.gchudnov.kprojekt
 
 import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
+import com.github.gchudnov.kprojekt.input.Parser
+import com.github.gchudnov.kprojekt.output.Builder
+import com.github.gchudnov.kprojekt.output.Writer
 import zio.cli.HelpDoc.Span.text
 import zio.Console._
 import zio._
 import zio.cli._
 import java.nio.file.Path
+import com.github.gchudnov.kprojekt.util.Files
 
 object Cli extends ZIOCliDefault {
 
@@ -27,52 +31,32 @@ object Cli extends ZIOCliDefault {
     version = KBuildInfo.version,
     summary = text("Visualize Kafka Topology"),
     command = rootCommand
-  ) { case _ =>
-    printLine(s"Good Job")
+  ) { case (options, path) =>
+      toDot(options, path)
   }
 
-  // override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] = {
-  //   val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
-  //   val psetup: OParserSetup                          = makePEffectSetup()
+  private def toDot(options: KOptions, path: Path) = {
+    val env = makeDotEnv
+    val dotFile = Files.changeExtension(path.toFile(), "dot")
 
-  //   val program = for {
-  //     as  <- getArgs
-  //     cfg <- CliConfig.fromArgs(as.toList)(psetup).provideLayer(osetup)
-  //     env  = makeEnv(cfg)
-  //     _   <- makeProgram(cfg).provideLayer(env)
-  //   } yield ()
+    val program = for {
+      input    <- ZIO.fromEither(Files.lines(path.toFile()))
+      desc     <- Parser.parse(input)
+      dotStr   <- Writer.write("topo", desc)
+      _        <- ZIO.fromEither(Files.save(dotFile, dotStr))
+    } yield ()
 
-  //   program.catchSome { case _: SuccessExitException => ZIO.unit }
-  //     .tapError(t => printLineError(s"Error: ${t.getMessage}"))
-  //     .ignore
-  // }
+    program.provideLayer(env)
+  }
 
-  // private def makeProgram(cfg: CliConfig): ZIO[Projektor, Throwable, Unit] =
-  //   for {
-  //     projector <- ZIO.service[Projektor]
-  //     _         <- projector.run(cfg.topologyFile)
-  //   } yield ()
+  private def makeDotEnv: ULayer[Parser with Writer] = {
+    val parserEnv = Parser.make
+    val writerEnv = Builder.dot >>> Writer.make
 
-  // private def makeEnv(cfg: CliConfig): ZLayer[Any, Throwable, Projektor] = {
-  //   val parseEnv  = LiveParser.layer
-  //   val nameEnv   = ZLayer.succeed(cfg.naming) >>> LiveNamer.layer
-  //   val foldEnv   = (ZLayer.succeed(cfg.dot) ++ nameEnv) >>> DotFolder.layer
-  //   val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
-  //   val bundleEnv = DotBundler.layer(cfg.isVerbose)
+    val env = parserEnv ++ writerEnv
 
-  //   val env = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
-
-  //   env
-  // }
-
-  // private def makeOZEffectSetup(): ZLayer[Any, Nothing, OZEffectSetup] =
-  //   StdioEffectSetup.layer
-
-  // private def makePEffectSetup(): OParserSetup =
-  //   new DefaultOParserSetup with OParserSetup {
-  //     override def errorOnUnknownArgument: Boolean   = false
-  //     override def showUsageOnError: Option[Boolean] = Some(false)
-  //   }
+    env    
+  }
 }
 
 /*
