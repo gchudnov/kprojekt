@@ -9,6 +9,7 @@ trait Parser {
 }
 
 object Parser {
+  
   def parse(input: String): RIO[Parser, TopologyDescription] =
     ZIO.serviceWithZIO(_.parse(input))
 

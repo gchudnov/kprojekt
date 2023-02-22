@@ -19,28 +19,6 @@ object LiveEncoderSpec extends ZIOSpecDefault {
       test("234") {
         assert(1)(equalTo(1))
       }
-      // test("resource should be non-empty") {
-      //   val errOrData = Resources.linesFromResource("graphs/fan-out.dot")
-      //   assert(errOrData)(isRight) &&
-      //   assert(errOrData.toTry.get)(isNonEmptyString)
-      // },
-      // test("encoding a fan-out topology should produce the expected graphviz output") {
-      //   val builder = new StreamsBuilder
-
-      //   val stream1 = builder.stream[String, String]("topic-a")
-      //   val stream2 = stream1.mapValues(_.toUpperCase())
-      //   val stream3 = stream1.mapValues(_.toLowerCase())
-      //   stream2.to("output-1")
-      //   stream3.to("output-2")
-
-      //   val topology = builder.build()
-      //   val desc     = topology.describe()
-
-      //   for {
-      //     expected <- ZIO.fromEither(Resources.linesFromResource("graphs/fan-out.dot"))
-      //     actual   <- Encoder.encode("fan-out", desc).provideLayer(defaultEnv)
-      //   } yield assert(actual.trim)(equalTo(expected.trim))
-      // },
       // test("encoding the word-count topology should produce the expected graphviz output") {
       //   val builder = new StreamsBuilder
       //   val source  = builder.stream[String, String]("streams-plaintext-input")

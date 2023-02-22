@@ -11,6 +11,9 @@ trait Writer {
 
 object Writer {
 
+  def write(name: String, desc: TopologyDescription): RIO[Writer, String] =
+    ZIO.serviceWithZIO(_.write(name, desc))
+
     def make: ZLayer[Builder, Nothing, Writer] = 
       ZLayer(for {
         builder <- ZIO.service[Builder]

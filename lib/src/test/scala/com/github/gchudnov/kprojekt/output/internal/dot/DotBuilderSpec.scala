@@ -2,10 +2,8 @@ package com.github.gchudnov.kprojekt.output.internal.dot
 
 import com.github.gchudnov.kprojekt.output.Id
 import com.github.gchudnov.kprojekt.output.internal.dot.DotBuilder
-import zio._
 import zio.test.Assertion._
 import zio.test._
-
 
 object DotBuilderSpec extends ZIOSpecDefault {
   override def spec: Spec[TestEnvironment, Any] =
