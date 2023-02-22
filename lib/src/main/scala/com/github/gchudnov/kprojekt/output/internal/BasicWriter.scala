@@ -31,6 +31,7 @@ final class BasicWriter(builder: Builder) extends Writer {
       val allIds = findTopologyIds(desc)
 
       builder
+        .legend(allIds)
         .topologyStart(name)
         .repository(allIds)
         .topics { b =>

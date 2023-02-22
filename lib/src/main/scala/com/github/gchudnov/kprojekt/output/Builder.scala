@@ -7,6 +7,8 @@ trait Builder {
 
   def build: String
 
+  def legend(ns: Iterable[Id]): Builder
+
   def topologyStart(name: String): Builder
   def topologyEnd(): Builder
 
