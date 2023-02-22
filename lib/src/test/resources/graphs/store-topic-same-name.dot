@@ -1,7 +1,7 @@
 digraph g_same_name {
   pack="true"
   packmode="clust"
-  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
+  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.5", ranksep="0.75"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
   t_countries [shape=box, fixedsize=true, label="countries", xlabel="", style=filled, fillcolor="#e8e8e8"];
@@ -35,5 +35,86 @@ digraph g_same_name {
     p_KTABLE_SOURCE_0000000002 [shape=ellipse, fixedsize=true, label="SOURCE\n2", xlabel=""];
     r_countries [shape=cylinder, fixedsize=true, width=0.5, label="countries", xlabel="", style=filled, fillcolor="#eeecae"];
     p_KTABLE_SOURCE_0000000002 -> r_countries;
+  }
+  subgraph legend_0 {
+    legend_root [shape=none, margin=0, label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR>
+          <TD bgcolor="#cdcdcd">#</TD>
+          <TD bgcolor="#cdcdcd" align="left">Alias</TD>
+          <TD bgcolor="#cdcdcd" align="left">Name</TD>
+        </TR>
+        <TR>
+          <TD>7</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000007</TD>
+        </TR>
+        <TR>
+          <TD>5</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000005</TD>
+        </TR>
+        <TR>
+          <TD>6</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000006</TD>
+        </TR>
+        <TR>
+          <TD>2</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KTABLE-SOURCE-0000000002</TD>
+        </TR>
+        <TR>
+          <TD>4</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KTABLE-SOURCE-0000000004</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">countries</TD>
+          <TD align="left">countries</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">documents</TD>
+          <TD align="left">documents</TD>
+        </TR>
+        <TR>
+          <TD>0</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
+        </TR>
+        <TR>
+          <TD>1</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000001</TD>
+        </TR>
+        <TR>
+          <TD>3</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000003</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">countries</TD>
+          <TD align="left">countries</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">documents</TD>
+          <TD align="left">documents</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">output</TD>
+          <TD align="left">output</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">requests</TD>
+          <TD align="left">requests</TD>
+        </TR>
+      </TABLE>
+    >];
   }
 }

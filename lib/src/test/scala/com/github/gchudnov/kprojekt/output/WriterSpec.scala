@@ -92,6 +92,36 @@ object WriterSpec extends ZIOSpecDefault {
           actual   <- Writer.write("global-store-usage", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
+      test("DOT - encoding topology where store and topic has the same name") {
+        val builder = new StreamsBuilder
+
+        val requests: KStream[String, Double] = builder
+          .stream[String, Double]("requests")
+
+        val countryTable: GlobalKTable[String, String] = builder.globalTable[String, String](
+          "countries",
+          Materialized.as[String, String, ByteArrayKeyValueStore]("countries")
+        )
+
+        val documentTable: KTable[String, String] = builder
+          .table[String, String](
+            "documents",
+            Materialized.as[String, String, ByteArrayKeyValueStore]("documents")
+          )
+
+        requests
+          .leftJoin(countryTable)((k, v) => k, (v, gv) => s"$v:$gv")
+          .leftJoin(documentTable)((v, vt) => s"$v:$vt")
+          .to("output")
+
+        val topology = builder.build()
+        val desc     = topology.describe()
+
+        for {
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/store-topic-same-name.dot"))
+          actual   <- Writer.write("same-name", desc).provideLayer(env)
+        } yield assert(actual.trim)(equalTo(expected.trim))
+      }
     )
 
   private def makeEnv: ULayer[Writer] = {
