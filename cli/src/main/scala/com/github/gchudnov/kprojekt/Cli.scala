@@ -25,7 +25,10 @@ object Cli extends ZIOCliDefault {
     summary = text("Visualize Kafka Topology"),
     command = rootCommand
   ) { case (options, path) =>
-    DotProcessor.toDot(options, path).ignore
+    DotProcessor.toDot(options, path)
   }
+
+  override def run =
+    super.run.ignore
 
 }
