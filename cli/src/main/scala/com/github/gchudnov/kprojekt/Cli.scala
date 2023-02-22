@@ -4,7 +4,6 @@ import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
 import zio.cli.HelpDoc.Span.text
 import zio.Console._
 import zio._
-import zio.logging._
 import zio.cli._
 import java.nio.file.Path
 
@@ -31,9 +30,6 @@ object Cli extends ZIOCliDefault {
   ) { case _ =>
     printLine(s"Good Job")
   }
-
-  override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
-    Runtime.removeDefaultLoggers ++ console(LogFormat.default)
 
   // override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] = {
   //   val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
