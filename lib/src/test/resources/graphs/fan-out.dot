@@ -31,14 +31,24 @@ digraph g_fan_out {
           <TD bgcolor="#cdcdcd" align="left">Name</TD>
         </TR>
         <TR>
-          <TD>3</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000003</TD>
+          <TD></TD>
+          <TD align="left">output-1</TD>
+          <TD align="left">output-1</TD>
         </TR>
         <TR>
-          <TD>4</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000004</TD>
+          <TD></TD>
+          <TD align="left">output-2</TD>
+          <TD align="left">output-2</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">topic-a</TD>
+          <TD align="left">topic-a</TD>
+        </TR>
+        <TR>
+          <TD>0</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
         </TR>
         <TR>
           <TD>1</TD>
@@ -51,24 +61,14 @@ digraph g_fan_out {
           <TD align="left">KSTREAM-MAPVALUES-0000000002</TD>
         </TR>
         <TR>
-          <TD>0</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
+          <TD>3</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000003</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">output-1</TD>
-          <TD align="left">output-1</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">output-2</TD>
-          <TD align="left">output-2</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">topic-a</TD>
-          <TD align="left">topic-a</TD>
+          <TD>4</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000004</TD>
         </TR>
       </TABLE>
     >];

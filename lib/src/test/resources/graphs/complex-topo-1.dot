@@ -95,9 +95,129 @@ digraph g_complex_topo_1 {
           <TD bgcolor="#cdcdcd" align="left">Name</TD>
         </TR>
         <TR>
+          <TD></TD>
+          <TD align="left">count-stream-repartition</TD>
+          <TD align="left">count-stream-repartition</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">input</TD>
+          <TD align="left">input</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">joined-stream-merge</TD>
+          <TD align="left">joined-stream-merge</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">joined-stream-other-join</TD>
+          <TD align="left">joined-stream-other-join</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">joined-stream-other-join-store</TD>
+          <TD align="left">joined-stream-other-join-store</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">joined-stream-other-windowed</TD>
+          <TD align="left">joined-stream-other-windowed</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">joined-stream-this-join</TD>
+          <TD align="left">joined-stream-this-join</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">joined-stream-this-join-store</TD>
+          <TD align="left">joined-stream-this-join-store</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">joined-stream-this-windowed</TD>
+          <TD align="left">joined-stream-this-windowed</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">outputTopicForJoin</TD>
+          <TD align="left">outputTopicForJoin</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">outputTopic_0</TD>
+          <TD align="left">outputTopic_0</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">outputTopic_1</TD>
+          <TD align="left">outputTopic_1</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">outputTopic_2</TD>
+          <TD align="left">outputTopic_2</TD>
+        </TR>
+        <TR>
+          <TD>0</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
+        </TR>
+        <TR>
+          <TD>1</TD>
+          <TD align="left">MAP</TD>
+          <TD align="left">KSTREAM-MAP-0000000001</TD>
+        </TR>
+        <TR>
+          <TD>2</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000002</TD>
+        </TR>
+        <TR>
+          <TD>3</TD>
+          <TD align="left">MAPVALUES</TD>
+          <TD align="left">KSTREAM-MAPVALUES-0000000003</TD>
+        </TR>
+        <TR>
+          <TD>4</TD>
+          <TD align="left">PROCESSOR</TD>
+          <TD align="left">KSTREAM-PROCESSOR-0000000004</TD>
+        </TR>
+        <TR>
+          <TD>6</TD>
+          <TD align="left">AGGREGATE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-AGGREGATE-STATE-STORE-0000000006</TD>
+        </TR>
+        <TR>
+          <TD>7</TD>
+          <TD align="left">AGGREGATE</TD>
+          <TD align="left">KSTREAM-AGGREGATE-0000000007</TD>
+        </TR>
+        <TR>
+          <TD>11</TD>
+          <TD align="left">TOSTREAM</TD>
+          <TD align="left">KTABLE-TOSTREAM-0000000011</TD>
+        </TR>
+        <TR>
           <TD>12</TD>
           <TD align="left">SINK</TD>
           <TD align="left">KSTREAM-SINK-0000000012</TD>
+        </TR>
+        <TR>
+          <TD>13</TD>
+          <TD align="left">AGGREGATE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-AGGREGATE-STATE-STORE-0000000013</TD>
+        </TR>
+        <TR>
+          <TD>14</TD>
+          <TD align="left">AGGREGATE</TD>
+          <TD align="left">KSTREAM-AGGREGATE-0000000014</TD>
+        </TR>
+        <TR>
+          <TD>18</TD>
+          <TD align="left">TOSTREAM</TD>
+          <TD align="left">KTABLE-TOSTREAM-0000000018</TD>
         </TR>
         <TR>
           <TD>19</TD>
@@ -105,9 +225,39 @@ digraph g_complex_topo_1 {
           <TD align="left">KSTREAM-SINK-0000000019</TD>
         </TR>
         <TR>
+          <TD>20</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000020</TD>
+        </TR>
+        <TR>
+          <TD>21</TD>
+          <TD align="left">PEEK</TD>
+          <TD align="left">KSTREAM-PEEK-0000000021</TD>
+        </TR>
+        <TR>
+          <TD>22</TD>
+          <TD align="left">REDUCE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000022</TD>
+        </TR>
+        <TR>
+          <TD>23</TD>
+          <TD align="left">REDUCE</TD>
+          <TD align="left">KSTREAM-REDUCE-0000000023</TD>
+        </TR>
+        <TR>
+          <TD>27</TD>
+          <TD align="left">TOSTREAM</TD>
+          <TD align="left">KTABLE-TOSTREAM-0000000027</TD>
+        </TR>
+        <TR>
           <TD>28</TD>
           <TD align="left">SINK</TD>
           <TD align="left">KSTREAM-SINK-0000000028</TD>
+        </TR>
+        <TR>
+          <TD>29</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000029</TD>
         </TR>
         <TR>
           <TD>38</TD>
@@ -120,164 +270,14 @@ digraph g_complex_topo_1 {
           <TD align="left">KSTREAM-SINK-0000000039</TD>
         </TR>
         <TR>
-          <TD>7</TD>
-          <TD align="left">AGGREGATE</TD>
-          <TD align="left">KSTREAM-AGGREGATE-0000000007</TD>
-        </TR>
-        <TR>
-          <TD>14</TD>
-          <TD align="left">AGGREGATE</TD>
-          <TD align="left">KSTREAM-AGGREGATE-0000000014</TD>
-        </TR>
-        <TR>
-          <TD>2</TD>
-          <TD align="left">FILTER</TD>
-          <TD align="left">KSTREAM-FILTER-0000000002</TD>
-        </TR>
-        <TR>
-          <TD>20</TD>
-          <TD align="left">FILTER</TD>
-          <TD align="left">KSTREAM-FILTER-0000000020</TD>
-        </TR>
-        <TR>
-          <TD>29</TD>
-          <TD align="left">FILTER</TD>
-          <TD align="left">KSTREAM-FILTER-0000000029</TD>
-        </TR>
-        <TR>
           <TD>40</TD>
           <TD align="left">FILTER</TD>
           <TD align="left">KSTREAM-FILTER-0000000040</TD>
         </TR>
         <TR>
-          <TD>1</TD>
-          <TD align="left">MAP</TD>
-          <TD align="left">KSTREAM-MAP-0000000001</TD>
-        </TR>
-        <TR>
-          <TD>3</TD>
-          <TD align="left">MAPVALUES</TD>
-          <TD align="left">KSTREAM-MAPVALUES-0000000003</TD>
-        </TR>
-        <TR>
-          <TD>21</TD>
-          <TD align="left">PEEK</TD>
-          <TD align="left">KSTREAM-PEEK-0000000021</TD>
-        </TR>
-        <TR>
-          <TD>4</TD>
-          <TD align="left">PROCESSOR</TD>
-          <TD align="left">KSTREAM-PROCESSOR-0000000004</TD>
-        </TR>
-        <TR>
-          <TD>23</TD>
-          <TD align="left">REDUCE</TD>
-          <TD align="left">KSTREAM-REDUCE-0000000023</TD>
-        </TR>
-        <TR>
-          <TD>11</TD>
-          <TD align="left">TOSTREAM</TD>
-          <TD align="left">KTABLE-TOSTREAM-0000000011</TD>
-        </TR>
-        <TR>
-          <TD>18</TD>
-          <TD align="left">TOSTREAM</TD>
-          <TD align="left">KTABLE-TOSTREAM-0000000018</TD>
-        </TR>
-        <TR>
-          <TD>27</TD>
-          <TD align="left">TOSTREAM</TD>
-          <TD align="left">KTABLE-TOSTREAM-0000000027</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">joined-stream-merge</TD>
-          <TD align="left">joined-stream-merge</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">joined-stream-other-join</TD>
-          <TD align="left">joined-stream-other-join</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">joined-stream-other-windowed</TD>
-          <TD align="left">joined-stream-other-windowed</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">joined-stream-this-join</TD>
-          <TD align="left">joined-stream-this-join</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">joined-stream-this-windowed</TD>
-          <TD align="left">joined-stream-this-windowed</TD>
-        </TR>
-        <TR>
-          <TD>6</TD>
-          <TD align="left">AGGREGATE.STATE.STORE</TD>
-          <TD align="left">KSTREAM-AGGREGATE-STATE-STORE-0000000006</TD>
-        </TR>
-        <TR>
-          <TD>13</TD>
-          <TD align="left">AGGREGATE.STATE.STORE</TD>
-          <TD align="left">KSTREAM-AGGREGATE-STATE-STORE-0000000013</TD>
-        </TR>
-        <TR>
-          <TD>22</TD>
-          <TD align="left">REDUCE.STATE.STORE</TD>
-          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000022</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">joined-stream-other-join-store</TD>
-          <TD align="left">joined-stream-other-join-store</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">joined-stream-this-join-store</TD>
-          <TD align="left">joined-stream-this-join-store</TD>
-        </TR>
-        <TR>
-          <TD>0</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
-        </TR>
-        <TR>
           <TD>41</TD>
           <TD align="left">SOURCE</TD>
           <TD align="left">KSTREAM-SOURCE-0000000041</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">count-stream-repartition</TD>
-          <TD align="left">count-stream-repartition</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">input</TD>
-          <TD align="left">input</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">outputTopicForJoin</TD>
-          <TD align="left">outputTopicForJoin</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">outputTopic_0</TD>
-          <TD align="left">outputTopic_0</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">outputTopic_1</TD>
-          <TD align="left">outputTopic_1</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">outputTopic_2</TD>
-          <TD align="left">outputTopic_2</TD>
         </TR>
       </TABLE>
     >];

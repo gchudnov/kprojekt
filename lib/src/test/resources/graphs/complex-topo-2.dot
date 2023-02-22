@@ -98,129 +98,29 @@ digraph g_complex_topo_2 {
           <TD bgcolor="#cdcdcd" align="left">Name</TD>
         </TR>
         <TR>
-          <TD>9</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000009</TD>
-        </TR>
-        <TR>
-          <TD>16</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000016</TD>
-        </TR>
-        <TR>
-          <TD>23</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000023</TD>
-        </TR>
-        <TR>
-          <TD>29</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000029</TD>
-        </TR>
-        <TR>
-          <TD>10</TD>
-          <TD align="left">FILTER</TD>
-          <TD align="left">KSTREAM-FILTER-0000000010</TD>
-        </TR>
-        <TR>
-          <TD>12</TD>
-          <TD align="left">FILTER</TD>
-          <TD align="left">KSTREAM-FILTER-0000000012</TD>
-        </TR>
-        <TR>
-          <TD>17</TD>
-          <TD align="left">FILTER</TD>
-          <TD align="left">KSTREAM-FILTER-0000000017</TD>
-        </TR>
-        <TR>
-          <TD>24</TD>
-          <TD align="left">FILTER</TD>
-          <TD align="left">KSTREAM-FILTER-0000000024</TD>
-        </TR>
-        <TR>
-          <TD>6</TD>
-          <TD align="left">KEY.SELECT</TD>
-          <TD align="left">KSTREAM-KEY-SELECT-0000000006</TD>
-        </TR>
-        <TR>
-          <TD>13</TD>
-          <TD align="left">KEY.SELECT</TD>
-          <TD align="left">KSTREAM-KEY-SELECT-0000000013</TD>
-        </TR>
-        <TR>
-          <TD>4</TD>
-          <TD align="left">LEFTJOIN</TD>
-          <TD align="left">KSTREAM-LEFTJOIN-0000000004</TD>
-        </TR>
-        <TR>
-          <TD>21</TD>
-          <TD align="left">LEFTJOIN</TD>
-          <TD align="left">KSTREAM-LEFTJOIN-0000000021</TD>
-        </TR>
-        <TR>
-          <TD>26</TD>
-          <TD align="left">LEFTJOIN</TD>
-          <TD align="left">KSTREAM-LEFTJOIN-0000000026</TD>
-        </TR>
-        <TR>
-          <TD>27</TD>
-          <TD align="left">LEFTJOIN</TD>
-          <TD align="left">KSTREAM-LEFTJOIN-0000000027</TD>
-        </TR>
-        <TR>
-          <TD>22</TD>
-          <TD align="left">MAP</TD>
-          <TD align="left">KSTREAM-MAP-0000000022</TD>
-        </TR>
-        <TR>
-          <TD>28</TD>
-          <TD align="left">MAP</TD>
-          <TD align="left">KSTREAM-MAP-0000000028</TD>
-        </TR>
-        <TR>
-          <TD>5</TD>
-          <TD align="left">MAPVALUES</TD>
-          <TD align="left">KSTREAM-MAPVALUES-0000000005</TD>
-        </TR>
-        <TR>
-          <TD>8</TD>
-          <TD align="left">REDUCE</TD>
-          <TD align="left">KSTREAM-REDUCE-0000000008</TD>
-        </TR>
-        <TR>
-          <TD>15</TD>
-          <TD align="left">REDUCE</TD>
-          <TD align="left">KSTREAM-REDUCE-0000000015</TD>
-        </TR>
-        <TR>
-          <TD>20</TD>
-          <TD align="left">REDUCE</TD>
-          <TD align="left">KSTREAM-REDUCE-0000000020</TD>
-        </TR>
-        <TR>
-          <TD>3</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KTABLE-SOURCE-0000000003</TD>
-        </TR>
-        <TR>
-          <TD>7</TD>
-          <TD align="left">REDUCE.STATE.STORE</TD>
-          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000007</TD>
-        </TR>
-        <TR>
-          <TD>14</TD>
-          <TD align="left">REDUCE.STATE.STORE</TD>
-          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000014</TD>
-        </TR>
-        <TR>
-          <TD>19</TD>
-          <TD align="left">REDUCE.STATE.STORE</TD>
-          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000019</TD>
-        </TR>
-        <TR>
           <TD></TD>
           <TD align="left">country-info-store</TD>
           <TD align="left">country-info-store</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">country-into-topic</TD>
+          <TD align="left">country-into-topic</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">output-entry-topic</TD>
+          <TD align="left">output-entry-topic</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">price-change-topic</TD>
+          <TD align="left">price-change-topic</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">request-entry-topic</TD>
+          <TD align="left">request-entry-topic</TD>
         </TR>
         <TR>
           <TD>0</TD>
@@ -238,24 +138,29 @@ digraph g_complex_topo_2 {
           <TD align="left">KSTREAM-SOURCE-0000000002</TD>
         </TR>
         <TR>
-          <TD>11</TD>
+          <TD>3</TD>
           <TD align="left">SOURCE</TD>
-          <TD align="left">KSTREAM-SOURCE-0000000011</TD>
+          <TD align="left">KTABLE-SOURCE-0000000003</TD>
         </TR>
         <TR>
-          <TD>18</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KSTREAM-SOURCE-0000000018</TD>
+          <TD>4</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000004</TD>
         </TR>
         <TR>
-          <TD>25</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KSTREAM-SOURCE-0000000025</TD>
+          <TD>5</TD>
+          <TD align="left">MAPVALUES</TD>
+          <TD align="left">KSTREAM-MAPVALUES-0000000005</TD>
         </TR>
         <TR>
-          <TD>22</TD>
-          <TD align="left">repartition</TD>
-          <TD align="left">KSTREAM-MAP-0000000022-repartition</TD>
+          <TD>6</TD>
+          <TD align="left">KEY.SELECT</TD>
+          <TD align="left">KSTREAM-KEY-SELECT-0000000006</TD>
+        </TR>
+        <TR>
+          <TD>7</TD>
+          <TD align="left">REDUCE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000007</TD>
         </TR>
         <TR>
           <TD>7</TD>
@@ -263,29 +168,124 @@ digraph g_complex_topo_2 {
           <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000007-repartition</TD>
         </TR>
         <TR>
+          <TD>8</TD>
+          <TD align="left">REDUCE</TD>
+          <TD align="left">KSTREAM-REDUCE-0000000008</TD>
+        </TR>
+        <TR>
+          <TD>9</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000009</TD>
+        </TR>
+        <TR>
+          <TD>10</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000010</TD>
+        </TR>
+        <TR>
+          <TD>11</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000011</TD>
+        </TR>
+        <TR>
+          <TD>12</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000012</TD>
+        </TR>
+        <TR>
+          <TD>13</TD>
+          <TD align="left">KEY.SELECT</TD>
+          <TD align="left">KSTREAM-KEY-SELECT-0000000013</TD>
+        </TR>
+        <TR>
+          <TD>14</TD>
+          <TD align="left">REDUCE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000014</TD>
+        </TR>
+        <TR>
           <TD>14</TD>
           <TD align="left">repartition</TD>
           <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000014-repartition</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">country-into-topic</TD>
-          <TD align="left">country-into-topic</TD>
+          <TD>15</TD>
+          <TD align="left">REDUCE</TD>
+          <TD align="left">KSTREAM-REDUCE-0000000015</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">output-entry-topic</TD>
-          <TD align="left">output-entry-topic</TD>
+          <TD>16</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000016</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">price-change-topic</TD>
-          <TD align="left">price-change-topic</TD>
+          <TD>17</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000017</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">request-entry-topic</TD>
-          <TD align="left">request-entry-topic</TD>
+          <TD>18</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000018</TD>
+        </TR>
+        <TR>
+          <TD>19</TD>
+          <TD align="left">REDUCE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000019</TD>
+        </TR>
+        <TR>
+          <TD>20</TD>
+          <TD align="left">REDUCE</TD>
+          <TD align="left">KSTREAM-REDUCE-0000000020</TD>
+        </TR>
+        <TR>
+          <TD>21</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000021</TD>
+        </TR>
+        <TR>
+          <TD>22</TD>
+          <TD align="left">MAP</TD>
+          <TD align="left">KSTREAM-MAP-0000000022</TD>
+        </TR>
+        <TR>
+          <TD>22</TD>
+          <TD align="left">repartition</TD>
+          <TD align="left">KSTREAM-MAP-0000000022-repartition</TD>
+        </TR>
+        <TR>
+          <TD>23</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000023</TD>
+        </TR>
+        <TR>
+          <TD>24</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000024</TD>
+        </TR>
+        <TR>
+          <TD>25</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000025</TD>
+        </TR>
+        <TR>
+          <TD>26</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000026</TD>
+        </TR>
+        <TR>
+          <TD>27</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000027</TD>
+        </TR>
+        <TR>
+          <TD>28</TD>
+          <TD align="left">MAP</TD>
+          <TD align="left">KSTREAM-MAP-0000000028</TD>
+        </TR>
+        <TR>
+          <TD>29</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000029</TD>
         </TR>
       </TABLE>
     >];

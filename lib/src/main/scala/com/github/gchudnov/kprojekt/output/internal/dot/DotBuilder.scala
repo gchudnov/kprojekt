@@ -128,7 +128,7 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
     sb.append(s"""$T5<TD bgcolor="$colorTableHeaderBg" align="left">Name</TD>\n""")
     sb.append(s"""$T4</TR>\n""")
 
-    val table = state.legend.values.toList.sortBy(it => (it.id))
+    val table = state.legend.values.toList.sortBy(it => ((it.n, it.id.name)))
 
     table.foreach { case LegendEntry(id, alias, n) =>
       sb.append(s"""$T4<TR>\n""")

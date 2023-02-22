@@ -46,9 +46,19 @@ digraph g_word_count {
           <TD bgcolor="#cdcdcd" align="left">Name</TD>
         </TR>
         <TR>
-          <TD>10</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000010</TD>
+          <TD></TD>
+          <TD align="left">counts-store</TD>
+          <TD align="left">counts-store</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">counts-store-repartition</TD>
+          <TD align="left">counts-store-repartition</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">counts-store-repartition-filter</TD>
+          <TD align="left">counts-store-repartition-filter</TD>
         </TR>
         <TR>
           <TD></TD>
@@ -56,9 +66,24 @@ digraph g_word_count {
           <TD align="left">counts-store-repartition-sink</TD>
         </TR>
         <TR>
-          <TD>3</TD>
-          <TD align="left">AGGREGATE</TD>
-          <TD align="left">KSTREAM-AGGREGATE-0000000003</TD>
+          <TD></TD>
+          <TD align="left">counts-store-repartition-source</TD>
+          <TD align="left">counts-store-repartition-source</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">streams-plaintext-input</TD>
+          <TD align="left">streams-plaintext-input</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">streams-wordcount-output</TD>
+          <TD align="left">streams-wordcount-output</TD>
+        </TR>
+        <TR>
+          <TD>0</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
         </TR>
         <TR>
           <TD>1</TD>
@@ -71,6 +96,11 @@ digraph g_word_count {
           <TD align="left">KSTREAM-KEY-SELECT-0000000002</TD>
         </TR>
         <TR>
+          <TD>3</TD>
+          <TD align="left">AGGREGATE</TD>
+          <TD align="left">KSTREAM-AGGREGATE-0000000003</TD>
+        </TR>
+        <TR>
           <TD>8</TD>
           <TD align="left">MAPVALUES</TD>
           <TD align="left">KTABLE-MAPVALUES-0000000008</TD>
@@ -81,39 +111,9 @@ digraph g_word_count {
           <TD align="left">KTABLE-TOSTREAM-0000000009</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">counts-store-repartition-filter</TD>
-          <TD align="left">counts-store-repartition-filter</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">counts-store</TD>
-          <TD align="left">counts-store</TD>
-        </TR>
-        <TR>
-          <TD>0</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">counts-store-repartition-source</TD>
-          <TD align="left">counts-store-repartition-source</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">counts-store-repartition</TD>
-          <TD align="left">counts-store-repartition</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">streams-plaintext-input</TD>
-          <TD align="left">streams-plaintext-input</TD>
-        </TR>
-        <TR>
-          <TD></TD>
-          <TD align="left">streams-wordcount-output</TD>
-          <TD align="left">streams-wordcount-output</TD>
+          <TD>10</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000010</TD>
         </TR>
       </TABLE>
     >];

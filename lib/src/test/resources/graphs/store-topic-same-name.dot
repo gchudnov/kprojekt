@@ -45,29 +45,9 @@ digraph g_same_name {
           <TD bgcolor="#cdcdcd" align="left">Name</TD>
         </TR>
         <TR>
-          <TD>7</TD>
-          <TD align="left">SINK</TD>
-          <TD align="left">KSTREAM-SINK-0000000007</TD>
-        </TR>
-        <TR>
-          <TD>5</TD>
-          <TD align="left">LEFTJOIN</TD>
-          <TD align="left">KSTREAM-LEFTJOIN-0000000005</TD>
-        </TR>
-        <TR>
-          <TD>6</TD>
-          <TD align="left">LEFTJOIN</TD>
-          <TD align="left">KSTREAM-LEFTJOIN-0000000006</TD>
-        </TR>
-        <TR>
-          <TD>2</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KTABLE-SOURCE-0000000002</TD>
-        </TR>
-        <TR>
-          <TD>4</TD>
-          <TD align="left">SOURCE</TD>
-          <TD align="left">KTABLE-SOURCE-0000000004</TD>
+          <TD></TD>
+          <TD align="left">countries</TD>
+          <TD align="left">countries</TD>
         </TR>
         <TR>
           <TD></TD>
@@ -78,6 +58,21 @@ digraph g_same_name {
           <TD></TD>
           <TD align="left">documents</TD>
           <TD align="left">documents</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">documents</TD>
+          <TD align="left">documents</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">output</TD>
+          <TD align="left">output</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">requests</TD>
+          <TD align="left">requests</TD>
         </TR>
         <TR>
           <TD>0</TD>
@@ -90,29 +85,34 @@ digraph g_same_name {
           <TD align="left">KSTREAM-SOURCE-0000000001</TD>
         </TR>
         <TR>
+          <TD>2</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KTABLE-SOURCE-0000000002</TD>
+        </TR>
+        <TR>
           <TD>3</TD>
           <TD align="left">SOURCE</TD>
           <TD align="left">KSTREAM-SOURCE-0000000003</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">countries</TD>
-          <TD align="left">countries</TD>
+          <TD>4</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KTABLE-SOURCE-0000000004</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">documents</TD>
-          <TD align="left">documents</TD>
+          <TD>5</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000005</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">output</TD>
-          <TD align="left">output</TD>
+          <TD>6</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000006</TD>
         </TR>
         <TR>
-          <TD></TD>
-          <TD align="left">requests</TD>
-          <TD align="left">requests</TD>
+          <TD>7</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000007</TD>
         </TR>
       </TABLE>
     >];

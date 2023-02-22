@@ -29,13 +29,13 @@ digraph g_global_store_usage {
         </TR>
         <TR>
           <TD></TD>
-          <TD align="left">test-store</TD>
-          <TD align="left">test-store</TD>
+          <TD align="left">test-source</TD>
+          <TD align="left">test-source</TD>
         </TR>
         <TR>
           <TD></TD>
-          <TD align="left">test-source</TD>
-          <TD align="left">test-source</TD>
+          <TD align="left">test-store</TD>
+          <TD align="left">test-store</TD>
         </TR>
         <TR>
           <TD></TD>
