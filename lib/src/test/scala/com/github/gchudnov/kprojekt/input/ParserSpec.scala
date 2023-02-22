@@ -1,6 +1,6 @@
 package com.github.gchudnov.kprojekt.input
 
-import com.github.gchudnov.kprojekt.util.{ Files, Resources }
+import com.github.gchudnov.kprojekt.util.{ Resources }
 import com.github.gchudnov.kprojekt.input.Parser
 import org.apache.kafka.streams.TopologyDescription.{ Processor, Sink, Source }
 import zio._
@@ -16,11 +16,11 @@ import scala.jdk.CollectionConverters._
 object ParserSpec extends ZIOSpecDefault {
 
   override def spec: Spec[TestEnvironment with Scope, Any] =
-    suite("ParserSpec")(
+    suite("Parser")(
       test("parse fan-out topology description should return the parsed structure") {
         for {
           input <- ZIO.fromEither(Resources.linesFromResource("topologies/fan-out.log"))
-          desc  <- Parser.parse(input).provideLayer(defaultEnv)
+          desc  <- Parser.parse(input).provideLayer(env)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSeq
           val subtopology   = subtopologies.head
@@ -67,7 +67,7 @@ object ParserSpec extends ZIOSpecDefault {
       test("parse global-store topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(Resources.linesFromResource("topologies/global-store.log"))
-          desc  <- Parser.parse(input).provideLayer(defaultEnv)
+          desc  <- Parser.parse(input).provideLayer(env)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSeq
           val subtopology   = subtopologies.head
@@ -91,7 +91,7 @@ object ParserSpec extends ZIOSpecDefault {
       test("parse complex topology description should return the valid structure") {
         for {
           input <- ZIO.fromEither(Resources.linesFromResource("topologies/complex-topo-1.log"))
-          desc  <- Parser.parse(input).provideLayer(defaultEnv)
+          desc  <- Parser.parse(input).provideLayer(env)
         } yield {
           val subtopologies = desc.subtopologies().asScala.toSet
           val subtopology0  = subtopologies.find(_.id() == 0).get
@@ -109,11 +109,11 @@ object ParserSpec extends ZIOSpecDefault {
       test("parse an invalid input should return an error") {
         for {
           input <- ZIO.fromEither(Resources.linesFromResource("topologies/invalid-structure.log"))
-          res   <- Parser.parse(input).provideLayer(defaultEnv).exit
+          res   <- Parser.parse(input).provideLayer(env).exit
         } yield assert(res)(fails(isSubtype[ParseException](anything)))
       }
     )
 
-  private val defaultEnv: ULayer[Parser] =
+  private val env: ULayer[Parser] =
     Parser.make()
 }
