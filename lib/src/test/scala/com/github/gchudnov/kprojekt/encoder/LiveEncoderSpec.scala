@@ -19,25 +19,7 @@ object LiveEncoderSpec extends ZIOSpecDefault {
       test("234") {
         assert(1)(equalTo(1))
       }
-      // test("encoding the word-count topology should produce the expected graphviz output") {
-      //   val builder = new StreamsBuilder
-      //   val source  = builder.stream[String, String]("streams-plaintext-input")
 
-      //   source
-      //     .flatMapValues(_.toLowerCase.split("\\W+").toList)
-      //     .groupBy((key, value) => value)
-      //     .count()(Materialized.as[String, Long, ByteArrayKeyValueStore]("counts-store"))
-      //     .toStream
-      //     .to("streams-wordcount-output")
-
-      //   val topology = builder.build()
-      //   val desc     = topology.describe()
-
-      //   for {
-      //     expected <- ZIO.fromEither(Resources.linesFromResource("graphs/word-count.dot"))
-      //     actual   <- Encoder.encode("word-count", desc).provideLayer(defaultEnv)
-      //   } yield assert(actual.trim)(equalTo(expected.trim))
-      // },
       // test("encoding the word-count topology should produce the expected graphviz output (embed stores)") {
       //   val builder = new StreamsBuilder
       //   val source  = builder.stream[String, String]("streams-plaintext-input")

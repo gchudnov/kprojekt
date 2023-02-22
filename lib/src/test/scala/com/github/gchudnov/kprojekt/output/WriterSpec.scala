@@ -42,6 +42,25 @@ object WriterSpec extends ZIOSpecDefault {
           actual   <- Writer.write("fan-out", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
+      test("DOT - encode the word-count topology") {
+        val builder = new StreamsBuilder
+        val source  = builder.stream[String, String]("streams-plaintext-input")
+
+        source
+          .flatMapValues(_.toLowerCase.split("\\W+").toList)
+          .groupBy((key, value) => value)
+          .count()(Materialized.as[String, Long, ByteArrayKeyValueStore]("counts-store"))
+          .toStream
+          .to("streams-wordcount-output")
+
+        val topology = builder.build()
+        val desc     = topology.describe()
+
+        for {
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/word-count.dot"))
+          actual   <- Writer.write("word-count", desc).provideLayer(env)
+        } yield assert(actual.trim)(equalTo(expected.trim))
+      },
     )
 
   private def makeEnv: ULayer[Writer] = {

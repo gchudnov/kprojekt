@@ -1,24 +1,24 @@
 digraph g_word_count {
   pack="true"
   packmode="clust"
-  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
+  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.5", ranksep="0.75"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
   t_counts_store_repartition [shape=box, fixedsize=true, label="counts-store-repartition", xlabel="", style=filled, fillcolor="#e8e8e8"];
   t_streams_plaintext_input [shape=box, fixedsize=true, label="streams-plaintext-input", xlabel="", style=filled, fillcolor="#e8e8e8"];
   t_streams_wordcount_output [shape=box, fixedsize=true, label="streams-wordcount-output", xlabel="", style=filled, fillcolor="#e8e8e8"];
   k_KSTREAM_SINK_0000000010 -> t_streams_wordcount_output;
-  t_counts_store_repartition -> s_counts_store_repartition_source;
   k_counts_store_repartition_sink -> t_counts_store_repartition;
+  t_counts_store_repartition -> s_counts_store_repartition_source;
   t_streams_plaintext_input -> s_KSTREAM_SOURCE_0000000000;
   subgraph cluster_0 {
     style=dotted;
     p_KSTREAM_FLATMAPVALUES_0000000001 -> p_KSTREAM_KEY_SELECT_0000000002;
     p_KSTREAM_KEY_SELECT_0000000002 -> p_counts_store_repartition_filter;
-    s_KSTREAM_SOURCE_0000000000 -> p_KSTREAM_FLATMAPVALUES_0000000001;
     p_counts_store_repartition_filter -> k_counts_store_repartition_sink;
+    s_KSTREAM_SOURCE_0000000000 -> p_KSTREAM_FLATMAPVALUES_0000000001;
     s_KSTREAM_SOURCE_0000000000 [shape=ellipse, fixedsize=true, label="SOURCE\n0", xlabel=""];
-    p_KSTREAM_FLATMAPVALUES_0000000001 [shape=ellipse, fixedsize=true, label="F\n1", xlabel=""];
+    p_KSTREAM_FLATMAPVALUES_0000000001 [shape=ellipse, fixedsize=true, label="FLATMAPVALUES\n1", xlabel=""];
     p_KSTREAM_KEY_SELECT_0000000002 [shape=ellipse, fixedsize=true, label="KEY.SELECT\n2", xlabel=""];
     p_counts_store_repartition_filter [shape=ellipse, fixedsize=true, label="counts-store-repartition-filter", xlabel=""];
     k_counts_store_repartition_sink [shape=ellipse, fixedsize=true, label="counts-store-repartition-sink", xlabel=""];
@@ -36,5 +36,86 @@ digraph g_word_count {
     k_KSTREAM_SINK_0000000010 [shape=ellipse, fixedsize=true, label="SINK\n10", xlabel=""];
     r_counts_store [shape=cylinder, fixedsize=true, width=0.5, label="counts-store", xlabel="", style=filled, fillcolor="#eeecae"];
     p_KSTREAM_AGGREGATE_0000000003 -> r_counts_store;
+  }
+  subgraph legend_0 {
+    legend_root [shape=none, margin=0, label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR>
+          <TD bgcolor="#cdcdcd">#</TD>
+          <TD bgcolor="#cdcdcd" align="left">Alias</TD>
+          <TD bgcolor="#cdcdcd" align="left">Name</TD>
+        </TR>
+        <TR>
+          <TD>10</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000010</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">counts-store-repartition-sink</TD>
+          <TD align="left">counts-store-repartition-sink</TD>
+        </TR>
+        <TR>
+          <TD>3</TD>
+          <TD align="left">AGGREGATE</TD>
+          <TD align="left">KSTREAM-AGGREGATE-0000000003</TD>
+        </TR>
+        <TR>
+          <TD>1</TD>
+          <TD align="left">FLATMAPVALUES</TD>
+          <TD align="left">KSTREAM-FLATMAPVALUES-0000000001</TD>
+        </TR>
+        <TR>
+          <TD>2</TD>
+          <TD align="left">KEY.SELECT</TD>
+          <TD align="left">KSTREAM-KEY-SELECT-0000000002</TD>
+        </TR>
+        <TR>
+          <TD>8</TD>
+          <TD align="left">MAPVALUES</TD>
+          <TD align="left">KTABLE-MAPVALUES-0000000008</TD>
+        </TR>
+        <TR>
+          <TD>9</TD>
+          <TD align="left">TOSTREAM</TD>
+          <TD align="left">KTABLE-TOSTREAM-0000000009</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">counts-store-repartition-filter</TD>
+          <TD align="left">counts-store-repartition-filter</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">counts-store</TD>
+          <TD align="left">counts-store</TD>
+        </TR>
+        <TR>
+          <TD>0</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">counts-store-repartition-source</TD>
+          <TD align="left">counts-store-repartition-source</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">counts-store-repartition</TD>
+          <TD align="left">counts-store-repartition</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">streams-plaintext-input</TD>
+          <TD align="left">streams-plaintext-input</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">streams-wordcount-output</TD>
+          <TD align="left">streams-wordcount-output</TD>
+        </TR>
+      </TABLE>
+    >];
   }
 }
