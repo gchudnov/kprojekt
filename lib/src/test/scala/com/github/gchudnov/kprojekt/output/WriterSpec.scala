@@ -9,7 +9,8 @@ import org.apache.kafka.streams.processor.api.{ Processor, ProcessorContext, Pro
 import org.apache.kafka.streams.scala.ImplicitConversions._
 import org.apache.kafka.streams.scala.kstream.{ KStream, KTable, Materialized }
 import org.apache.kafka.streams.scala.serialization.Serdes._
-import org.apache.kafka.streams.scala._
+import org.apache.kafka.streams.scala.{ ByteArrayKeyValueStore, StreamsBuilder }
+import org.apache.kafka.streams.state.{ KeyValueStore, StoreBuilder, Stores }
 import zio._
 import zio.test.Assertion._
 import zio.test._
@@ -25,7 +26,7 @@ object WriterSpec extends ZIOSpecDefault {
 
   override def spec: Spec[TestEnvironment, Any] =
     suite("Writer")(
-      test("DOT - encode a fan-out topology") {
+      test("DOT - write the fan-out topology") {
         val builder = new StreamsBuilder
 
         val stream1 = builder.stream[String, String]("topic-a")
@@ -42,7 +43,7 @@ object WriterSpec extends ZIOSpecDefault {
           actual   <- Writer.write("fan-out", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
-      test("DOT - encode the word-count topology") {
+      test("DOT - write the word-count topology") {
         val builder = new StreamsBuilder
         val source  = builder.stream[String, String]("streams-plaintext-input")
 
@@ -59,6 +60,36 @@ object WriterSpec extends ZIOSpecDefault {
         for {
           expected <- ZIO.fromEither(Resources.linesFromResource("graphs/word-count.dot"))
           actual   <- Writer.write("word-count", desc).provideLayer(env)
+        } yield assert(actual.trim)(equalTo(expected.trim))
+      },
+      test("DOT - write the topology with global store") {
+        val stateStoreName = "test-store"
+
+        def processor: Processor[String, Long, Void, Void] = new Processor[String, Long, Void, Void] {
+          var keyValueStore: KeyValueStore[String, Long] = _
+
+          override def init(context: ProcessorContext[Void, Void]): Unit =
+            keyValueStore = context.getStateStore(stateStoreName).asInstanceOf[KeyValueStore[String, Long]]
+
+          override def process(record: Record[String, Long]): Unit =
+            keyValueStore.put(record.key(), record.value())
+
+          override def close(): Unit = {}
+        }
+
+        val storeSupplier: StoreBuilder[KeyValueStore[String, Long]] = Stores
+          .keyValueStoreBuilder(Stores.persistentKeyValueStore(stateStoreName), stringSerde, longSerde)
+          .withLoggingDisabled()
+
+        val processorSupplier: ProcessorSupplier[String, Long, Void, Void] = () => processor
+
+        val topology = new Topology()
+        topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
+        val desc = topology.describe()
+
+        for {
+          expected <- ZIO.fromEither(Resources.linesFromResource("graphs/global-store.dot"))
+          actual   <- Writer.write("global-store-usage", desc).provideLayer(env)
         } yield assert(actual.trim)(equalTo(expected.trim))
       },
     )

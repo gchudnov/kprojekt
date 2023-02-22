@@ -19,55 +19,6 @@ object LiveEncoderSpec extends ZIOSpecDefault {
       test("234") {
         assert(1)(equalTo(1))
       }
-
-      // test("encoding the word-count topology should produce the expected graphviz output (embed stores)") {
-      //   val builder = new StreamsBuilder
-      //   val source  = builder.stream[String, String]("streams-plaintext-input")
-      //   source
-      //     .flatMapValues(value => value.toLowerCase.split("\\W+").toList)
-      //     .groupBy((key, value) => value)
-      //     .count()(Materialized.as[String, Long, ByteArrayKeyValueStore]("counts-store"))
-      //     .toStream
-      //     .to("streams-wordcount-output")
-
-      //   val topology = builder.build()
-      //   val desc     = topology.describe()
-
-      //   for {
-      //     expected <- ZIO.fromEither(Resources.linesFromResource("graphs/word-count-embed.dot"))
-      //     actual   <- Encoder.encode("word-count", desc).provideLayer(embeddedEnv)
-      //   } yield assert(actual.trim)(equalTo(expected.trim))
-      // },
-      // test("encoding a topology with global store should produce the expected graphviz output") {
-      //   val stateStoreName = "test-store"
-
-      //   def processor: Processor[String, Long, Void, Void] = new Processor[String, Long, Void, Void] {
-      //     var keyValueStore: KeyValueStore[String, Long] = _
-
-      //     override def init(context: ProcessorContext[Void, Void]): Unit =
-      //       keyValueStore = context.getStateStore(stateStoreName).asInstanceOf[KeyValueStore[String, Long]]
-
-      //     override def process(record: Record[String, Long]): Unit =
-      //       keyValueStore.put(record.key(), record.value())
-
-      //     override def close(): Unit = {}
-      //   }
-
-      //   val storeSupplier: StoreBuilder[KeyValueStore[String, Long]] = Stores
-      //     .keyValueStoreBuilder(Stores.persistentKeyValueStore(stateStoreName), stringSerde, longSerde)
-      //     .withLoggingDisabled()
-
-      //   val processorSupplier: ProcessorSupplier[String, Long, Void, Void] = () => processor
-
-      //   val topology = new Topology()
-      //   topology.addGlobalStore(storeSupplier, "test-source", stringSerde.deserializer(), longSerde.deserializer(), "test-topic", "test-processor", processorSupplier)
-      //   val desc = topology.describe()
-
-      //   for {
-      //     expected <- ZIO.fromEither(Resources.linesFromResource("graphs/global-store.dot"))
-      //     actual   <- Encoder.encode("global-store-usage", desc).provideLayer(defaultEnv)
-      //   } yield assert(actual.trim)(equalTo(expected.trim))
-      // },
       // test("encoding topology where store and topic has the same name should properly create a dot-file") {
       //   val builder = new StreamsBuilder
 
