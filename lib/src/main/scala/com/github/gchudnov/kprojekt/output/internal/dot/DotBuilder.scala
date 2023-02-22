@@ -3,7 +3,6 @@ package com.github.gchudnov.kprojekt.output.internal.dot
 import com.github.gchudnov.kprojekt.output.Id
 import com.github.gchudnov.kprojekt.output.Edge
 import com.github.gchudnov.kprojekt.output.Builder
-import com.github.gchudnov.kprojekt.formatter.dot.DotConfig
 import com.github.gchudnov.kprojekt.output.internal.dot.DotBuilder.State
 
 /**
@@ -43,42 +42,79 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
     withState(state.copy(sb = state.sb.append(sb1), indent = state.indent - 1))
   }
 
-/**
+  override def topic(id: Id): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"""$T1${toDotId(id)} [shape=box, fixedsize=true, label="${toAlias(id)}", xlabel="", style=filled, fillcolor="$colorTopicFill"];\n""")
 
-  */
+    withState(state.copy(sb = state.sb.append(sb1)))
+  }
 
-  override def topic(id: Id): Builder = 
-    ???
+  override def subtopologyStart(name: String): Builder = {
+    val sb1 = new StringBuilder()
+            .append(s"${T1}subgraph cluster_${sanitizeName(name)} {\n")
+            .append(s"${T2}style=dotted;\n")
 
-  override def subtopologyStart(name: String): Builder = 
-    ???
+    withState(state.copy(sb = state.sb.append(sb1), indent = state.indent + 1))
+  }
 
-  override def subtopologyEnd(): Builder = 
-    ???
+  override def subtopologyEnd(): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"""$T_1}\n""")
 
-  override def edge(e: Edge): Builder =
-    ???
+    withState(state.copy(sb = state.sb.append(sb1), indent = state.indent - 1))
+  }
 
-  override def source(id: Id, topics: Iterable[Id]): Builder =
-    ???
+  override def edge(e: Edge): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"$T1${toDotId(e.from)} -> ${toDotId(e.to)};\n")
 
-  override def processor(id: Id, stores: Iterable[Id]): Builder =
-    ???
+    withState(state.copy(sb = state.sb.append(sb1)))
+  }
 
-  override def sink(id: Id, topic: Id): Builder =
-    ???
+  override def source(id: Id, topics: Iterable[Id]): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"""$T1${toDotId(id)} [shape=ellipse, fixedsize=true, label="${toAlias(id)}", xlabel=""];\n""")
 
-  override def storeEdges(edges: Iterable[Edge]): Builder =
-    ???
+    withState(state.copy(sb = state.sb.append(sb1)))
+  }
 
-  override def store(id: Id): Builder =
-    ???
+  override def processor(id: Id, stores: Iterable[Id]): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"""$T1${toDotId(id)} [shape=ellipse, fixedsize=true, label="${toAlias(id)}", xlabel=""];\n""")
 
-  override def repository(ns: Iterable[Id]): Builder =
-    ???
+    withState(state.copy(sb = state.sb.append(sb1)))
+  }
 
-  override def rank(a: Id, b: Id): Builder =
-    ???
+  override def sink(id: Id, topic: Id): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"""$T1${toDotId(id)} [shape=ellipse, fixedsize=true, label="${toAlias(id)}", xlabel=""];\n""")
+
+    withState(state.copy(sb = state.sb.append(sb1)))
+  }
+
+  override def storeEdges(edges: Iterable[Edge]): Builder = {
+    this
+  }
+
+  override def store(id: Id): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"""$T1${toDotId(id)} [shape=cylinder, fixedsize=true, width=0.5, label="${toAlias(id)}", xlabel="", style=filled, fillcolor="$colorStoreFill"];\n""")
+    
+    withState(state.copy(sb = state.sb.append(sb1)))
+  }
+
+  override def rank(a: Id, b: Id): Builder = {
+    val sb1 = new StringBuilder()
+      .append(s"""$T1{ rank=same; ${toDotId(a)}; ${toDotId(b)}; };\n""")
+
+    withState(state.copy(sb = state.sb.append(sb1)))
+  }
+
+  private def toAlias(id: Id): String =
+    state.legend
+      .get(id)
+      .map(l => l.n.map(i => s"""${l.alias}\\n$i""").getOrElse(s"${l.alias}"))
+      .getOrElse("?")
 
   private def buildLegend(): StringBuilder = {
     val sb = new StringBuilder()
@@ -109,12 +145,6 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
 
     sb
   }
-
-  private val padG: String = "0.5"
-  private val sepNode: String = "0.5"
-  private val sepRank: String = "0.75"
-
-  private val colorTableHeaderBg = "#cdcdcd"
 
   /**
     * Make a new builder with an updated state
@@ -151,6 +181,14 @@ private[internal] final class DotBuilder(config: DotConfig, state: State) extend
 
 object DotBuilder {
 
+  private val padG: String = "0.5"
+  private val sepNode: String = "0.5"
+  private val sepRank: String = "0.75"
+
+  private val colorTableHeaderBg = "#cdcdcd"
+  private val colorTopicFill = "#e8e8e8"
+  private val colorStoreFill = "#eeecae"
+
   final case class LegendEntry(id: Id, alias: String, n: Option[Int])
 
   final case class State(
@@ -174,6 +212,9 @@ object DotBuilder {
 
     new DotBuilder(config = config, state = state)
   }
+
+  private def toDotId(id: Id): String =
+    sanitizeName(id.uid)
 
   private def sanitizeName(name: String): String =
     name.replaceAll("""[-.:]""", "_")

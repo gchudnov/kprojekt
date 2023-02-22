@@ -16,7 +16,7 @@ final class ParseException(message: String) extends KProjektException(message) {
     this(null: String)
 }
 
-object KProjektException {
+object ParseException {
   def unapply(e: KProjektException): Option[(String, Throwable)] =
     Some((e.getMessage, e.getCause))
 }

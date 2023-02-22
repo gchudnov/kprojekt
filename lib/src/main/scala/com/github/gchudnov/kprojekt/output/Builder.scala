@@ -35,8 +35,6 @@ trait Builder {
   def stores(f: Builder => Builder): Builder = f(this)
   def store(id: Id): Builder
 
-  def repository(ns: Iterable[Id]): Builder
-
   def rank(a: Id, b: Id): Builder
 
 }

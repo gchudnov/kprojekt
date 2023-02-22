@@ -1,9 +1,5 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.encoder.LiveEncoder
-import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
-import com.github.gchudnov.kprojekt.naming.LiveNamer
-// import com.github.gchudnov.kprojekt.parser.LiveParser
 import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
 import zio.cli.HelpDoc.Span.text
 import zio.Console._
@@ -14,13 +10,12 @@ import java.nio.file.Path
 
 object Cli extends ZIOCliDefault {
 
-  case class KOptions(scale: Boolean, verbose: Boolean, version: Boolean)
+  case class KOptions(verbose: Boolean, version: Boolean)
 
-  val scaleFlag: Options[Boolean] = Options.boolean("scale").alias("s")
   val verboseFlag: Options[Boolean] = Options.boolean("verbose").alias("v")
   val versionFlag: Options[Boolean] = Options.boolean("version")
 
-  val options = (scaleFlag ++ verboseFlag ++ versionFlag).as(KOptions)
+  val options = (verboseFlag ++ versionFlag).as(KOptions)
 
   val inputTopologyArgs: Args[Path] = Args.file("input-topology", Exists.Yes)
 

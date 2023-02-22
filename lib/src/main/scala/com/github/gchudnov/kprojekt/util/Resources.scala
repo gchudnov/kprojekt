@@ -1,7 +1,6 @@
 package com.github.gchudnov.kprojekt.util
 
-import java.io.{ BufferedWriter, File, FileOutputStream, FileWriter }
-import java.nio.file.{Files => JFiles}
+import java.io.{ File, FileOutputStream }
 
 import scala.io.Source
 import scala.util.Using

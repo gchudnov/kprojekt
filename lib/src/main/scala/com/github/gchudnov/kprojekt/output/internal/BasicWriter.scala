@@ -33,7 +33,6 @@ final class BasicWriter(builder: Builder) extends Writer {
       builder
         .legend(allIds)
         .topologyStart(name)
-        .repository(allIds)
         .topics { b =>
           topics.foldLeft(b) { (acc, t) =>
             acc.topic(t)
