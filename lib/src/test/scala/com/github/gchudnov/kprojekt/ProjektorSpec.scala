@@ -1,8 +1,8 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.encoder.{ Encoder, LiveEncoder }
-import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpace }
-import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
+// import com.github.gchudnov.kprojekt.encoder.{ Encoder, LiveEncoder }
+// import com.github.gchudnov.kprojekt.formatter.dot.{ DotConfig, DotFolder, DotSpace }
+// import com.github.gchudnov.kprojekt.naming.{ LiveNamer, NamerConfig }
 // import com.github.gchudnov.kprojekt.parser.{ LiveParser }
 import com.github.gchudnov.kprojekt.input.Parser
 import zio._
@@ -44,21 +44,21 @@ object ProjektorSpec extends ZIOSpecDefault {
       // }
     )
 
-  private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false, space = DotSpace.Small)
-  private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
+  // private val defaultDotConfig  = DotConfig(indent = 2, fontName = "sans-serif", fontSize = 10, isEmbedStore = false, hasLegend = false, space = DotSpace.Small)
+  // private val defaultNameConfig = NamerConfig(maxLenWithoutShortening = 12, separator = ".")
 
-  private val defaultEnv =
-    withEnv(defaultDotConfig, defaultNameConfig)
+  // private val defaultEnv =
+  //   withEnv(defaultDotConfig, defaultNameConfig)
 
-  private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig) = {
-    val dotConfigEnv  = ZLayer.succeed(dotConfig)
-    val nameConfigEnv = ZLayer.succeed(nameConfig)
+  // private def withEnv(dotConfig: DotConfig, nameConfig: NamerConfig) = {
+  //   val dotConfigEnv  = ZLayer.succeed(dotConfig)
+  //   val nameConfigEnv = ZLayer.succeed(nameConfig)
 
-    val nameEnv = (nameConfigEnv >>> LiveNamer.layer)
-    val foldEnv = ((dotConfigEnv ++ nameEnv) >>> DotFolder.layer)
+  //   val nameEnv = (nameConfigEnv >>> LiveNamer.layer)
+  //   val foldEnv = ((dotConfigEnv ++ nameEnv) >>> DotFolder.layer)
 
-    val encoderEnv = foldEnv >>> LiveEncoder.layer
+  //   val encoderEnv = foldEnv >>> LiveEncoder.layer
 
-    encoderEnv
-  }
+  //   encoderEnv
+  // }
 }
