@@ -213,7 +213,7 @@ object DotBuilder {
     new DotBuilder(config = config, state = state)
   }
 
-  private def toDotId(id: Id): String =
+  private[dot] def toDotId(id: Id): String =
     sanitizeName(id.uid)
 
   private def sanitizeName(name: String): String =
