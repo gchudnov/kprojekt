@@ -23,7 +23,7 @@ object Dependencies {
   private val zioTestMagnolia = "dev.zio" %% "zio-test-magnolia" % versions.zio
   private val zioTestSbt      = "dev.zio" %% "zio-test-sbt"      % versions.zio
 
-  private val fastparse = "com.lihaoyi"      %% "fastparse" % versions.fastparse
+  private val fastparse = "com.lihaoyi" %% "fastparse" % versions.fastparse
 
   private val kafkaStreams = "org.apache.kafka" %% "kafka-streams-scala" % versions.kafka
   private val kafkaClients = "org.apache.kafka"  % "kafka-clients"       % versions.kafka
