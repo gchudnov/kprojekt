@@ -1,7 +1,7 @@
 digraph g_complex_topo_2 {
   pack="true"
   packmode="clust"
-  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
+  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.5", ranksep="0.75"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
   t_KSTREAM_MAP_0000000022_repartition [shape=box, fixedsize=true, label="repartition\n22", xlabel="", style=filled, fillcolor="#e8e8e8"];
@@ -11,13 +11,13 @@ digraph g_complex_topo_2 {
   t_output_entry_topic [shape=box, fixedsize=true, label="output-entry-topic", xlabel="", style=filled, fillcolor="#e8e8e8"];
   t_price_change_topic [shape=box, fixedsize=true, label="price-change-topic", xlabel="", style=filled, fillcolor="#e8e8e8"];
   t_request_entry_topic [shape=box, fixedsize=true, label="request-entry-topic", xlabel="", style=filled, fillcolor="#e8e8e8"];
-  t_KSTREAM_MAP_0000000022_repartition -> s_KSTREAM_SOURCE_0000000025;
-  t_KSTREAM_REDUCE_STATE_STORE_0000000007_repartition -> s_KSTREAM_SOURCE_0000000011;
-  t_KSTREAM_REDUCE_STATE_STORE_0000000014_repartition -> s_KSTREAM_SOURCE_0000000018;
   k_KSTREAM_SINK_0000000009 -> t_KSTREAM_REDUCE_STATE_STORE_0000000007_repartition;
   k_KSTREAM_SINK_0000000016 -> t_KSTREAM_REDUCE_STATE_STORE_0000000014_repartition;
   k_KSTREAM_SINK_0000000023 -> t_KSTREAM_MAP_0000000022_repartition;
   k_KSTREAM_SINK_0000000029 -> t_output_entry_topic;
+  t_KSTREAM_MAP_0000000022_repartition -> s_KSTREAM_SOURCE_0000000025;
+  t_KSTREAM_REDUCE_STATE_STORE_0000000007_repartition -> s_KSTREAM_SOURCE_0000000011;
+  t_KSTREAM_REDUCE_STATE_STORE_0000000014_repartition -> s_KSTREAM_SOURCE_0000000018;
   t_country_into_topic -> s_KSTREAM_SOURCE_0000000002;
   t_price_change_topic -> s_KSTREAM_SOURCE_0000000001;
   t_request_entry_topic -> s_KSTREAM_SOURCE_0000000000;
@@ -53,7 +53,7 @@ digraph g_complex_topo_2 {
     k_KSTREAM_SINK_0000000009 [shape=ellipse, fixedsize=true, label="SINK\n9", xlabel=""];
     k_KSTREAM_SINK_0000000016 [shape=ellipse, fixedsize=true, label="SINK\n16", xlabel=""];
     k_KSTREAM_SINK_0000000023 [shape=ellipse, fixedsize=true, label="SINK\n23", xlabel=""];
-    r_KSTREAM_REDUCE_STATE_STORE_0000000019 [shape=cylinder, fixedsize=true, width=0.5, label="R.STATE.STORE\n19", xlabel="", style=filled, fillcolor="#eeecae"];
+    r_KSTREAM_REDUCE_STATE_STORE_0000000019 [shape=cylinder, fixedsize=true, width=0.5, label="REDUCE.STATE.STORE\n19", xlabel="", style=filled, fillcolor="#eeecae"];
     p_KSTREAM_LEFTJOIN_0000000021 -> r_KSTREAM_REDUCE_STATE_STORE_0000000019;
     p_KSTREAM_REDUCE_0000000020 -> r_KSTREAM_REDUCE_STATE_STORE_0000000019;
   }
@@ -82,11 +82,212 @@ digraph g_complex_topo_2 {
     p_KSTREAM_REDUCE_0000000008 [shape=ellipse, fixedsize=true, label="REDUCE\n8", xlabel=""];
     p_KSTREAM_REDUCE_0000000015 [shape=ellipse, fixedsize=true, label="REDUCE\n15", xlabel=""];
     k_KSTREAM_SINK_0000000029 [shape=ellipse, fixedsize=true, label="SINK\n29", xlabel=""];
-    r_KSTREAM_REDUCE_STATE_STORE_0000000007 [shape=cylinder, fixedsize=true, width=0.5, label="R.STATE.STORE\n7", xlabel="", style=filled, fillcolor="#eeecae"];
-    r_KSTREAM_REDUCE_STATE_STORE_0000000014 [shape=cylinder, fixedsize=true, width=0.5, label="R.STATE.STORE\n14", xlabel="", style=filled, fillcolor="#eeecae"];
+    r_KSTREAM_REDUCE_STATE_STORE_0000000007 [shape=cylinder, fixedsize=true, width=0.5, label="REDUCE.STATE.STORE\n7", xlabel="", style=filled, fillcolor="#eeecae"];
+    r_KSTREAM_REDUCE_STATE_STORE_0000000014 [shape=cylinder, fixedsize=true, width=0.5, label="REDUCE.STATE.STORE\n14", xlabel="", style=filled, fillcolor="#eeecae"];
     p_KSTREAM_LEFTJOIN_0000000026 -> r_KSTREAM_REDUCE_STATE_STORE_0000000007;
     p_KSTREAM_LEFTJOIN_0000000027 -> r_KSTREAM_REDUCE_STATE_STORE_0000000014;
     p_KSTREAM_REDUCE_0000000008 -> r_KSTREAM_REDUCE_STATE_STORE_0000000007;
     p_KSTREAM_REDUCE_0000000015 -> r_KSTREAM_REDUCE_STATE_STORE_0000000014;
+  }
+  subgraph legend_0 {
+    legend_root [shape=none, margin=0, label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR>
+          <TD bgcolor="#cdcdcd">#</TD>
+          <TD bgcolor="#cdcdcd" align="left">Alias</TD>
+          <TD bgcolor="#cdcdcd" align="left">Name</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">country-info-store</TD>
+          <TD align="left">country-info-store</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">country-into-topic</TD>
+          <TD align="left">country-into-topic</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">output-entry-topic</TD>
+          <TD align="left">output-entry-topic</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">price-change-topic</TD>
+          <TD align="left">price-change-topic</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">request-entry-topic</TD>
+          <TD align="left">request-entry-topic</TD>
+        </TR>
+        <TR>
+          <TD>0</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
+        </TR>
+        <TR>
+          <TD>1</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000001</TD>
+        </TR>
+        <TR>
+          <TD>2</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000002</TD>
+        </TR>
+        <TR>
+          <TD>3</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KTABLE-SOURCE-0000000003</TD>
+        </TR>
+        <TR>
+          <TD>4</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000004</TD>
+        </TR>
+        <TR>
+          <TD>5</TD>
+          <TD align="left">MAPVALUES</TD>
+          <TD align="left">KSTREAM-MAPVALUES-0000000005</TD>
+        </TR>
+        <TR>
+          <TD>6</TD>
+          <TD align="left">KEY.SELECT</TD>
+          <TD align="left">KSTREAM-KEY-SELECT-0000000006</TD>
+        </TR>
+        <TR>
+          <TD>7</TD>
+          <TD align="left">REDUCE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000007</TD>
+        </TR>
+        <TR>
+          <TD>7</TD>
+          <TD align="left">repartition</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000007-repartition</TD>
+        </TR>
+        <TR>
+          <TD>8</TD>
+          <TD align="left">REDUCE</TD>
+          <TD align="left">KSTREAM-REDUCE-0000000008</TD>
+        </TR>
+        <TR>
+          <TD>9</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000009</TD>
+        </TR>
+        <TR>
+          <TD>10</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000010</TD>
+        </TR>
+        <TR>
+          <TD>11</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000011</TD>
+        </TR>
+        <TR>
+          <TD>12</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000012</TD>
+        </TR>
+        <TR>
+          <TD>13</TD>
+          <TD align="left">KEY.SELECT</TD>
+          <TD align="left">KSTREAM-KEY-SELECT-0000000013</TD>
+        </TR>
+        <TR>
+          <TD>14</TD>
+          <TD align="left">REDUCE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000014</TD>
+        </TR>
+        <TR>
+          <TD>14</TD>
+          <TD align="left">repartition</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000014-repartition</TD>
+        </TR>
+        <TR>
+          <TD>15</TD>
+          <TD align="left">REDUCE</TD>
+          <TD align="left">KSTREAM-REDUCE-0000000015</TD>
+        </TR>
+        <TR>
+          <TD>16</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000016</TD>
+        </TR>
+        <TR>
+          <TD>17</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000017</TD>
+        </TR>
+        <TR>
+          <TD>18</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000018</TD>
+        </TR>
+        <TR>
+          <TD>19</TD>
+          <TD align="left">REDUCE.STATE.STORE</TD>
+          <TD align="left">KSTREAM-REDUCE-STATE-STORE-0000000019</TD>
+        </TR>
+        <TR>
+          <TD>20</TD>
+          <TD align="left">REDUCE</TD>
+          <TD align="left">KSTREAM-REDUCE-0000000020</TD>
+        </TR>
+        <TR>
+          <TD>21</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000021</TD>
+        </TR>
+        <TR>
+          <TD>22</TD>
+          <TD align="left">MAP</TD>
+          <TD align="left">KSTREAM-MAP-0000000022</TD>
+        </TR>
+        <TR>
+          <TD>22</TD>
+          <TD align="left">repartition</TD>
+          <TD align="left">KSTREAM-MAP-0000000022-repartition</TD>
+        </TR>
+        <TR>
+          <TD>23</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000023</TD>
+        </TR>
+        <TR>
+          <TD>24</TD>
+          <TD align="left">FILTER</TD>
+          <TD align="left">KSTREAM-FILTER-0000000024</TD>
+        </TR>
+        <TR>
+          <TD>25</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000025</TD>
+        </TR>
+        <TR>
+          <TD>26</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000026</TD>
+        </TR>
+        <TR>
+          <TD>27</TD>
+          <TD align="left">LEFTJOIN</TD>
+          <TD align="left">KSTREAM-LEFTJOIN-0000000027</TD>
+        </TR>
+        <TR>
+          <TD>28</TD>
+          <TD align="left">MAP</TD>
+          <TD align="left">KSTREAM-MAP-0000000028</TD>
+        </TR>
+        <TR>
+          <TD>29</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000029</TD>
+        </TR>
+      </TABLE>
+    >];
   }
 }

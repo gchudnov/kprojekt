@@ -1,6 +1,6 @@
 # KProjekt - Kafka Topology Visualization
 
-<img src="res/images/projektor-192.png" width="192px" height="192px" align="right" />
+<img src="res/projektor-192.png" width="192px" height="192px" align="right" />
 
 Visualizes kafka topology.
 
@@ -11,31 +11,44 @@ Visualizes kafka topology.
 ## Usage
 
 - Install [Graph Visualization Tools](https://graphviz.gitlab.io/).
+  ```bash
+  # Ubuntu
+  sudo apt install graphviz
+  ```
 - Download and extract [kproject-cli executable](https://github.com/gchudnov/kprojekt/releases).
-- Prepare a file with Kafka-topology ([word-count example](res/example/word-count.log)).
+- Prepare a file with Kafka-topology (e.g. [./word-count.log](res/example/word-count.log)).
 - Run application from the command line:
 
   ```bash
   ./kprojekt-cli ./word-count.log
   ```
 
-- An output png-image with the same name as the topology file will be created: `word-count.png`.
+- As an output, a dot-file and png-image will be created in the directory log was provided: `word-count.dot` and `word-count.png`.
 
 ![word-count-png](res/example/word-count.png)
 
 ## Command-line parameters
 
 ```text
-  ./kprojekt-cli --help
+./kprojekt-cli --help
 
-  kprojekt-cli 1.3.1
-  Usage: kprojekt-cli [options] <file>
+KProjekt Cli v2.0.0 -- Visualize Kafka Topology
 
-  --help           prints this usage text
-  --verbose        verbose mode
-  --space <value>  space between nodes: [small,s; medium,m; large,l] (default: m)
-  <file>           path to topology description
-  --version
+USAGE
+
+  $ kprojekt-cli [(-v, --verbose)] <input-topology>
+
+ARGUMENTS
+
+  <input-topology>
+    An existing file.
+
+OPTIONS
+
+  (-v, --verbose)
+    A true or false value.
+
+    This setting is optional. Default: 'false'.
 ```
 
 ## Contact

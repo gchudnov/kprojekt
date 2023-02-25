@@ -1,63 +1,34 @@
 package com.github.gchudnov.kprojekt
 
-import com.github.gchudnov.kprojekt.encoder.LiveEncoder
-import com.github.gchudnov.kprojekt.formatter.dot.{ DotBundler, DotFolder }
-import com.github.gchudnov.kprojekt.naming.LiveNamer
-import com.github.gchudnov.kprojekt.parser.LiveParser
-import com.github.gchudnov.kprojekt.zopt.SuccessExitException
-import com.github.gchudnov.kprojekt.zopt.ozeffectsetup.{ OZEffectSetup, StdioEffectSetup }
-import scopt.{ DefaultOParserSetup, OParserSetup }
-import zio.Console._
-import zio._
-import zio.logging.backend.SLF4J
-import zio.logging.LogFormat
+import com.github.gchudnov.kprojekt.{ BuildInfo => KBuildInfo }
+import zio.cli.HelpDoc.Span.text
+import zio.cli._
+import java.nio.file.Path
+import com.github.gchudnov.kprojekt.internal.DotProcessor
 
-object Cli extends ZIOAppDefault {
+object Cli extends ZIOCliDefault {
 
-  private val slf4jLayer = SLF4J.slf4j(format = LogFormat.line)
+  val verboseFlag: Options[Boolean] = Options.boolean("verbose").alias("v")
 
-  override val bootstrap: ZLayer[ZIOAppArgs with Scope, Any, Environment] = Runtime.removeDefaultLoggers ++ slf4jLayer
+  val options = verboseFlag
 
-  override def run: ZIO[ZIOAppArgs, Any, Any] = {
-    val osetup: ZLayer[Any, Throwable, OZEffectSetup] = makeOZEffectSetup()
-    val psetup: OParserSetup                          = makePEffectSetup()
+  val inputTopologyArgs: Args[Path] = Args.file("input-topology", Exists.Yes)
 
-    val program = for {
-      as  <- getArgs
-      cfg <- CliConfig.fromArgs(as.toList)(psetup).provideLayer(osetup)
-      env  = makeEnv(cfg)
-      _   <- makeProgram(cfg).provideLayer(env)
-    } yield ()
+  val args = inputTopologyArgs
 
-    program.catchSome { case _: SuccessExitException => ZIO.unit }
-      .tapError(t => printLineError(s"Error: ${t.getMessage}"))
-      .ignore
+  val rootCommand = Command(KBuildInfo.name, options, args)
+
+  val cliApp = CliApp.make(
+    name = "KProjekt Cli",
+    version = KBuildInfo.version,
+    summary = text("Visualize Kafka Topology"),
+    command = rootCommand
+  ) { case (verbose, path) =>
+    val options = CliOptions(verbose)
+    DotProcessor.toDot(options, path)
   }
 
-  private def makeProgram(cfg: CliConfig): ZIO[Projektor, Throwable, Unit] =
-    for {
-      projector <- ZIO.service[Projektor]
-      _         <- projector.run(cfg.topologyFile)
-    } yield ()
+  override def run =
+    super.run.ignore
 
-  private def makeEnv(cfg: CliConfig): ZLayer[Any, Throwable, Projektor] = {
-    val parseEnv  = LiveParser.layer
-    val nameEnv   = ZLayer.succeed(cfg.naming) >>> LiveNamer.layer
-    val foldEnv   = (ZLayer.succeed(cfg.dot) ++ nameEnv) >>> DotFolder.layer
-    val encEnv    = nameEnv ++ foldEnv >>> LiveEncoder.layer
-    val bundleEnv = DotBundler.layer(cfg.isVerbose)
-
-    val env = (parseEnv ++ encEnv ++ bundleEnv) >>> LiveProjector.layer
-
-    env
-  }
-
-  private def makeOZEffectSetup(): ZLayer[Any, Nothing, OZEffectSetup] =
-    StdioEffectSetup.layer
-
-  private def makePEffectSetup(): OParserSetup =
-    new DefaultOParserSetup with OParserSetup {
-      override def errorOnUnknownArgument: Boolean   = false
-      override def showUsageOnError: Option[Boolean] = Some(false)
-    }
 }

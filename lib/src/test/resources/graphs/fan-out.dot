@@ -1,7 +1,7 @@
 digraph g_fan_out {
   pack="true"
   packmode="clust"
-  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
+  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.5", ranksep="0.75"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
   t_output_1 [shape=box, fixedsize=true, label="output-1", xlabel="", style=filled, fillcolor="#e8e8e8"];
@@ -21,5 +21,56 @@ digraph g_fan_out {
     p_KSTREAM_MAPVALUES_0000000002 [shape=ellipse, fixedsize=true, label="MAPVALUES\n2", xlabel=""];
     k_KSTREAM_SINK_0000000003 [shape=ellipse, fixedsize=true, label="SINK\n3", xlabel=""];
     k_KSTREAM_SINK_0000000004 [shape=ellipse, fixedsize=true, label="SINK\n4", xlabel=""];
+  }
+  subgraph legend_0 {
+    legend_root [shape=none, margin=0, label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR>
+          <TD bgcolor="#cdcdcd">#</TD>
+          <TD bgcolor="#cdcdcd" align="left">Alias</TD>
+          <TD bgcolor="#cdcdcd" align="left">Name</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">output-1</TD>
+          <TD align="left">output-1</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">output-2</TD>
+          <TD align="left">output-2</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">topic-a</TD>
+          <TD align="left">topic-a</TD>
+        </TR>
+        <TR>
+          <TD>0</TD>
+          <TD align="left">SOURCE</TD>
+          <TD align="left">KSTREAM-SOURCE-0000000000</TD>
+        </TR>
+        <TR>
+          <TD>1</TD>
+          <TD align="left">MAPVALUES</TD>
+          <TD align="left">KSTREAM-MAPVALUES-0000000001</TD>
+        </TR>
+        <TR>
+          <TD>2</TD>
+          <TD align="left">MAPVALUES</TD>
+          <TD align="left">KSTREAM-MAPVALUES-0000000002</TD>
+        </TR>
+        <TR>
+          <TD>3</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000003</TD>
+        </TR>
+        <TR>
+          <TD>4</TD>
+          <TD align="left">SINK</TD>
+          <TD align="left">KSTREAM-SINK-0000000004</TD>
+        </TR>
+      </TABLE>
+    >];
   }
 }

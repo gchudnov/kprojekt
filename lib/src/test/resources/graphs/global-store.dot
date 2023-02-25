@@ -1,7 +1,7 @@
 digraph g_global_store_usage {
   pack="true"
   packmode="clust"
-  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.25", ranksep="0.5"];
+  graph [fontname = "sans-serif", fontsize=10, pad="0.5", nodesep="0.5", ranksep="0.75"];
   node [fontname = "sans-serif", fontsize=10];
   edge [fontname = "sans-serif", fontsize=10];
   t_test_topic [shape=box, fixedsize=true, label="test-topic", xlabel="", style=filled, fillcolor="#e8e8e8"];
@@ -13,5 +13,36 @@ digraph g_global_store_usage {
     p_test_processor [shape=ellipse, fixedsize=true, label="test-processor", xlabel=""];
     r_test_store [shape=cylinder, fixedsize=true, width=0.5, label="test-store", xlabel="", style=filled, fillcolor="#eeecae"];
     p_test_processor -> r_test_store;
+  }
+  subgraph legend_0 {
+    legend_root [shape=none, margin=0, label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR>
+          <TD bgcolor="#cdcdcd">#</TD>
+          <TD bgcolor="#cdcdcd" align="left">Alias</TD>
+          <TD bgcolor="#cdcdcd" align="left">Name</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">test-processor</TD>
+          <TD align="left">test-processor</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">test-source</TD>
+          <TD align="left">test-source</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">test-store</TD>
+          <TD align="left">test-store</TD>
+        </TR>
+        <TR>
+          <TD></TD>
+          <TD align="left">test-topic</TD>
+          <TD align="left">test-topic</TD>
+        </TR>
+      </TABLE>
+    >];
   }
 }
