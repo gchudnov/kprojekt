@@ -1,18 +1,5 @@
 {
   "resources":{
-  "includes":[
-    {
-      "pattern":"\\Qapplication.conf\\E"
-    }, 
-    {
-      "pattern":"\\Qimages/cylinder.png\\E"
-    }, 
-    {
-      "pattern":"\\Qlogback.xml\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"
-    }
-  ]},
+  "includes":[]},
   "bundles":[]
 }

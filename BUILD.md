@@ -8,25 +8,13 @@ Building kprojekt:
 sbt cli/assembly
 ```
 
-will produce an application, bundled in a shell-script: `target/kprojekt-cli`.
+will produce an application, that depends on JDK, bundled in a shell-script: `target/kprojekt-cli`.
 
 ```bash
 ./target/kprojekt-cli --help
 
-# kprojekt-cli 1.3.1
-# Usage: kprojekt-cli [options] <file>
-
-#   -s, --space <value>  Nodes proximity: [small,s; medium,m; large,l] (default: m)
-#   <file>               path to topology file
-#   -v, --verbose        verbose output
-#   -h, --help           prints this usage text
-#   --version            prints the version
-
-# Examples:
-
-#   - Make a PNG-image of the topology
-#     kprojekt-cli <topology-filepath>
-
+KProjekt Cli v2.0.0 -- Visualize Kafka Topology
+...
 ```
 
 ## GraalVM
@@ -43,7 +31,7 @@ mkdir -p "${META_INF_DIR}"
 3. Having `java` pointing to `GraalVM`, run the app with `native-image-agent` to trace execution.
 
 ```bash
-sdk use java 22.2.r17-grl
+sdk use java 22.3.r19-grl
 gu install native-image
 
 # stage your app so you can run it locally without having the app packaged
@@ -94,7 +82,7 @@ export APP_BUILD_DIR="./cli/target/graalvm-native-image"
 ${APP_BUILD_DIR}/kprojekt-cli --help
 
 # generate an image from the topology 
-${APP_BUILD_DIR}/kprojekt-cli --verbose "res/example/word-count.log"
+${APP_BUILD_DIR}/kprojekt-cli --verbose "./res/example/word-count.log"
 
 # copy
 cp .${APP_BUILD_DIR}/kprojekt-cli /usr/local/bin/

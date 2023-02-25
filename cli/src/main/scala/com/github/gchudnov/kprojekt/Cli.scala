@@ -9,9 +9,8 @@ import com.github.gchudnov.kprojekt.internal.DotProcessor
 object Cli extends ZIOCliDefault {
 
   val verboseFlag: Options[Boolean] = Options.boolean("verbose").alias("v")
-  val versionFlag: Options[Boolean] = Options.boolean("version")
 
-  val options = (verboseFlag ++ versionFlag).as(CliOptions)
+  val options = verboseFlag
 
   val inputTopologyArgs: Args[Path] = Args.file("input-topology", Exists.Yes)
 
@@ -24,7 +23,8 @@ object Cli extends ZIOCliDefault {
     version = KBuildInfo.version,
     summary = text("Visualize Kafka Topology"),
     command = rootCommand
-  ) { case (options, path) =>
+  ) { case (verbose, path) =>
+    val options = CliOptions(verbose)
     DotProcessor.toDot(options, path)
   }
 

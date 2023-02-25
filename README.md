@@ -36,7 +36,7 @@ KProjekt Cli v2.0.0 -- Visualize Kafka Topology
 
 USAGE
 
-  $ kprojekt-cli [(-v, --verbose)] [--version] <input-topology>
+  $ kprojekt-cli [(-v, --verbose)] <input-topology>
 
 ARGUMENTS
 
@@ -46,11 +46,6 @@ ARGUMENTS
 OPTIONS
 
   (-v, --verbose)
-    A true or false value.
-
-    This setting is optional. Default: 'false'.
-
-  --version
     A true or false value.
 
     This setting is optional. Default: 'false'.
