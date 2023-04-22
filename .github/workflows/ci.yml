@@ -51,7 +51,7 @@ jobs:
           ./native-image-build.sh
 
       - name: Create tarball
-        run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" -C cli/target/graalvm-native-image/ ./kprojekt-cli
+        run: tar -zcvf "kprojekt-cli-${{ matrix.os }}.tar.gz" -C cli/target/graalvm-native-image/kprojekt-cli .
 
       - name: Release artifact
         uses: softprops/action-gh-release@v1
