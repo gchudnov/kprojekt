@@ -3,11 +3,11 @@ import sbt._
 object Dependencies {
 
   object versions {
-    val fastparse     = "2.3.3"
-    val kafka         = "3.4.0"
+    val fastparse     = "3.1.1"
+    val kafka         = "3.9.0"
     val kindProjector = "0.10.3"
-    val zio           = "2.0.9"
-    val zioCli        = "0.4.0"
+    val zio           = "2.1.14"
+    val zioCli        = "0.7.0"
   }
 
   private val compiler = Seq(
